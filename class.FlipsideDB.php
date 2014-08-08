@@ -11,6 +11,17 @@ class FlipsideDB
         $ret['pass'] = FlipsideSettings::$db_info['db_'.$db_name]['pass'];
         return $ret;
     }
+	
+	public static function get_pdo($db_name)
+    {
+        $db_info = FlipsideDB::get_connection_info_by_db_name($db_name);
+        $pdo = new PDO($db_info['dsn'], $db_info['user'], $db_info['pass']);
+        if($pdo == FALSE)
+        {
+            return FALSE;
+        }
+        return $pdo;
+	}	
 
     private static function get_table_info($db_name, $db_table)
     {
@@ -128,4 +139,5 @@ class FlipsideDB
         return $pdo->exec($sql);
     }
 }
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>
