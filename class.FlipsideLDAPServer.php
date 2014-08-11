@@ -99,6 +99,29 @@ class FlipsideLDAPServer extends ldap_server
         }
         return TRUE;
     }
+
+    function doLogin($uid, $pass)
+    {
+        $res = $this->testLogin($uid, $pass);
+        if($res == FALSE)
+        {
+            $res = $this->testLoginByEmail($uid, $pass);
+            if($res == FALSE)
+            {
+                return FALSE;
+            }
+        }
+        $users = $this->getUsers("(uid=".$uid.")");
+        if($users == FALSE)
+        {
+            $users = $this->getUsers("(mail=".$uid.")");
+            if($users == FALSE)
+            {
+                return FALSE;
+            }
+        }
+        return $users[0];
+    }
 }
 
 // vim: set tabstop=4 shiftwidth=4 expandtab:
