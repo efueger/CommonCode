@@ -5,12 +5,24 @@ class WebPage
 
     public $head_tags;
     public $body;
+    public $browser;
 
     function __construct($title)
     {
         $this->title = $title;
         $this->head_tags = array();
         $this->body = '';
+        $this->browser = $this->getBrowser();
+    }
+
+    private function getBrowser()
+    {
+        static $browser;//No accident can arise from depending on an unset variable.
+        if(!isset($browser))
+        {
+            $browser = get_browser(null,true);
+        }
+        return $browser;
     }
 
     function print_doctype()
@@ -76,6 +88,19 @@ class WebPage
         return $start_tag.$link_name.$end_tag;
     }
 
+    function print_ie_compatability($prefix='')
+    {
+       //IE 7 doesn't support HTML 5. Install the shim...
+       if($this->browser['majorver'] < 9)
+       {
+           echo $prefix.'<script src="js/html5.js"></script>';
+           echo "\n";
+       }
+       //Tell the browser not to use compatability mode...
+       echo $prefix.'<meta http-equiv="X-UA-Compatible" content="IE=9"/>';
+       echo "\n";
+    }
+
     function print_head($prefix='')
     {
         echo $prefix."<HEAD>\n";
@@ -83,6 +108,10 @@ class WebPage
         foreach($this->head_tags as $tag)
         {
             echo $prefix.$prefix.$tag."\n";
+        }
+        if($this->browser['browser'] == 'IE')
+        {
+            $this->print_ie_compatability($prefix);
         }
         echo $prefix."</HEAD>\n";
     }

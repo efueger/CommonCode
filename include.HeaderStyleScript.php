@@ -75,6 +75,14 @@
             #flipside_nav nav ul { display: none }
         }
 </style>
+<!--[if lt IE 9]>
+<style>
+    .tinynav { display: block }
+    .tinynav1 { float: left }
+    .tinynav2 { float: right }
+    #flipside_nav nav ul { display: none }
+</style>
+<![endif]-->
 <script>
     function do_flip_header_init()
     {
