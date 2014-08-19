@@ -1,10 +1,15 @@
 <?php
+
+require('Browscap.php');
+use phpbrowscap\Browscap;
+
 class WebPage
 {
     public $title;
 
     public $head_tags;
     public $body;
+    private $bc;
     public $browser;
 
     function __construct($title)
@@ -12,6 +17,9 @@ class WebPage
         $this->title = $title;
         $this->head_tags = array();
         $this->body = '';
+        $this->bc = new Browscap('/var/php_cache/browser');
+        $this->bc->doAutoUpdate = false;
+        $this->bc->lowercase = true;
         $this->browser = $this->getBrowser();
     }
 
@@ -20,7 +28,7 @@ class WebPage
         static $browser;//No accident can arise from depending on an unset variable.
         if(!isset($browser))
         {
-            $browser = get_browser(null,true);
+            $browser = $this->bc->getBrowser();
         }
         return $browser;
     }
@@ -91,7 +99,7 @@ class WebPage
     function print_ie_compatability($prefix='')
     {
        //IE 7 doesn't support HTML 5. Install the shim...
-       if($this->browser['majorver'] < 9)
+       if($this->browser->MajorVer < 9)
        {
            echo $prefix.'<script src="js/html5.js"></script>';
            echo "\n";
@@ -109,7 +117,7 @@ class WebPage
         {
             echo $prefix.$prefix.$tag."\n";
         }
-        if($this->browser['browser'] == 'IE')
+        if($this->browser->Browser == 'IE')
         {
             $this->print_ie_compatability($prefix);
         }
