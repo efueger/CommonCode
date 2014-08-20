@@ -41,6 +41,13 @@ class person extends top
         if(isset($data["seealso"])) $this->seeAlso = $data["seealso"];
         if(isset($data["description"])) $this->description = $data["description"];
     }
+
+    function setPassword($pass)
+    {
+        $attribs['userPassword'] = $pass;
+        $this->userPassword[0] = $pass;
+        $this->server->replaceAttribute($this->dn, $attribs);
+    }
 }
 
 class groupofnames extends top

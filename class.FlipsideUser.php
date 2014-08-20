@@ -1,6 +1,7 @@
 <?php
 require_once("ldap/core_schema.php");
 require_once("class.FlipsideDB.php");
+require_once("class.FlipsideLDAPServer.php");
 class FlipsideUser extends inetOrgPerson
 {
     function __construct($server, $data = FALSE, $uid = FALSE, $password = FALSE, $email= FALSE)
@@ -39,6 +40,22 @@ class FlipsideUser extends inetOrgPerson
         return $user;
     }
 
+    public static function getUserByResetHash($hash)
+    {
+        $uid = FlipsideDB::select_field('registration', 'reset', 'uid', array('hash'=>'="'.$hash.'"'));
+        if($uid == FALSE || !isset($uid['uid']))
+        {
+            return FALSE;
+        }
+        $server = new FlipsideLDAPServer();
+        $users = $server->getUsers("(uid=".$uid['uid'].")");
+        if($users == FALSE || !isset($users[0]))
+        {
+            return FALSE;
+        }
+        return $users[0];
+    }
+
     function exists()
     {
        if($this->server->userWithUIDExists($this->uid[0]))
@@ -55,16 +72,24 @@ class FlipsideUser extends inetOrgPerson
        }
     }
 
-    function getHash()
+    function getHash($salt = '')
     {
-        return hash('sha512', json_encode($this));
+        return hash('sha512', json_encode($this).$salt);
     }
 
     function flushToTempDB()
     {
-        $hash = $this->GetHash();
+         $hash = $this->GetHash();
          FlipsideDB::write_to_db('registration', 'registration', array('hash'=>$hash,'data'=>json_encode($this),'time'=>'UTC_TIMESTAMP()'));
          return $hash;
+    }
+
+    function putInResetDB()
+    {
+        FlipsideDB::delete_from_db('registration', 'reset', array('uid'=>'="'.$this->uid[0].'"')); 
+        $hash = $this->GetHash(microtime());
+        FlipsideDB::write_to_db('registration', 'reset', array('hash'=>$hash,'uid'=>$this->uid[0],'time'=>'UTC_TIMESTAMP()'));
+        return $hash;
     }
 
     function eraseFromTempDB($hash)

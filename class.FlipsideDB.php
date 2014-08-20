@@ -12,7 +12,7 @@ class FlipsideDB
         return $ret;
     }
 	
-	public static function get_pdo($db_name)
+    public static function get_pdo($db_name)
     {
         $db_info = FlipsideDB::get_connection_info_by_db_name($db_name);
         $pdo = new PDO($db_info['dsn'], $db_info['user'], $db_info['pass']);
@@ -21,7 +21,7 @@ class FlipsideDB
             return FALSE;
         }
         return $pdo;
-	}	
+    }
 
     private static function get_table_info($db_name, $db_table)
     {

@@ -105,21 +105,21 @@ class WebPage
            echo "\n";
        }
        //Tell the browser not to use compatability mode...
-       echo $prefix.'<meta http-equiv="X-UA-Compatible" content="IE=9"/>';
+       echo $prefix.'<meta http-equiv="X-UA-Compatible" content="IE=edge"/>';
        echo "\n";
     }
 
     function print_head($prefix='')
     {
         echo $prefix."<HEAD>\n";
+        if($this->browser->Browser == 'IE')
+        {
+            $this->print_ie_compatability($prefix.$prefix);
+        }
         echo $prefix.$prefix."<TITLE>".$this->title."</TITLE>\n";
         foreach($this->head_tags as $tag)
         {
             echo $prefix.$prefix.$tag."\n";
-        }
-        if($this->browser->Browser == 'IE')
-        {
-            $this->print_ie_compatability($prefix);
         }
         echo $prefix."</HEAD>\n";
     }
