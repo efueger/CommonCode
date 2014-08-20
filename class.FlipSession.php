@@ -32,11 +32,21 @@ class FlipSession
         return isset($_SESSION['flipside_user']);
     }
 
-    static function get_user()
+    static function get_user($fixServer = FALSE)
     {
         if(isset($_SESSION['flipside_user']))
         {
-            return $_SESSION['flipside_user'];
+            if($fixServer)
+            {
+                $user = $_SESSION['flipside_user'];
+                $server = new FlipsideLDAPServer();
+                $user->resetServer($server);
+                return $user;
+            }
+            else
+            {
+                return $_SESSION['flipside_user'];
+            }
         }
         else
         {

@@ -163,6 +163,15 @@ class ldap_server
         $ret = ldap_add($this->ds, $dn, $entity);
         return $ret;
     }
+
+    function lastError()
+    {
+        if($this->ds == null)
+        {
+            return 'No connection';
+        }
+        return ldap_error($this->ds);
+    }
 }
 // vim: set tabstop=4 shiftwidth=4 expandtab:
 ?>

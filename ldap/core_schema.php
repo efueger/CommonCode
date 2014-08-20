@@ -46,7 +46,11 @@ class person extends top
     {
         $attribs['userPassword'] = $pass;
         $this->userPassword[0] = $pass;
-        $this->server->replaceAttribute($this->dn, $attribs);
+        if($this->server->replaceAttribute($this->dn, $attribs) == FALSE)
+        {
+            return FALSE;
+        }
+        return TRUE;
     }
 }
 
