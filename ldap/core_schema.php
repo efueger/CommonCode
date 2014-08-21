@@ -68,7 +68,14 @@ class groupofnames extends top
     function __construct($server, $data)
     {
         parent::__construct($server, $data);
-        $this->member = $data["member"];
+        if(isset($data["member"]))
+        {
+            $this->member = $data["member"];
+        }
+        else if(isset($data["uniquemember"]))
+        {
+            $this->member = $data["uniquemember"];
+        }
         $this->cn = $data["cn"];
         /*MAY fields, check for NULL*/
         if(isset($data["businesscategory"])) $this->businessCategory = $data["businesscategory"];

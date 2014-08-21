@@ -40,6 +40,44 @@ class FlipsideUser extends inetOrgPerson
         return $user;
     }
 
+    public static function get_all_temp_users()
+    {
+        $data = FlipsideDB::seleect_all_from_db('registration', 'registration', 'hash');
+        if($data == FALSE)
+        {
+            return FALSE;
+        }
+        $res = array();
+        for($i = 0; $i < count($data); $i++)
+        {
+            $user = FlipsideUser::get_temp_user_by_hash($data[$i]['hash']);
+            array_push($res, $user);
+        }
+        return $res;
+    }
+
+    public static function delete_temp_user_by_uid($uid)
+    {
+        $data = FlipsideDB::seleect_all_from_db('registration', 'registration', 'hash');
+        if($data == FALSE)
+        {
+            return FALSE;
+        }
+        for($i = 0; $i < count($data); $i++)
+        {
+            $user = FlipsideUser::get_temp_user_by_hash($data[$i]['hash']);
+            if($user == FALSE)
+            {
+                continue;
+            }
+            if($user->uid[0] == $uid)
+            {
+                return FlipsideDB::delete_from_db('registration', 'registration', array('hash'=>'="'.$data[$i]['hash'].'"'));
+            }
+        }
+        return FALSE;
+    }
+
     public static function getUserByResetHash($hash)
     {
         $uid = FlipsideDB::select_field('registration', 'reset', 'uid', array('hash'=>'="'.$hash.'"'));
@@ -102,9 +140,21 @@ class FlipsideUser extends inetOrgPerson
         $res = $this->server->getGroups("(member=".$this->dn.")");
         if($res == FALSE || !isset($res[0]))
         {
-            return FALSE;
+            $res = $this->server->getGroups("(uniqueMember=".$this->dn.")");
+            if($res == FALSE || !isset($res[0]))
+            {
+                return FALSE;
+            }
         }
-        else if($nested)
+        else
+        {
+            $res2 = $this->server->getGroups("(uniqueMember=".$this->dn.")");
+            if($res2 != FALSE)
+            {
+                $res = array_merge($res, $res2);
+            }
+        }
+        if($nested)
         {
             /*See if this group is a member of other groups*/
             $parentGroups = $res[0]->getGroups();

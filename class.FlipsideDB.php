@@ -117,6 +117,28 @@ class FlipsideDB
         return $ret[0];
     }
 
+    public static function seleect_all_from_db($db_name, $db_table, $db_field)
+    {
+        $db_info = FlipsideDB::get_connection_info_by_db_name($db_name);
+        $pdo = new PDO($db_info['dsn'], $db_info['user'], $db_info['pass']);
+        if($pdo == FALSE)
+        {
+             return FALSE;
+        }
+        $sql = 'SELECT '.$db_field.' FROM '.$db_table.';';
+        $stmt = $pdo->query($sql, PDO::FETCH_ASSOC);
+        if($stmt == FALSE)
+        {
+            return FALSE;
+        }
+        $ret = $stmt->fetchAll();
+        if($ret == FALSE)
+        {
+            return FALSE;
+        }
+        return $ret;
+    }
+
     public static function delete_from_db($db_name, $db_table, $cond)
     {
         $db_info = FlipsideDB::get_connection_info_by_db_name($db_name);

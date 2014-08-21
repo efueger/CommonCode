@@ -43,9 +43,21 @@ class FlipsideUserGroup extends groupOfNames
         $res = $this->server->getGroups("(member=".$this->dn.")");
         if($res == FALSE || !isset($res[0]))
         {
-            return FALSE;
+            $res = $this->server->getGroups("(uniqueMember=".$this->dn.")");
+            if($res == FALSE || !isset($res[0]))
+            {
+                return FALSE;
+            }
         }
-        else if($nested)
+        else
+        {
+            $res2 = $this->server->getGroups("(uniqueMember=".$this->dn.")");
+            if($res2 != FALSE)
+            {
+                $res = array_merge($res, $res2);
+            } 
+        }
+        if($nested)
         {
             /*See if this group is a member of other groups*/
             $parentGroups = $res[0]->getGroups();
