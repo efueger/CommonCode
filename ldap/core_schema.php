@@ -19,6 +19,11 @@ class top
     {
         $this->server = $server;
     }
+
+    function setAttribs($attribs)
+    {
+        return $this->server->replaceAttribute($this->dn, $attribs);
+    }
 }
 
 class person extends top
@@ -46,11 +51,7 @@ class person extends top
     {
         $attribs['userPassword'] = $pass;
         $this->userPassword[0] = $pass;
-        if($this->server->replaceAttribute($this->dn, $attribs) == FALSE)
-        {
-            return FALSE;
-        }
-        return TRUE;
+        return $this->setAttribs($attribs);
     }
 }
 
@@ -75,6 +76,10 @@ class groupofnames extends top
         else if(isset($data["uniquemember"]))
         {
             $this->member = $data["uniquemember"];
+        }
+        else if(isset($data["memberuid"]))
+        {
+            $this->member = $data["memberuid"];
         }
         $this->cn = $data["cn"];
         /*MAY fields, check for NULL*/

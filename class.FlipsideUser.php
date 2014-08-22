@@ -137,22 +137,25 @@ class FlipsideUser extends inetOrgPerson
 
     function getGroups($nested=TRUE)
     {
-        $res = $this->server->getGroups("(member=".$this->dn.")");
-        if($res == FALSE || !isset($res[0]))
+        $res = array();
+        $res1 = $this->server->getGroups("(member=".$this->dn.")");
+        $res2 = $this->server->getGroups("(uniqueMember=".$this->dn.")");
+        $res3 = $this->server->getGroups("(memberUid=".$this->uid[0].")");
+        if($res1 != FALSE && isset($res1[0]))
         {
-            $res = $this->server->getGroups("(uniqueMember=".$this->dn.")");
-            if($res == FALSE || !isset($res[0]))
-            {
-                return FALSE;
-            }
+            $res = array_merge($res, $res1);
         }
-        else
+        if($res2 != FALSE && isset($res2[0]))
         {
-            $res2 = $this->server->getGroups("(uniqueMember=".$this->dn.")");
-            if($res2 != FALSE)
-            {
-                $res = array_merge($res, $res2);
-            }
+            $res = array_merge($res, $res2);
+        }
+        if($res3 != FALSE && isset($res3[0]))
+        {
+            $res = array_merge($res, $res3);
+        }
+        if(!isset($res[0]))
+        {
+            return FALSE;
         }
         if($nested)
         {
