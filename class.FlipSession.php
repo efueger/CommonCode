@@ -2,6 +2,14 @@
 require_once('class.FlipsideLDAPServer.php');
 require_once('class.FlipsideDB.php');
 if (!isset($_SESSION)) { session_start(); }
+if(!isset($_SESSION['ip_address']))
+{
+    $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
+}
+if(!isset($_SESSION['init_time']))
+{
+    $_SESSION['init_time'] = date('c');
+}
 
 class FlipSession
 {
@@ -110,6 +118,53 @@ class FlipSession
     {
         $_SESSION = array();
         session_destroy();
+    }
+
+    static function unserialize_php_session($session_data)
+    {
+        $res = array();
+        $offset = 0;
+        while($offset < strlen($session_data))
+        {
+            if(!strstr(substr($session_data, $offset), "|"))
+            {
+                return FALSE;
+            }
+            $pos = strpos($session_data, "|", $offset);
+            $len = $pos - $offset;
+            $name = substr($session_data, $offset, $len);
+            $offset += $len+1;
+            $data = unserialize(substr($session_data, $offset));
+            $res[$name] = $data;
+            $offset += strlen(serialize($data));
+        }
+        return $res;
+    }
+
+    static function get_all_sessions()
+    {
+        $res = array();
+        $sess_files = scandir(ini_get('session.save_path'));
+        for($i = 0; $i < count($sess_files); $i++)
+        {
+            if($sess_files[$i][0] == '.')
+            {
+                continue;
+            }
+            $id = substr($sess_files[$i], 5);
+            $session_data = file_get_contents(ini_get('session.save_path').'/'.$sess_files[$i]);
+            $res[$id] = FlipSession::unserialize_php_session($session_data);
+        }
+        if(count($res) == 0)
+        {
+            return FALSE;
+        }
+        return $res;
+    }
+
+    static function delete_session_by_id($sid)
+    {
+       return unlink(ini_get('session.save_path').'/sess_'.$sid); 
     }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
