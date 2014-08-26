@@ -33,6 +33,9 @@ class FlipPage extends WebPage
         $js_tag = $this->create_open_tag('script', array('src'=>'/js/jquery-ui.js', 'type'=>'text/javascript'));
         $this->add_head_tag($js_tag);
         $this->add_head_tag($close_tag);
+        $js_tag = $this->create_open_tag('script', array('src'=>'/js/jquery.ui.touch-punch.min.js', 'type'=>'text/javascript'));
+        $this->add_head_tag($js_tag);
+        $this->add_head_tag($close_tag);
     }
 
     function add_header_js_and_style()
