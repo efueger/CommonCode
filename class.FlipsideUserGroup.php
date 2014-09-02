@@ -4,6 +4,20 @@ require_once("ldap/core_schema.php");
 
 class FlipsideUserGroup extends groupOfNames
 {
+    static function newGroup($gid, $desc, $members)
+    {
+        $group = new FlipsideUserGroup();
+        $group->dn = 'cn='.$gid.',ou=Groups,dc=burningflipside,dc=com';
+        $group->objectClass = array('top', 'groupofnames');
+        $group->cn = $gid;
+        if(strlen($desc > 0))
+        {
+            $group->description = $desc;
+        }
+        $group->member = $members;
+        return $group;
+    }
+
     function getGroupName()
     {
         return $this->cn;
