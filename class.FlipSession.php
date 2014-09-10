@@ -114,6 +114,25 @@ class FlipSession
         }
     }
 
+    static function get_user_email()
+    {
+        if(isset($_SESSION['flipside_email']))
+        {
+            return $_SESSION['flipside_email'];
+        }
+        $user = FlipSession::get_user(TRUE);
+        if($user == FALSE)
+        {
+            return FALSE;
+        }
+        if(isset($user->mail) && isset($user->mail[0]))
+        {
+            $_SESSION['flipside_email'] = $user->mail[0];
+            return $_SESSION['flipside_email'];
+        }
+        return FALSE;
+    }
+
     static function end()
     {
         $_SESSION = array();
