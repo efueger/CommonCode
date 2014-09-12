@@ -4,11 +4,14 @@ require_once("class.FlipsideDB.php");
 require_once("class.FlipsideLDAPServer.php");
 class FlipsideUser extends inetOrgPerson
 {
+    public $c;
+
     function __construct($server, $data = FALSE, $uid = FALSE, $password = FALSE, $email= FALSE)
     {
         if($data != FALSE)
         {
             parent::__construct($server, $data);
+            $this->c = $data["c"];
         }
         else
         {
@@ -34,7 +37,7 @@ class FlipsideUser extends inetOrgPerson
         $data = json_decode($data['data']);
         $user = FlipsideUser::convert_from_stdClass($data);
         $user->dn = 'uid='.$user->uid[0].',ou=Users,dc=burningflipside,dc=com';
-        $user->objectClass = array('top', 'inetOrgPerson');
+        $user->objectClass = array('top', 'inetOrgPerson', 'extensibleObject');
         $user->sn = $user->uid[0];
         $user->cn = $user->uid[0];
         return $user;
