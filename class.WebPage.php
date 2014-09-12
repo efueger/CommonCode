@@ -21,7 +21,7 @@ class WebPage
         $this->bc->doAutoUpdate = false;
         $this->bc->lowercase = true;
         $this->browser = $this->getBrowser();
-        if($this->browser->MajorVer <= 6)
+        if($this->browser->Browser == 'IE' && $this->browser->MajorVer <= 6)
         {
             header( 'Location: /badbrowser.php' ) ;
         }
