@@ -4,6 +4,8 @@ class FlipPage extends WebPage
 {
     public $sites;
     public $links;
+    public $notifications;
+    public $header;
 
     function __construct($title, $header=true)
     {
@@ -14,8 +16,10 @@ class FlipPage extends WebPage
         {
             $this->add_header_js_and_style();
         }
+        $this->header = $header;
         $this->sites = array();
         $this->links = array();
+        $this->notifications = array();
     }
 
     function add_viewport()
@@ -99,9 +103,62 @@ class FlipPage extends WebPage
         $this->body = $header.$this->body;
     }
 
+    const NOTIFICATION_SUCCESS = "alert-success";
+    const NOTIFICATION_INFO    = "alert-info";
+    const NOTIFICATION_WARNING = "alert-warning";
+    const NOTIFICATION_FAILED  = "alert-danger";
+
+    function add_notification($msg, $sev=self::NOTIFICATION_INFO, $dismissible=1)
+    {
+        $notice = array('msg'=>$msg, 'sev'=>$sev, 'dismissible'=>$dismissible);
+        array_push($this->notifications, $notice);
+    }
+
+    private function render_notifications()
+    {
+        for($i = 0; $i < count($this->notifications); $i++)
+        {
+            $class = 'alert '.$this->notifications[$i]['sev'];
+            $button = '';
+            if($this->notifications[$i]['dismissible'])
+            {
+                $class .= ' alert-dismissible';
+                $button = '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>';
+            }
+            $prefix = '';
+            switch($this->notifications[$i]['sev'])
+            {
+                case self::NOTIFICATION_INFO:
+                    $prefix = '<strong>Notice:</strong> '; 
+                    break;
+                case self::NOTIFICATION_WARNING:
+                    $prefix = '<strong>Warning!</strong> ';
+                    break;
+                case self::NOTIFICATION_FAILED:
+                    $prefix = '<strong>Warning!</strong> ';
+                    break;
+            }
+            $style = '';
+            if($i+1 < count($this->notifications))
+            {
+                //Not the last notification, remove the end margin
+                $style='style="margin: 0px;"';
+            }
+            $this->body = '
+                <div class="'.$class.'" role="alert" '.$style.'>
+                    '.$button.$prefix.$this->notifications[$i]['msg'].'
+                </div>
+            '.$this->body;
+        }
+    }
+
     function print_page($header=true)
     {
-        if($header)
+        if(count($this->notifications) > 0)
+        {
+            $this->render_notifications();
+        }
+        if($this->header)
         {
             $this->add_header();
         }
