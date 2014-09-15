@@ -2,6 +2,123 @@
 require_once("/var/www/secure_settings/class.FlipsideSettings.php");
 class FlipsideDB
 {
+    protected $db_name;
+    protected $db;
+
+    function __construct($db_name)
+    {
+        $this->db_name = $db_name;
+        $db_info = FlipsideDB::get_connection_info_by_db_name($db_name);
+        $this->db = new PDO($db_info['dsn'], $db_info['user'], $db_info['pass']);
+    }
+
+    private function _array_op($op, $table, $data)
+    {
+        $fields = $values = array();
+
+        foreach(array_keys($data) as $key)
+        {
+            $fields[] = "`$key`";
+            FlipsideDB::sql_escape($data[$key], 0, $this->db);
+            $values[] = $data[$key];
+        }
+
+        $fields = implode(",", $fields);
+        $values = implode(",", $values);
+
+        $sql = "$op INTO `$table` ($fields) VALUES ($values);";
+        if($this->db->exec($sql) === FALSE)
+        {
+            $db_table_info = FlipsideDB::get_table_info($this->db_name, $table);
+            if($db_table_info != FALSE)
+            {
+                if($this->db->exec($db_table_info) === FALSE)
+                {
+                    return FALSE;
+                }
+                else
+                {
+                    if($this->db->exec($sql) === FALSE)
+                    {
+                        return FALSE;
+                    }
+                    else
+                    {
+                        return $this->db->lastInsertId();
+                    }
+                }
+            }
+            else
+            {
+                return FALSE;
+            }
+        }
+        else
+        {
+            return $this->db->lastInsertId();
+        }
+    }
+
+    function insert_array($table, $data)
+    {
+        return $this->_array_op('INSERT', $table, $data);
+    }
+
+    function replace_array($table, $data)
+    {
+        return $this->_array_op('REPLACE', $table, $data);
+    }
+
+    function select($db_table, $db_fields='*', $cond=array())
+    {
+        $sql = '';
+        if(count($cond) == 0)
+        {
+            $sql = 'SELECT '.$db_fields.' FROM '.$db_table.';';
+        }
+        else
+        {
+            $conditions = '';
+            $keys = array_keys($cond);
+            for($i = 0; $i < count($cond); $i++)
+            {
+                $conditions .= $keys[$i].$cond[$keys[$i]].' ';
+                if($i != count($cond)-1)
+                {
+                    $conditions .= ' AND ';
+                }
+            }
+            $sql = 'SELECT '.$db_fields.' FROM '.$db_table.' WHERE '.$conditions.';';
+        }
+        $stmt = $this->db->query($sql, PDO::FETCH_ASSOC);
+        if($stmt == FALSE)
+        {
+            return FALSE;
+        }
+        $ret = $stmt->fetchAll();
+        if($ret == FALSE)
+        {
+            return FALSE;
+        }
+        return $ret;
+    }
+
+    function delete($db_table, $cond)
+    {
+        $conditions = '';
+        $keys = array_keys($cond);
+        for($i = 0; $i < count($cond); $i++)
+        {
+            $conditions .= $keys[$i].$cond[$keys[$i]].' ';
+            if($i != count($cond)-1)
+            {
+                $conditions .= ' AND ';
+            }
+        }
+        $sql = 'DELETE FROM '.$db_table.' WHERE '.$conditions.';';
+        return $this->db->exec($sql);
+    }
+
     private static function get_connection_info_by_db_name($db_name)
     {
         $ret = array();
