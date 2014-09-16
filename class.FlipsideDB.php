@@ -50,6 +50,8 @@ class FlipsideDB
             }
             else
             {
+                //echo $sql."\n";
+                //print_r($this->db->errorInfo());
                 return FALSE;
             }
         }
