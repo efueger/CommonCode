@@ -22,6 +22,14 @@ class FlipPage extends WebPage
         $this->notifications = array();
     }
 
+    function add_js_from_src($src)
+    {
+        $js_tag = $this->create_open_tag('script', array('src'=>$src, 'type'=>'text/javascript'));
+        $close_tag = $this->create_close_tag('script');
+        $this->add_head_tag($js_tag);
+        $this->add_head_tag($close_tag);
+    }
+
     function add_viewport()
     {
         $view_tag = $this->create_open_tag('meta', array('name'=>'viewport', 'content'=>'width=device-width, initial-scale=1.0'), true);
@@ -30,24 +38,14 @@ class FlipPage extends WebPage
 
     function add_jquery_ui()
     {
-        $js_tag = $this->create_open_tag('script', array('src'=>'/js/jquery.js', 'type'=>'text/javascript'));
-        $close_tag = $this->create_close_tag('script');
-        $this->add_head_tag($js_tag);
-        $this->add_head_tag($close_tag);
-        $js_tag = $this->create_open_tag('script', array('src'=>'/js/jquery-ui.js', 'type'=>'text/javascript'));
-        $this->add_head_tag($js_tag);
-        $this->add_head_tag($close_tag);
-        $js_tag = $this->create_open_tag('script', array('src'=>'/js/jquery.ui.touch-punch.min.js', 'type'=>'text/javascript'));
-        $this->add_head_tag($js_tag);
-        $this->add_head_tag($close_tag);
+        $this->add_js_from_src('/js/jquery.js');
+        $this->add_js_from_src('/js/jquery-ui.js');
+        $this->add_js_from_src('/js/jquery.ui.touch-punch.min.js');
     }
 
     function add_header_js_and_style()
     {
-        $js_tag = $this->create_open_tag('script', array('src'=>'/js/tinynav.js', 'type'=>'text/javascript'));
-        $close_tag = $this->create_close_tag('script');
-        $this->add_head_tag($js_tag);
-        $this->add_head_tag($close_tag);
+        $this->add_js_from_src('/js/tinynav.js');
         $script_js_tags = file_get_contents(dirname(__FILE__).'/include.HeaderStyleScript.php');
         $this->add_head_tag($script_js_tags);
     }
