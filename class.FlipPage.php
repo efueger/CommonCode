@@ -41,6 +41,7 @@ class FlipPage extends WebPage
         $this->add_js_from_src('/js/jquery.js');
         $this->add_js_from_src('/js/jquery-ui.js');
         $this->add_js_from_src('/js/jquery.ui.touch-punch.min.js');
+        $this->add_js_from_src('/js/common/flipside.js');
     }
 
     function add_header_js_and_style()
@@ -156,6 +157,14 @@ class FlipPage extends WebPage
         {
             $this->render_notifications();
         }
+        $this->body = '
+            <noscript>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <strong>Error!</strong> This site makes extensive use of JavaScript. Please enable JavaScript or this site will not function.
+                </div>
+            </noscript>
+        '.$this->body;
         if($this->header)
         {
             $this->add_header();
