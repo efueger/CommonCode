@@ -1,3 +1,6 @@
+/*jslint browser: true, sloppy: true, vars: true, white: true */
+/*global docElement: false, $: false*/
+
 function getParameterByName(name)
 {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -8,11 +11,12 @@ function getParameterByName(name)
 
 function browser_supports_cors()
 {
-    if('withCredentials' in new XMLHttpRequest())
+    var xhr = new XMLHttpRequest();
+    if(xhr !== null && xhr.hasOwnProperty('withCredentials'))
     {
         return true;
     }
-    else if(typeof XDomainRequest !== 'undefined')
+    if(typeof XDomainRequest !== 'undefined')
     {
         return true;
     }
@@ -33,7 +37,7 @@ function browser_supports_font_face_css2(rule)
         sheet.insertRule(rule, 0);
         result = !(/unknown/i).test(sheet.cssRules[0].cssText);
         sheet.deleteRule(sheet.cssRules.length - 1);
-    } catch(e) {}
+    } catch(ignore) {}
     return result;
 }
 
@@ -60,24 +64,21 @@ function browser_supports_font_face()
     {
         return browser_supports_font_face_css2(rule);
     }
-    else
-    {
-        return browser_supports_font_face_older(rule);
-    }
+    return browser_supports_font_face_older(rule);
 }
 
-const NOTIFICATION_SUCCESS = "alert-success";
-const NOTIFICATION_INFO    = "alert-info";
-const NOTIFICATION_WARNING = "alert-warning";
-const NOTIFICATION_FAILED  = "alert-danger";
+var NOTIFICATION_SUCCESS = "alert-success";
+var NOTIFICATION_INFO    = "alert-info";
+var NOTIFICATION_WARNING = "alert-warning";
+var NOTIFICATION_FAILED  = "alert-danger";
 
 function add_notification(container, message, severity, dismissible)
 {
-    if(severity == undefined)
+    if(severity === undefined)
     {
         severity = NOTIFICATION_INFO; 
     }
-    if(dismissible == undefined)
+    if(dismissible === undefined)
     {
         dismissible = true;
     }
@@ -119,4 +120,4 @@ function browser_supported()
     }
 }
 
-$(broswer_supported);
+$(browser_supported);
