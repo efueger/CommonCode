@@ -102,6 +102,7 @@ class FlipsideLDAPServer extends ldap_server
 
     function doLogin($uid, $pass)
     {
+        $uid = $this->ldap_escape($uid, TRUE);
         $res = $this->testLogin($uid, $pass);
         if($res == FALSE)
         {
