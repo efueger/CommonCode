@@ -140,9 +140,55 @@ class ldap_server
         return ldap_mod_replace($this->ds, $dn, $attribs);
     }
 
+    /**
+     * function ldap_escape
+     * @author Chris Wright
+     * @version 2.0
+     * @param string $subject The subject string
+     * @param bool $dn Treat subject as a DN if TRUE
+     * @param string|array $ignore Set of characters to leave untouched
+     * @return string The escaped string
+     */
+    function ldap_escape($subject, $dn = FALSE, $ignore = NULL)
+    {
+        // The base array of characters to escape
+        // Flip to keys for easy use of unset()
+        $search = array_flip($dn ? array('\\', '+', '<', '>', ';', '"', '#') : array('\\', '*', '(', ')', "\x00"));
+
+        // Process characters to ignore
+        if (is_array($ignore)) {
+            $ignore = array_values($ignore);
+        }
+        for ($char = 0; isset($ignore[$char]); $char++) {
+            unset($search[$ignore[$char]]);
+        }
+
+        // Flip $search back to values and build $replace array
+        $search = array_keys($search); 
+        $replace = array();
+        foreach ($search as $char) {
+            $replace[] = sprintf('\\%02x', ord($char));
+        }
+
+        // Do the main replacement
+        $result = str_replace($search, $replace, $subject);
+
+        // Encode leading/trailing spaces in DN values
+        if ($dn) {
+            if ($result[0] == ' ') {
+                $result = '\\20'.substr($result, 1);
+            }
+            if ($result[strlen($result) - 1] == ' ') {
+                $result = substr($result, 0, -1).'\\20';
+            }
+        }
+
+        return $result;
+}
+
     function writeObject($object)
     {
-        $dn = $object->dn;
+        $dn = $this->ldap_escape($object->dn, TRUE);
         $entity = get_object_vars($object);
         $entity = array_filter($entity);
         $keys = array_keys($entity);
@@ -161,6 +207,10 @@ class ldap_server
         unset($entity['dn']);
 
         $ret = ldap_add($this->ds, $dn, $entity);
+        if($ret == FALSE)
+        {
+            error_log("Failed to write object with dn=".$dn."\n");
+        }
         return $ret;
     }
 
