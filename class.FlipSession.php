@@ -62,6 +62,22 @@ class FlipSession
         }
     }
 
+    static function refresh_user()
+    {
+        if(isset($_SESSION['flipside_user']))
+        {
+            $user = $_SESSION['flipside_user'];
+            $server = new FlipsideLDAPServer();
+            $user = $server->getUsers("(uid=".$user->uid[0].")");
+            $_SESSION['flipside_user'] = $user[0];
+            return $user;
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
+
     static function get_user_copy()
     {
         return clone FlipSession::get_user();
