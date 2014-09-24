@@ -7,11 +7,14 @@ class FlipJax
     const INVALID_PARAM = 2;
     const ALREADY_LOGGED_IN = 3;
     const INVALID_LOGIN = 4;
+    const ACCESS_DENIED = 5;
+    const INTERNAL_ERROR = 6;
 
     const UNKNOWN_ERROR = 255;
 
     protected $post_params = array();
     protected $get_params = array();
+    protected $user = null;
 
     function validate_params($params, $required_params)
     {
@@ -48,6 +51,19 @@ class FlipJax
     function is_logged_in()
     {
         return FlipSession::is_logged_in(); 
+    }
+
+    function user_in_group($groupName)
+    {
+        if($this->user == null)
+        {
+            $this->user = FlipSession::get_user(TRUE);
+        }
+        if($this->user == null)
+        {
+            return FALSE;
+        }
+        return $this->user->isInGroupNamed($groupName);
     }
 
     function run()
@@ -97,6 +113,24 @@ class FlipJax
                 return "Already Logged In!";
             case self::INVALID_LOGIN:
                 return "Invalid Username or Password!";
+            case self::ACCESS_DENIED:
+                if(isset($data['reason']))
+                {
+                    return "Access Denied! ".$data['reason'];
+                }
+                else
+                {
+                    return "Access Denied!";
+                }
+            case self::INTERNAL_ERROR:
+                if(isset($data['reason']))
+                {
+                    return "Internal Error! ".$data['reason'];
+                }
+                else
+                {
+                    return "Internal Error! One of more internal operations failed. Please contact an administrator.";
+                }
             case self::UNKNOWN_ERROR:
                 return "Unknown error code ".$err_code;
         }
