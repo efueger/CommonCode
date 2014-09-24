@@ -94,7 +94,7 @@ class FlipsideCAPTCHA implements JsonSerializable
 
     public function is_answer_right($answer)
     {
-        return $this->get_answer() == $answer;
+        return strcasecmp($this->get_answer(),$answer) == 0;
     }
 
     public function draw_captcha($explination = true, $return = false)
