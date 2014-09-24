@@ -24,7 +24,6 @@
             float: left;
             margin: 0;
             list-style: none;
-            border-right: 1px solid rgba(255, 255, 255, 0.0976562);
             border-left: 1px solid rgba(0, 0, 0, 0.347656);
         }
         #flipside_nav nav ul.links {
