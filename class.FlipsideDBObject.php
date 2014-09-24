@@ -72,31 +72,32 @@ class FlipsideDBObject
         {
             $ret = $db->replace_array($table, $values);
         }
-        if($ret != FALSE)
+        if($ret === FALSE)
         {
-            if($ai_key_name != null)
+            return $ret;
+        }
+        if($ai_key_name != null)
+        {
+            $this->$ai_key_name = $ret;
+        }
+        foreach($arrays as $key => $value)
+        {
+            for($i = 0; $i < count($value); $i++)
             {
-                $this->$ai_key_name = $ret;
-            }
-            foreach($arrays as $key => $value)
-            {
-                for($i = 0; $i < count($value); $i++)
+                if(is_subclass_of($value[$i], 'FlipsideDBObject'))
                 {
-                    if(is_subclass_of($value[$i], 'FlipsideDBObject'))
+                    if($op == 'insert')
                     {
-                        if($op == 'insert')
-                        {
-                            $value[$i]->insert_to_db($db);
-                        }
-                        else
-                        {
-                            $value[$i]->replace_in_db($db);
-                        }
+                        $value[$i]->insert_to_db($db);
                     }
                     else
                     {
-                        echo "Couldn't add object: ".print_r($value[$i], TRUE);
+                        $value[$i]->replace_in_db($db);
                     }
+                }
+                else
+                {
+                    echo "Couldn't add object: ".print_r($value[$i], TRUE);
                 }
             }
         }
