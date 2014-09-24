@@ -11,7 +11,10 @@ class FlipsideUser extends inetOrgPerson
         if($data != FALSE)
         {
             parent::__construct($server, $data);
-            $this->c = $data["c"];
+            if(isset($data['c']))
+            {
+                $this->c = $data["c"];
+            }
         }
         else
         {
