@@ -38,16 +38,20 @@ class FlipPage extends WebPage
 
     function add_jquery_ui()
     {
-        $this->add_js_from_src('/js/jquery.js');
-        $this->add_js_from_src('/js/jquery-ui.js');
+        //Test with a CDN
+        $this->add_js_from_src('//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js');
+        $this->add_js_from_src('//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js');
+        //$this->add_js_from_src('/js/jquery.js');
+        //$this->add_js_from_src('/js/jquery-ui.js');
         $this->add_js_from_src('/js/jquery.ui.touch-punch.min.js');
         $this->add_js_from_src('/js/common/flipside.js');
     }
 
     function add_header_js_and_style()
     {
-        $this->add_js_from_src('/js/tinynav.js');
-        $script_js_tags = file_get_contents(dirname(__FILE__).'/include.HeaderStyleScript.php');
+        $this->add_js_from_src('/js/common/tinynav.min.js');
+        $script_js_tags = file_get_contents(dirname(__FILE__).'/include.HeaderStyleScript.min.php');
+        //$script_js_tags = file_get_contents(dirname(__FILE__).'/include.HeaderStyleScript.php');
         $this->add_head_tag($script_js_tags);
     }
 
