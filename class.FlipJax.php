@@ -101,6 +101,10 @@ class FlipJax
             case self::UNRECOGNIZED_METHOD:
                 return "Unrecognized Operation ".$_SERVER['REQUEST_METHOD'];
             case self::INVALID_PARAM:
+                if(isset($data['action_name']))
+                {
+                    return "Invalid Parameter! Unrecognized action ".$data['action_name'];
+                }
                 if(isset($data['param_name']))
                 {
                     return "Invalid Parameter! Expected parameter ".$data['param_name']." to be set";
