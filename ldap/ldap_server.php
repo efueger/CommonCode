@@ -214,6 +214,11 @@ class ldap_server
         return $ret;
     }
 
+    function delete_dn($dn)
+    {
+        return ldap_delete($this->ds, $dn);
+    }
+
     function lastError()
     {
         if($this->ds == null)
