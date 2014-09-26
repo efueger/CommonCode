@@ -227,6 +227,17 @@ class FlipsideUser extends inetOrgPerson
             return FALSE;
         }
     }
+
+    function isProfileComplete()
+    {
+        if($this->c == null          || $this->postalAddress == null ||
+           $this->postalCode == null || $this->l == null             ||
+           $this->st == null         || $this->mobile == null)
+        {
+            return FALSE;
+        }
+        return TRUE;
+    }
 }
 
 // vim: set tabstop=4 shiftwidth=4 expandtab:
