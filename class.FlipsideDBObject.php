@@ -19,6 +19,51 @@ class FlipsideDBObject
         }
     }
 
+    protected function to_value_array($drop_sql_ignore = TRUE, &$arrays, &$ai_key_name = NULL)
+    {
+        $values = get_object_vars($this);
+        foreach($values as $key => $value)
+        {
+            if(strncmp($key, '_', 1) == 0)
+            {
+                unset($values[$key]);
+            }
+            if(is_array($this->_sql_special))
+            {
+                if(isset($this->_sql_special[$key]))
+                {
+                    $values[$key] = call_user_func($this->_sql_special[$key], $value);
+                }
+            }
+            if(is_array($this->_sql_ignore) && $drop_sql_ignore == TRUE) 
+            {
+                if(in_array($key, $this->_sql_ignore))
+                {
+                    unset($values[$key]);
+                }
+            }
+            if(is_array($this->_sql_ai_key))
+            {
+                if(in_array($key, $this->_sql_ai_key))
+                {
+                    if($value == null)
+                    {
+                        //If the key isn't set I can only do an INSERT...
+                        $op = 'insert';
+                        if($ai_key_name != NULL) $ai_key_name = $key;
+                        unset($values[$key]);
+                    }
+                }
+            }
+            if(strncmp($key, '_', 1) != 0 && is_array($value))
+            {
+                $arrays[$key] = $values[$key];
+                unset($values[$key]);
+            }
+        }
+        return $values;
+    }
+
     protected function set_in_db($db, $op)
     {
         $values = get_object_vars($this);

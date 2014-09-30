@@ -12,6 +12,7 @@ class FlipPage extends WebPage
         parent::__construct($title);
         $this->add_viewport();
         $this->add_jquery_ui();
+        $this->add_bootstrap();
         if($header)
         {
             $this->add_header_js_and_style();
@@ -45,6 +46,13 @@ class FlipPage extends WebPage
         //$this->add_js_from_src('/js/jquery-ui.js');
         $this->add_js_from_src('/js/jquery.ui.touch-punch.min.js');
         $this->add_js_from_src('/js/common/flipside.js');
+    }
+
+    function add_bootstrap()
+    {
+        $this->add_js_from_src('/js/bootstrap.min.js');
+        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/bootstrap.min.css', 'type'=>'text/css'), true);
+        $this->add_head_tag($css_tag);
     }
 
     function add_header_js_and_style()
