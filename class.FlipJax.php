@@ -172,6 +172,17 @@ class FlipJax
         }
         return json_encode($data);
     }
+
+    function convert_to_datatable($array)
+    {
+        $ret = array();
+        $i = 0;
+        foreach($array as $key => $value)
+        {
+            $ret[$i++] = $value;
+        }
+        return $ret;
+    }
 }
 
 class FlipJaxSecure extends FlipJax
