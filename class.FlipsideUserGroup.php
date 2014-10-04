@@ -29,7 +29,8 @@ class FlipsideUserGroup extends groupOfNames
         for($i = 0; $i < $this->member["count"]; $i++)
         {
             $class = $this->server->getObjectClassForDN($this->member[$i]);
-            if($class != FALSE && in_array("groupOfNames", $class) != FALSE)
+            if($class != FALSE &&
+               (in_array("groupOfNames", $class) != FALSE || in_array("groupOfUniqueNames", $class) != FALSE))
             {
                 if($nested)
                 {
