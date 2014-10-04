@@ -71,7 +71,7 @@ class FlipsideDB
         return $this->_array_op('REPLACE', $table, $data);
     }
 
-    function select($db_table, $db_fields='*', $cond=array())
+    function select($db_table, $db_fields='*', $cond=array(), $conj='AND')
     {
         $sql = '';
         if(count($cond) == 0)
@@ -87,7 +87,7 @@ class FlipsideDB
                 $conditions .= $keys[$i].$cond[$keys[$i]].' ';
                 if($i != count($cond)-1)
                 {
-                    $conditions .= ' AND ';
+                    $conditions .= ' '.$conj.' ';
                 }
             }
             $sql = 'SELECT '.$db_fields.' FROM '.$db_table.' WHERE '.$conditions.';';

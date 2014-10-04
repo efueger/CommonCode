@@ -157,7 +157,7 @@ class FlipsideDBObject
 
     function replace_in_db($db)
     {
-        $this->set_in_db($db, 'replace');
+        return $this->set_in_db($db, 'replace');
     }
 
     function set_object_vars($vars)
@@ -172,6 +172,10 @@ class FlipsideDBObject
     static function get_all_of_type($db)
     {
         $array = $db->select(self::get_table_name());
+        if($array == FALSE)
+        {
+            return FALSE;
+        }
         $res = array();
         for($i = 0; $i < count($array); $i++)
         {
@@ -209,10 +213,10 @@ class FlipsideDBObject
         }
     }
 
-    static function select_from_db_multi_conditions($db, $conds)
+    static function select_from_db_multi_conditions($db, $conds, $conj='AND')
     {
         $table = self::get_table_name();
-        $array = $db->select($table, '*', $conds);
+        $array = $db->select($table, '*', $conds, $conj);
         if($array == FALSE || !isset($array[0]))
         {
             return FALSE;
