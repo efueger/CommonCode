@@ -63,6 +63,16 @@ class FlipsideLDAPServer extends ldap_server
         return new FlipsideUserGroup($this, $raw[0]);
     }
 
+    function getUserByDN($dn)
+    {
+        $raw = $this->getObjectByDN($dn);
+        if($raw == FALSE)
+        {
+            return FALSE;
+        }
+        return new FlipsideUser($this, $raw[0]);
+    }
+
     function testLogin($uid,$pass)
     {
         $dn = "uid=".$uid.",".FlipsideSettings::$ldap['user_base'];
