@@ -83,6 +83,39 @@ class FlipsideUserGroup extends groupOfNames
         }
         return $res; 
     }
+
+    function addMemberByEmail($email)
+    {
+        $users = $this->server->getUsers("(mail=".$email.")");
+        if($users == FALSE || !isset($users[0]))
+        {
+            return FALSE;
+        }
+        $dn = $users[0]->dn;
+        $tmp = array();
+        if(in_array("groupOfNames", $this->objectClass))
+        {
+            array_push($this->member, $dn);
+            $tmp['member'] = $this->member;
+        }
+        else
+        {
+            return FALSE;
+        }
+        $attribs = array();
+        $attribs['member'] = array();
+        for($i = 0; $i < count($tmp['member']); $i++)
+        {
+            if($tmp['member'][$i] == FALSE) continue;
+            array_push($attribs['member'], $tmp['member'][$i]);
+        }
+        $ret = $this->setAttribs($attribs);
+        if($ret == FALSE)
+        {
+            print_r($this->server->lastError());
+        }
+        return $ret;
+    }
 }
 // vim: set tabstop=4 shiftwidth=4 expandtab:
 ?>
