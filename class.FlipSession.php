@@ -197,6 +197,12 @@ class FlipSession
         return $res;
     }
 
+    static function get_session_by_id($sid)
+    {
+        $session_data = file_get_contents(ini_get('session.save_path').'/sess_'.$sid);
+        return FlipSession::unserialize_php_session($session_data);
+    }
+
     static function delete_session_by_id($sid)
     {
        return unlink(ini_get('session.save_path').'/sess_'.$sid); 
