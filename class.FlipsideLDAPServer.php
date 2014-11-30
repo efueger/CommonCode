@@ -53,6 +53,11 @@ class FlipsideLDAPServer extends ldap_server
         return $res;
     }
 
+    function getUsersByTitle($title)
+    {
+        return $this->getUsers("(title=".$title.")");
+    }
+
     function getGroupByDN($dn)
     {
         $raw = $this->getObjectByDN($dn);
