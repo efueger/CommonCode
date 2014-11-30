@@ -238,6 +238,19 @@ class FlipsideUser extends inetOrgPerson
         }
         return TRUE;
     }
+
+    function publicName()
+    {
+        if(isset($this->description[0]))
+        {
+            return $this->description[0];
+        }
+        if(isset($this->displayName[0]) && $this->displayName[0] != $this->givenName[0])
+        {
+            return $this->givenName[0].' "'.$this->displayName[0].'" '.$this->sn[0];
+        }
+        return $this->givenName[0].' '.$this->sn[0];
+    }
 }
 
 // vim: set tabstop=4 shiftwidth=4 expandtab:
