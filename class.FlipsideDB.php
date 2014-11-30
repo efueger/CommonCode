@@ -121,6 +121,11 @@ class FlipsideDB
         return $this->db->exec($sql);
     }
 
+    function sql_query($sql)
+    {
+        return $this->db->exec($sql);
+    }
+
     private static function get_connection_info_by_db_name($db_name)
     {
         $ret = array();
