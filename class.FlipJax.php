@@ -66,6 +66,15 @@ class FlipJax
         return $this->user->isInGroupNamed($groupName);
     }
 
+    function get_user()
+    {
+        if($this->user == null)
+        {
+            $this->user = FlipSession::get_user(TRUE);
+        }
+        return $this->user;
+    }
+
     function run()
     {
         $ret = FALSE;
