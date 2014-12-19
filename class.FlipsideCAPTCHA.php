@@ -100,14 +100,14 @@ class FlipsideCAPTCHA implements JsonSerializable
     public function draw_captcha($explination = true, $return = false)
     {
         $string = '';
+
+        $string .= '<form id="flipcaptcha" name="flipcaptcha">
+            <label for="captcha" class="col-sm-2 control-label">'.$this->get_question().'</label><div class="col-sm-10"><input type="text" id="captcha" name="captcha"/> '.$this->get_hint().'</div>
+        </form><br/>';
         if($explination)
         {
             $string .= 'The answer to this question may be found in the Burning Flipside Survival Guide. It may be found <a href="http://www.burningflipside.com/sg">here</a>.<br/>';
         }
-
-        $string .= '<form id="flipcaptcha" name="flipcaptcha">
-            <label for="captcha">'.$this->get_question().'</label><input type="text" id="captcha" name="captcha"/> '.$this->get_hint().'
-        </form>';
         
         if(!$return)
         {
