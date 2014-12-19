@@ -182,4 +182,12 @@ function browser_supported()
     }
 }
 
-$(browser_supported);
+function flipside_init()
+{
+    browser_supported();
+    var host = window.location.hostname.split('.')[0];
+    var link = $(".sites a[href^='https://"+host+"']");
+    link.attr('class', 'site_selected');
+}
+
+$(flipside_init);
