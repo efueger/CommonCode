@@ -12,9 +12,12 @@ function getParameterByName(name)
 function browser_supports_cors()
 {
     var xhr = new XMLHttpRequest();
-    if(xhr !== null && xhr.hasOwnProperty('withCredentials'))
+    if(xhr !== null)
     {
-        return true;
+        if(xhr.hasOwnProperty('withCredentials') || xhr.withCredentials !== undefined)
+        {
+            return true;
+        }
     }
     if(typeof XDomainRequest !== 'undefined')
     {
