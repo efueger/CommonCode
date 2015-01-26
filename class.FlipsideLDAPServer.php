@@ -21,9 +21,16 @@ class FlipsideLDAPServer extends ldap_server
         parent::bind(FlipsideSettings::$ldap_auth['read_write_user'], FlipsideSettings::$ldap_auth['read_write_pass']);
     }
 
-    function search($filter)
+    function search($filter, $base_dn = FALSE)
     {
-        return parent::search(FlipsideSettings::$ldap['base'], $filter);
+        if($base_dn = FALSE)
+        {
+            return parent::search($filter, FlipsideSettings::$ldap['base']);
+        }
+        else
+        {
+            return parent::search($filter, $base_dn);
+        }
     }
 
     function search_extended($base_dn, $filter)
@@ -33,7 +40,7 @@ class FlipsideLDAPServer extends ldap_server
 
     function getGroups($filter="(cn=*)")
     {
-        $raw = $this->search_extended(FlipsideSettings::$ldap['group_base'], $filter);
+        $raw = $this->search($filter, FlipsideSettings::$ldap['group_base']);
         $res = array();
         for($i = 0; $i < $raw["count"]; $i++)
         {
@@ -44,7 +51,7 @@ class FlipsideLDAPServer extends ldap_server
 
     function getUsers($filter="(cn=*)")
     {
-        $raw = $this->search_extended(FlipsideSettings::$ldap['user_base'], $filter);
+        $raw = $this->search($filter, FlipsideSettings::$ldap['user_base']);
         $res = array();
         for($i = 0; $i < $raw["count"]; $i++)
         {

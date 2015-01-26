@@ -71,7 +71,7 @@ class ldap_server
         return $res;
     }
 
-    function search($base_dn, $filter)
+    function search($filter, $base_dn)
     {
         //print("ldap_server::seach entered\n");
         if($this->ds == null)
