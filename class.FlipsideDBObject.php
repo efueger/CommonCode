@@ -221,10 +221,11 @@ class FlipsideDBObject
         {
             return FALSE;
         }
-        if(count($array) > 1)
+        $ret_count = count($array);
+        if($ret_count > 1)
         {
             $all = array();
-            for($i = 0; $i < count($array); $i++)
+            for($i = 0; $i < $ret_count; $i++)
             {
                 $type = new static();
                 $type->set_object_vars($array[$i]);

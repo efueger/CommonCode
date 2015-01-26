@@ -74,7 +74,8 @@ class FlipsideDB
     function select($db_table, $db_fields='*', $cond=array(), $conj='AND')
     {
         $sql = '';
-        if(count($cond) == 0)
+        $cond_count = count($cond);
+        if($cond_count == 0)
         {
             $sql = 'SELECT '.$db_fields.' FROM '.$db_table.';';
         }
@@ -82,10 +83,10 @@ class FlipsideDB
         {
             $conditions = '';
             $keys = array_keys($cond);
-            for($i = 0; $i < count($cond); $i++)
+            for($i = 0; $i < $cond_count; $i++)
             {
                 $conditions .= $keys[$i].$cond[$keys[$i]].' ';
-                if($i != count($cond)-1)
+                if($i != $cond_count-1)
                 {
                     $conditions .= ' '.$conj.' ';
                 }
