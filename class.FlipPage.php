@@ -40,8 +40,8 @@ class FlipPage extends WebPage
     function add_jquery_ui()
     {
         //Test with a CDN
-        $this->add_js_from_src('//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js');
-        $this->add_js_from_src('//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js');
+        $this->add_js_from_src('//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js');
+        $this->add_js_from_src('//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js');
         //$this->add_js_from_src('/js/jquery.js');
         //$this->add_js_from_src('/js/jquery-ui.js');
         $this->add_js_from_src('/js/jquery.ui.touch-punch.min.js');
