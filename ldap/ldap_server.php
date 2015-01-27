@@ -131,7 +131,7 @@ class ldap_server
         {
             return FALSE;
         }
-        $res = ldap_bind($temp_ds, $dn, $pass);
+        $res = @ldap_bind($temp_ds, $dn, $pass);
         return $res;
     }
 
