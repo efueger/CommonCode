@@ -23,7 +23,7 @@ class FlipsideLDAPServer extends ldap_server
 
     function search($filter, $base_dn = FALSE)
     {
-        if($base_dn = FALSE)
+        if($base_dn == FALSE)
         {
             return parent::search($filter, FlipsideSettings::$ldap['base']);
         }
