@@ -31,6 +31,12 @@ class FlipPage extends WebPage
         $this->add_head_tag($close_tag);
     }
 
+    function add_css_from_src($src)
+    {
+        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>$src, 'type'=>'text/css'), true);
+        $this->add_head_tag($css_tag);
+    }
+
     function add_viewport()
     {
         $view_tag = $this->create_open_tag('meta', array('name'=>'viewport', 'content'=>'width=device-width, initial-scale=1.0'), true);
@@ -42,24 +48,20 @@ class FlipPage extends WebPage
         //Test with a CDN
         $this->add_js_from_src('//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js');
         $this->add_js_from_src('//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js');
-        //$this->add_js_from_src('/js/jquery.js');
-        //$this->add_js_from_src('/js/jquery-ui.js');
         $this->add_js_from_src('/js/jquery.ui.touch-punch.min.js');
         $this->add_js_from_src('/js/common/flipside.js');
     }
 
     function add_bootstrap()
     {
-        $this->add_js_from_src('/js/bootstrap.min.js');
-        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/bootstrap.min.css', 'type'=>'text/css'), true);
-        $this->add_head_tag($css_tag);
+        $this->add_js_from_src('//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js');
+        $this->add_css_from_src('//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css');
     }
 
     function add_header_js_and_style()
     {
         $this->add_js_from_src('/js/common/tinynav.min.js');
         $script_js_tags = file_get_contents(dirname(__FILE__).'/include.HeaderStyleScript.min.php');
-        //$script_js_tags = file_get_contents(dirname(__FILE__).'/include.HeaderStyleScript.php');
         $this->add_head_tag($script_js_tags);
     }
 
