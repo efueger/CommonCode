@@ -100,6 +100,65 @@ class FlipsideUser extends inetOrgPerson
         return $users[0];
     }
 
+    public static function getUserByAuthorizationCode($auth_code)
+    {
+        $uid = FlipsideDB::select_field('oauth2', 'authorization', 'uid', array('hash'=>'="'.$auth_code.'"'));
+        if($uid == FALSE || !isset($uid['uid']))
+        {
+            return FALSE;
+        }
+        $server = new FlipsideLDAPServer();
+        $users = $server->getUsers("(uid=".$uid['uid'].")");
+        if($users == FALSE || !isset($users[0]))
+        {
+            return FALSE;
+        }
+        return $users[0];
+    }
+
+    public static function getUserByAccessCode($access_code)
+    {
+        $data = FlipsideDB::seleect_all_from_db('oauth2', 'access', '*', array('access_token'=>'="'.$access_code.'"'));
+        if($data === FALSE)
+        {
+            return FALSE;
+        }
+        $x = time() - strtotime($data[0]['start_time'].'-00:00');
+        if($x > $data[0]['expires_in'])
+        {
+            FlipsideDB::delete_from_db('oauth2', 'access', array('access_token'=>'="'.$access_code.'"'));
+            return FALSE;
+        }
+        $server = new FlipsideLDAPServer();
+        $users = $server->getUsers("(uid=".$data[0]['uid'].")");
+        if($users == FALSE || !isset($users[0]))
+        {
+            return FALSE;
+        }
+        return $users[0];
+    }
+
+    function getAuthorizationCode($uri)
+    {
+        $hash = $this->getHash($uri);
+        FlipsideDB::write_to_db('oauth2', 'authorization', array('hash'=>$hash,'uid'=>$this->uid[0],'time'=>'UTC_TIMESTAMP()'));
+        return $hash;
+    }
+
+    function getAccessToken($uri)
+    {
+        //TODO Support differnt expire times etc
+        $res = array(
+            'access_token'=>$this->getHash(date('c')),
+            'token_type'=>'bearer',
+            'expires_in'=>3600,
+            'uid'=>$this->uid[0],
+            'refresh_token'=>$this->getHash(date('c', time()+3600)));
+        FlipsideDB::write_to_db('oauth2', 'access', $res);
+        unset($res['uid']);
+        return $res;
+    }
+
     function exists()
     {
        if($this->server->userWithUIDExists($this->uid[0]))

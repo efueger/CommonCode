@@ -47,6 +47,10 @@ class FlipsideMail extends PHPMailer
         {
             $this->addAddress($mail['to']);
         }
+        if(isset($mail['reply_to']))
+        {
+            $this->addReplyTo($mail['reply_to']);
+        }
         $this->isHTML(true);
 
         $this->Subject = $mail['subject'];

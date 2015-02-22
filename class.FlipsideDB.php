@@ -242,7 +242,7 @@ class FlipsideDB
         return $ret[0];
     }
 
-    public static function seleect_all_from_db($db_name, $db_table, $db_field)
+    public static function seleect_all_from_db($db_name, $db_table, $db_field, $cond = FALSE)
     {
         $db_info = FlipsideDB::get_connection_info_by_db_name($db_name);
         $pdo = new PDO($db_info['dsn'], $db_info['user'], $db_info['pass']);
@@ -250,7 +250,25 @@ class FlipsideDB
         {
              return FALSE;
         }
-        $sql = 'SELECT '.$db_field.' FROM '.$db_table.';';
+        $conditions = '';
+        $sql = '';
+        if($cond !== FALSE)
+        {
+            $keys = array_keys($cond);
+            for($i = 0; $i < count($cond); $i++)
+            {
+                $conditions .= $keys[$i].$cond[$keys[$i]].' ';
+                if($i != count($cond)-1)
+                {
+                    $conditions .= ' AND ';
+                }
+            }
+            $sql = 'SELECT '.$db_field.' FROM '.$db_table.' WHERE '.$conditions.';';
+        }
+        else
+        {
+            $sql = 'SELECT '.$db_field.' FROM '.$db_table.';';
+        }
         $stmt = $pdo->query($sql, PDO::FETCH_ASSOC);
         if($stmt == FALSE)
         {
