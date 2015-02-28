@@ -21,7 +21,8 @@ class WebPage
         $this->bc->doAutoUpdate = false;
         $this->bc->lowercase = true;
         $this->browser = $this->getBrowser();
-        if($this->browser->Browser == 'IE' && $this->browser->MajorVer <= 6)
+        
+        if($this->get_browser_name() === 'IE' && $this->get_browser_major_ver() <= 6)
         {
             header( 'Location: /badbrowser.php' ) ;
         }
@@ -35,6 +36,30 @@ class WebPage
             $browser = $this->bc->getBrowser();
         }
         return $browser;
+    }
+
+    private function get_browser_name()
+    {
+        if(isset($this->browser->Browser))
+        {
+            return $this->browser->Browser;
+        }
+        else
+        {
+            return $this->browser->browser;
+        }
+    }
+
+    private function get_browser_major_ver()
+    {
+        if(isset($this->browser->MajorVer))
+        {
+            return $this->browser->MajorVer;
+        }
+        else
+        {
+            return $this->browser->majorver;
+        }
     }
 
     function print_doctype()
@@ -103,7 +128,7 @@ class WebPage
     function print_ie_compatability($prefix='')
     {
        //IE 7 doesn't support HTML 5. Install the shim...
-       if($this->browser->MajorVer < 9)
+       if($this->get_browser_major_ver() < 9)
        {
            echo $prefix.'<script src="js/html5.js"></script>';
            echo "\n";
@@ -116,7 +141,7 @@ class WebPage
     function print_head($prefix='')
     {
         echo $prefix."<HEAD>\n";
-        if($this->browser->Browser == 'IE')
+        if($this->get_browser_name() === 'IE')
         {
             $this->print_ie_compatability($prefix.$prefix);
         }
