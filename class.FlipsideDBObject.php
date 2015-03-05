@@ -142,7 +142,7 @@ class FlipsideDBObject
                 }
                 else
                 {
-                    echo "Couldn't add object: ".print_r($value[$i], TRUE);
+                    //echo "Couldn't add object: ".print_r($value[$i], TRUE);
                 }
             }
         }
