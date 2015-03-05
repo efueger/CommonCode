@@ -49,7 +49,7 @@ class FlipPage extends WebPage
         $this->add_js_from_src('//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js');
         $this->add_js_from_src('//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js');
         $this->add_js_from_src('/js/jquery.ui.touch-punch.min.js');
-        $this->add_js_from_src('/js/common/flipside.js');
+        $this->add_js_from_src('/js/common/flipside.min.js');
     }
 
     function add_bootstrap()
