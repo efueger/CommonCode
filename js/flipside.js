@@ -70,6 +70,13 @@ function browser_supports_font_face()
     return browser_supports_font_face_older(rule);
 }
 
+function browser_supports_input_type(type)
+{
+    var i = document.createElement("input");
+    i.setAttribute("type", type);
+    return i.type !== "text";
+}
+
 var NOTIFICATION_SUCCESS = "alert-success";
 var NOTIFICATION_INFO    = "alert-info";
 var NOTIFICATION_WARNING = "alert-warning";
