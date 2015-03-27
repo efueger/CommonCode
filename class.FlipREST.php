@@ -108,7 +108,7 @@ class FlipRESTFormat extends \Slim\Middleware
                     $id = $row[$keys[0]];
                     foreach($row as $key=>$value)
                     {
-                        $this->fix_encoded_element($key, $value, &$row, '/'.$id);
+                        $this->fix_encoded_element($key, $value, $row, '/'.$id);
                     }
                     fputcsv($df, $row);
                 }
@@ -122,7 +122,7 @@ class FlipRESTFormat extends \Slim\Middleware
                     $values = get_object_vars($row);
                     foreach($values as $key=>$value)
                     {
-                        $this->fix_encoded_element($key, $value, &$values, '/'.$id);
+                        $this->fix_encoded_element($key, $value, $values, '/'.$id);
                     }
                     fputcsv($df, $values);
                 }
@@ -134,7 +134,7 @@ class FlipRESTFormat extends \Slim\Middleware
             fputcsv($df, array_keys($array));
             foreach($array as $key=>$value)
             {
-                $this->fix_encoded_element($key, $value, &$array);
+                $this->fix_encoded_element($key, $value, $array);
             }
             fputcsv($df, $array);
         }
