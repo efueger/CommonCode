@@ -1,4 +1,5 @@
 <?php
+require_once('Autoload.php');
 require_once('class.FlipsideLDAPServer.php');
 require_once('class.FlipsideDB.php');
 if (!isset($_SESSION)) { session_start(); }
@@ -11,7 +12,7 @@ if(!isset($_SESSION['init_time']))
     $_SESSION['init_time'] = date('c');
 }
 
-class FlipSession
+class FlipSession extends Singleton
 {
     static function does_var_exist($name)
     {
@@ -37,7 +38,19 @@ class FlipSession
 
     static function is_logged_in()
     {
-        return isset($_SESSION['flipside_user']);
+        if(isset($_SESSION['flipside_user']))
+        {
+            return true;
+        }
+        else if(isset($_SESSION['AuthMethod']) && isset($_SESSION['AuthData']))
+        {
+            $auth = AuthProvider::getInstance();
+            return $auth->is_logged_in($_SESSION['AuthMethod'], $_SESSION['AuthData']);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     static function get_user($fixServer = FALSE)
@@ -47,8 +60,11 @@ class FlipSession
             if($fixServer)
             {
                 $user = $_SESSION['flipside_user'];
-                $server = new FlipsideLDAPServer();
-                $user->resetServer($server);
+                if($user instanceof FlipsideLDAPUser)
+                {
+                    $server = new FlipsideLDAPServer();
+                    $user->resetServer($server);
+                }
                 return $user;
             }
             else
@@ -56,9 +72,19 @@ class FlipSession
                 return $_SESSION['flipside_user'];
             }
         }
+        else if(isset($_SESSION['AuthMethod']) && isset($_SESSION['AuthData']))
+        {
+            $auth = AuthProvider::getInstance();
+            $user = $auth->get_user($_SESSION['AuthMethod'], $_SESSION['AuthData']);
+            if($user !== null)
+            {
+                $_SESSION['flipside_user'] = $user;
+            }
+            return $user;
+        }
         else
         {
-            return FALSE;
+            return null;
         }
     }
 
@@ -151,8 +177,11 @@ class FlipSession
 
     static function end()
     {
-        $_SESSION = array();
-        session_destroy();
+        if(isset($_SESSION) && !empty($_SESSION))
+        {
+            $_SESSION = array();
+            session_destroy();
+        }
     }
 
     static function unserialize_php_session($session_data)

@@ -59,7 +59,14 @@ class ldap_server
         else
         {
             //print("ldap_server::bind performing bind\n");
-            $res = ldap_bind($this->ds, $cn, $password);
+            try
+            {
+                $res = ldap_bind($this->ds, $cn, $password);
+            }
+            catch(Exception $e)
+            {
+                throw new Exception($e->getMessage().' (server='.$this->proto.'://'.$this->name.')', $e->getCode(), $e);
+            }
             $this->connect_cn = $cn;
             $this->connect_pass = $password;
         }
