@@ -11,6 +11,7 @@ class WebPage
     public $body;
     private $bc;
     public $browser;
+    public $body_tags;
 
     function __construct($title)
     {
@@ -155,7 +156,7 @@ class WebPage
 
     function print_body($prefix='')
     {
-        echo $prefix."<BODY>\n";
+        echo $prefix.'<BODY '.$this->body_tags.'>';
         echo $prefix.$prefix.$this->body."\n";
         echo $prefix."</BODY>\n";
     }
