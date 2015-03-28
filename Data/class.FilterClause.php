@@ -70,6 +70,24 @@ class FilterClause
         return $str;
     }
 
+    function to_ldap_string()
+    {
+        $str = '(';
+        switch($this->op)
+        {
+            case 'substringof':
+                $str.=$this->var1.$this->op.'*'.trim($this->var2,"'").'*';
+                break;
+            case '!=':
+                $str.='!('.$this->var1.'='.$this->var2.')';
+                break;
+            default:
+                $str.=$this->var1.$this->op.$this->var2;
+                break;
+        }
+        return $str.')';
+    }
+
     function php_compare($value)
     {
         switch($this->op)

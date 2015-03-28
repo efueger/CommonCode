@@ -1,16 +1,41 @@
 <?php
 namespace Auth;
+require_once("/var/www/secure_settings/class.FlipsideSettings.php");
 
 class LDAPAuthenticator
 {
     public function login($username, $password)
     {
-        $server = new \FlipsideLDAPServer();
-        $user = $server->doLogin($username, $password);
-        if($user !== false)
+        $server = \LDAP\LDAPServer::getInstance();
+        if(isset(\FlipsideSettings::$ldap['proto']))
         {
-            return array('res'=>true, 'extended'=>$user->uid[0]);
+            $server->connect(\FlipsideSettings::$ldap['host'], 
+                             \FlipsideSettings::$ldap['proto']);
         }
+        else
+        {
+            $server->connect(\FlipsideSettings::$ldap['host']);
+        }
+        $filter = new \Data\Filter("uid eq $username or mail eq $username");
+        $ret = $server->bind(\FlipsideSettings::$ldap_auth['read_write_user'],
+                             \FlipsideSettings::$ldap_auth['read_write_pass']);
+        if($ret === false)
+        {
+            return false;
+        }
+        $user = $server->read(\FlipsideSettings::$ldap['base'], $filter);
+        if($user === false)
+        {
+            return false;
+        }
+        $user = $user[0];
+        $server->unbind();
+        $ret = $server->bind($user->dn, $password);
+        if($ret !== false)
+        {
+            return array('res'=>true, 'extended'=>$user); 
+        }
+        return false;
     }
 
     public function is_logged_in($data)

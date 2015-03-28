@@ -94,6 +94,41 @@ class Filter
         return $ret;
     }
 
+    function to_ldap_string()
+    {
+        $ret = '';
+        $count = count($this->children);
+        $prefix = '';
+        for($i = 0; $i < $count; $i++)
+        {
+            if($this->children[$i] === 'and')
+            {
+                if($prefix == '|')
+                {
+                    throw new \Exception('Do not support both and or');
+                }
+                $prefix = '&';
+            }
+            else if($this->children[$i] === 'or')
+            {
+                if($prefix == '&')
+                {
+                    throw new \Exception('Do not support both and or');
+                }
+                $prefix = '|';
+            }
+            else
+            {
+                $ret.=$this->children[$i]->to_ldap_string();
+            }
+        }
+        if($count === 1 && $prefix === '')
+        {
+            return $ret;
+        }
+        return '('.$prefix.$ret.')';
+    }
+
     function filter_array(&$array)
     {
         $res = array();
