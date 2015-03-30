@@ -109,6 +109,7 @@ class FlipsideDBObject
             }
         }
         $table = self::get_table_name();
+        $ret = false;
         if($op == 'insert')
         {
             $ret = $db->insert_array($table, $values);
