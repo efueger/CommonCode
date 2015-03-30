@@ -57,7 +57,11 @@ class FlipsideDB
         }
         else
         {
-            return $this->db->lastInsertId();
+            if($op === 'INSERT')
+            {
+                return $this->db->lastInsertId();
+            }
+            return true;
         }
     }
 
@@ -125,6 +129,11 @@ class FlipsideDB
     function sql_query($sql)
     {
         return $this->db->exec($sql);
+    }
+
+    function quote($string)
+    {
+        return $this->db->quote($string);
     }
 
     private static function get_connection_info_by_db_name($db_name)
