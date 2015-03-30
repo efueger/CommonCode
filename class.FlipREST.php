@@ -30,7 +30,6 @@ class OAuth2Auth extends \Slim\Middleware
         // no auth header
         if(!isset($this->headers['Authorization']))
         {
-            $this->app->getLog()->error("No authorization header");
             if(FlipSession::is_logged_in())
             {
                 $user = FlipSession::get_user(TRUE);
@@ -39,6 +38,15 @@ class OAuth2Auth extends \Slim\Middleware
         } 
         else 
         {
+            if(strncmp($this->headers['Authorization'], 'Basic', 5) == 0)
+            {
+                $ldap = new FlipsideLDAPServer();
+                $user = $ldap->doLogin($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+                if($user !== false)
+                {
+                    $this->app->user = $user;
+                }
+            }
             try
             {
                 $key = substr($this->headers['Authorization'], 7);
