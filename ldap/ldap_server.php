@@ -79,7 +79,14 @@ class ldap_server
             $this->reconnect();
             $this->bind($this->connect_cn, $this->connect_pass);
         }
-        $sr = ldap_search($this->ds, $base_dn, $filter);
+        try
+        {
+            $sr = ldap_search($this->ds, $base_dn, $filter);
+        }
+        catch(Exception $ex)
+        {
+            throw new Exception($ex->getMessage().' '.$filter, $ex->getCode(), $ex);
+        }
         if($sr == FALSE)
         {
             //print("ldap_server::seach ldap_search failed\n");
