@@ -55,7 +55,10 @@ class FlipsideLDAPServer extends ldap_server
         $res = array();
         for($i = 0; $i < $raw["count"]; $i++)
         {
-            array_push($res, new FlipsideUser($this, $raw[$i]));
+            try{
+                $user = new FlipsideUser($this, $raw[$i]);
+                array_push($res, $user);
+            } catch(Exception $ex) {}
         }
         return $res;
     }

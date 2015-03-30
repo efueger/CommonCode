@@ -10,7 +10,14 @@ class FlipsideUser extends inetOrgPerson
     {
         if($data != FALSE)
         {
-            parent::__construct($server, $data);
+            try
+            {
+                parent::__construct($server, $data);
+            }
+            catch(Exception $ex)
+            {
+                throw new Exception('Not a FlipsideLDAPUser!');
+            }
             if(isset($data['c']))
             {
                 $this->c = $data["c"];
@@ -138,9 +145,17 @@ class FlipsideUser extends inetOrgPerson
         return $users[0];
     }
 
-    function getAuthorizationCode($uri)
+    function getAuthorizationCode($uri = false)
     {
-        $hash = $this->getHash($uri);
+        $hash = false;
+        if($uri === false)
+        {
+            $hash = $this->getHash();
+        }
+        else
+        {
+            $hash = $this->getHash($uri);
+        }
         FlipsideDB::write_to_db('oauth2', 'authorization', array('hash'=>$hash,'uid'=>$this->uid[0],'time'=>'UTC_TIMESTAMP()'));
         return $hash;
     }
