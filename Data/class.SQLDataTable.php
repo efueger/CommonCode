@@ -51,7 +51,7 @@ class SQLDataTable extends DataTable
         }
     }
   
-    function search($filter=false, $select=false, $count=false, $skip=false)
+    function search($filter=false, $select=false, $count=false, $skip=false, $sort=false, $params=false)
     {
         if($this->data !== null)
         {
