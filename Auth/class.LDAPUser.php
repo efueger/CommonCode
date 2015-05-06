@@ -72,6 +72,11 @@ class LDAPUser extends User
     {
         return $this->ldap_obj->mail[0];
     }
+
+    function getUid()
+    {
+        return $this->ldap_obj->uid[0];
+    }
 }
 
 ?>

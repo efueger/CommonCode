@@ -88,6 +88,19 @@ class ApiUser extends User
         }
         return false;
     }
+
+    function getUid()
+    {
+        if($this->json === false)
+        {
+            return false;
+        }
+        if(isset($this->json->uid))
+        {
+            return $this->json->uid;
+        }
+        return false;
+    }
 }
 
 ?>

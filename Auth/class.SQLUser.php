@@ -28,6 +28,11 @@ class SQLUser extends User
     {
         return $this->uid;
     }
+
+    function getUid()
+    {
+        return $this->uid;
+    }
 }
 
 ?>

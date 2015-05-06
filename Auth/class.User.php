@@ -12,6 +12,11 @@ class User extends \SerializableObject
     {
         return false;
     }
+
+    function getUid()
+    {
+        return false;
+    }
 }
 
 ?>
