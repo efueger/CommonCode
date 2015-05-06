@@ -129,6 +129,34 @@ class Filter
         return '('.$prefix.$ret.')';
     }
 
+    function to_mongo_filter()
+    {
+        $ret = array();
+        $count = count($this->children);
+        for($i = 0; $i < $count; $i++)
+        {
+            if($this->children[$i] === 'and')
+            {
+                $old = array_pop($ret);
+                array_push($ret, array('$and'=>array($old, $this->children[$i++]->to_mongo_filter())));
+            }
+            else if($this->children[$i] === 'or')
+            {
+                $old = array_pop($ret);
+                array_push($ret, array('$or'=>array($old, $this->children[$i++]->to_mongo_filter())));
+            }
+            else
+            {
+                array_push($ret, $this->children[$i]->to_mongo_filter());
+            }
+        }
+        if(count($ret) == 1 && is_array($ret[0]))
+        {
+            return $ret[0];
+        }
+        return $ret;
+    }
+
     function filter_array(&$array)
     {
         $res = array();

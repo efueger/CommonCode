@@ -88,6 +88,32 @@ class FilterClause
         return $str.')';
     }
 
+    function to_mongo_filter()
+    {
+        $this->var2 = trim($this->var2, "'");
+        if($this->var1 === '_id')
+        {
+            $this->var2 = new \MongoId($this->var2);
+        }
+        switch($this->op)
+        {
+            case '!=':
+                return array($this->var1=>array('$ne'=>$this->var2));
+            case '=':
+                return array($this->var1=>$this->var2);
+            case '<';
+                return array($this->var1=>array('$lt'=>$this->var2));
+            case '<=':
+                return array($this->var1=>array('$lte'=>$this->var2));
+            case '>':
+                return array($this->var1=>array('$gt'=>$this->var2));
+            case '>=':
+                return array($this->var1=>array('$gte'=>$this->var2));
+            case 'substringof':
+                return array($this->var1=>array('$regex'=>new MongoRegex('/'.$this->var2.'/i')));
+        }
+    }
+
     function php_compare($value)
     {
         switch($this->op)
