@@ -13,7 +13,8 @@ define('JS_BOOTSTRAP_SW', 7);
 define('JS_DATATABLE',    8);
 define('JS_CHART',        9);
 define('JS_METISMENU',    10);
-define('JS_BOOTBOX',      11);
+define('JS_BOOTBOX',         11);
+define('JS_DATATABLE_ODATA', 12);
 define('JS_FLIPSIDE',     20);
 define('JS_LOGIN',        21);
 
@@ -142,6 +143,16 @@ $js_array = array(
          'cdn' => array(
              'no'  => '//cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.3.0/bootbox.js',
              'min' => '//cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.3.0/bootbox.min.js'
+         )
+     ),
+     JS_DATATABLE_ODATA => array(
+         'no' => array(
+             'no'  => '/js/common/jquery.dataTables.odata.js',
+             'min' => '/js/common/jquery.dataTables.odata.js',
+         ),
+         'cdn' => array(
+             'no'  => '/js/common/jquery.dataTables.odata.js',
+             'min' => '/js/common/jquery.dataTables.odata.js',
          )
      ),
      JS_FLIPSIDE => array(
