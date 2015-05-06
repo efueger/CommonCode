@@ -4,6 +4,7 @@ require_once('class.FlipsideUser.php');
 require_once('PHPExcel/PHPExcel.php');
 require_once('XML/Serializer.php');
 require_once('Slim/Slim.php');
+require_once('Autoload.php');
 \Slim\Slim::registerAutoloader();
 
 const SUCCESS = 0;
@@ -182,7 +183,16 @@ class FlipRESTFormat extends \Slim\Middleware
         {
             return;
         }
-        $fmt = $this->app->request->params('fmt');
+        $params = $this->app->request->params();
+        $fmt = null;
+        if(isset($params['fmt']))
+        {
+            $fmt = $params['fmt'];
+        }
+        if($fmt === null && isset($params['$format']))
+        {
+            $fmt = $params['$format'];
+        }
         if($fmt === null)
         {
             $mime_type = $this->app->request->headers->get('Accept');
@@ -197,7 +207,9 @@ class FlipRESTFormat extends \Slim\Middleware
             }
         }
 
-        $this->app->fmt = $fmt;
+        $this->app->fmt     = $fmt;
+        $this->app->odata   = new ODataParams($params);
+
 
         $this->next->call();
 
