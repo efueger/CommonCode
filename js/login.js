@@ -11,17 +11,17 @@ function login_submit_done(jqXHR)
     else
     {
         if(jqXHR.responseJSON !== undefined)
-	{
+        {
             var data = jqXHR.responseJSON;
-	    var url  = '';
-	    if(data.return)
-	    {
-                url = data.return;
-	    }
-	    else
-	    {
+            var url  = '';
+            if(data['return'])
+            {
+                url = data['return'];
+            }
+            else
+            {
                 url = window.location;
-	    }
+            }
             if(data.extended)
             {
                 url += '?extended='+data.extended;

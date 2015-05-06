@@ -6,7 +6,7 @@ function getParameterByName(name)
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
-    return results == null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
+    return (results === null) ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
 function browser_supports_cors()
@@ -97,12 +97,12 @@ function add_notification(container, message, severity, dismissible)
     {
         class_str+=' alert-dismissible';
     }
-    var alert_div = $('<div/>', {class: class_str, role: 'alert'});
+    var alert_div = $('<div/>', {'class': class_str, role: 'alert'});
     if(dismissible)
     {
-        var button = $('<button/>', {type: 'button', class: 'close', 'data-dismiss': 'alert'});
+        var button = $('<button/>', {type: 'button', 'class': 'close', 'data-dismiss': 'alert'});
         $('<span/>', {'aria-hidden': 'true'}).html('&times;').appendTo(button);
-        $('<span/>', {class: 'sr-only'}).html('Close').appendTo(button);
+        $('<span/>', {'class': 'sr-only'}).html('Close').appendTo(button);
         button.appendTo(alert_div);
     }
     var prefix = '';
@@ -140,7 +140,7 @@ function create_modal(title, body, buttons)
     var div = $('<div/>', {'class': 'modal-body'}).html(body);
     div.appendTo(content);
     var footer = $('<div/>', {'class': 'modal-footer'});
-    for(i = 0; i < buttons.length; i++)
+    for(var i = 0; i < buttons.length; i++)
     {
         var btn_class = '';
         var options = {'type': 'button'};
@@ -152,8 +152,8 @@ function create_modal(title, body, buttons)
         {
             btn_class = buttons[i].style;
         }
-        options.class = 'btn '+btn_class;
-        if(buttons[i].close !== undefined && buttons[i].close == true)
+        options['class'] = 'btn '+btn_class;
+        if(buttons[i].close !== undefined && buttons[i].close === true)
         {
             options['data-dismiss'] = 'modal';
         }
