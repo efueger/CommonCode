@@ -5,7 +5,7 @@ class DataTable implements \ArrayAccess
 {
     protected $data = null;
 
-    function search($filter=false, $select=false, $count=false)
+    function search($filter=false, $select=false, $count=false, $skip=false, $sort=false, $params=false)
     {
         if($this->data === null)
         {
@@ -23,9 +23,9 @@ class DataTable implements \ArrayAccess
         throw new \Exception('Unimplemented');
     }
 
-    function read($filter=false, $select=false, $count=false)
+    function read($filter=false, $select=false, $count=false, $skip=false, $sort=false, $params=false)
     {
-        return $this->search($filter, $select, $count);
+        return $this->search($filter, $select, $count, $skip, $sort, $params);
     }
 
     function update($filter, $data)
