@@ -77,6 +77,22 @@ class LDAPUser extends User
     {
         return $this->ldap_obj->uid[0];
     }
+
+    function setPass($password)
+    {
+        $obj = array('dn'=>$this->ldap_obj->dn);
+        $obj['userPassword'] = '{SHA}'.base64_encode(pack('H*',sha1($password)));
+        return $this->server->update($obj);
+    }
+
+    function validate_password($password)
+    {
+        if($this->server->bind($this->ldap_obj->dn, $password))
+        {
+            return true;
+        }
+        return false;
+    }
 }
 
 ?>

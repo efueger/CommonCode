@@ -1,6 +1,58 @@
 <?php
 namespace LDAP;
 
+/**
+ * function ldap_escape
+ * @author Chris Wright
+ * @version 2.0
+ * @param string $subject The subject string
+ * @param bool $dn Treat subject as a DN if TRUE
+ * @param string|array $ignore Set of characters to leave untouched
+ * @return string The escaped string
+ */
+function ldap_escape($subject, $dn = FALSE, $ignore = NULL)
+{
+    // The base array of characters to escape
+    // Flip to keys for easy use of unset()
+    $search = array_flip($dn ? array('\\', '+', '<', '>', ';', '"', '#') : array('\\', '*', '(', ')', "\x00"));
+
+    // Process characters to ignore
+    if(is_array($ignore))
+    {
+        $ignore = array_values($ignore);
+    }
+    for($char = 0; isset($ignore[$char]); $char++)
+    {
+        unset($search[$ignore[$char]]);
+    }
+
+    // Flip $search back to values and build $replace array
+    $search = array_keys($search); 
+    $replace = array();
+    foreach($search as $char)
+    {
+        $replace[] = sprintf('\\%02x', ord($char));
+    }
+
+    // Do the main replacement
+    $result = str_replace($search, $replace, $subject);
+
+    // Encode leading/trailing spaces in DN values
+    if($dn)
+    {
+        if($result[0] == ' ')
+        {
+            $result = '\\20'.substr($result, 1);
+        }
+        if($result[strlen($result) - 1] == ' ')
+        {
+            $result = substr($result, 0, -1).'\\20';
+        }
+    }
+
+    return $result;
+}
+
 class LDAPServer extends \Singleton
 {
     protected $ds;
@@ -96,9 +148,18 @@ class LDAPServer extends \Singleton
         return @ldap_unbind($this->ds);
     }
 
+    function get_error()
+    {
+        return ldap_error($this->ds);
+    }
+
     private function _fix_object($object)
     {
-        $entity = $object->to_array();
+        $entity = $object;
+        if(!is_array($object))
+        {
+            $entity = $object->to_array();
+        }
         $entity = array_filter($entity);
         unset($entity['dn']);
         $keys = array_keys($entity);
@@ -119,7 +180,7 @@ class LDAPServer extends \Singleton
 
     function create($object)
     {
-        $dn = ldap_escape($object['dn'], true, LDAP_ESCAPE_DN);
+        $dn = ldap_escape($object['dn'], true);
         $entity = $this->_fix_object($object);
         $ret = ldap_add($this->ds, $dn, $entity);
         if($ret === false)
@@ -167,7 +228,7 @@ class LDAPServer extends \Singleton
 
     function update($object)
     {
-        $dn = ldap_escape($object['dn'], true, LDAP_ESCAPE_DN);
+        $dn = ldap_escape($object['dn'], true);
         $entity = $this->_fix_object($object);
         $ret = ldap_mod_replace($this->ds, $dn, $entity);
         if($ret === false)
