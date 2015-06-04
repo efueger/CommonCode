@@ -50,6 +50,28 @@ class SQLDataTable extends DataTable
             }
         }
     }
+
+    function count($filter=false)
+    {
+        if($this->data !== null)
+        {
+            return parent::count($filter);
+        }
+        $where = false;
+        if($filter !== false)
+        {
+            $where = $filter->to_sql_string();
+        }
+        $ret = $this->dataset->read($this->tablename, $where, 'COUNT(*)');
+        if($ret === false || !isset($ret[0]) || !isset($ret[0]['COUNT(*)']))
+        {
+             return false;
+        }
+        else
+        {
+             return $ret[0]['COUNT(*)'];
+        }
+    }
   
     function search($filter=false, $select=false, $count=false, $skip=false, $sort=false, $params=false)
     {
@@ -66,7 +88,7 @@ class SQLDataTable extends DataTable
         {
             $select = implode(',', $select);
         }
-        return $this->dataset->read($this->tablename, $where, $select, $count, $skip);
+        return $this->dataset->read($this->tablename, $where, $select, $count, $skip, $sort);
     }
 
     function update($filter, $data)

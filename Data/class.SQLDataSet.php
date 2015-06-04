@@ -33,6 +33,14 @@ class SQLDataSet extends DataSet
         return $count;
     }
 
+    function _tableExistsNoPrefix($name)
+    {
+        if($this->_get_row_count_for_query('SHOW TABLES LIKE '.$this->pdo->quote($name)) > 0)
+        {
+            return true;
+        }
+    }
+
     function _tableExists($name)
     {
         if($this->_get_row_count_for_query('SHOW TABLES LIKE '.$this->pdo->quote('tbl'.$name)) > 0)
@@ -65,6 +73,10 @@ class SQLDataSet extends DataSet
         {
             return true;
         }
+        if($this->_tableExistsNoPrefix($name))
+        {
+            return true;
+        }
         if($this->_viewExists($name))
         {
             return true;
@@ -82,10 +94,14 @@ class SQLDataSet extends DataSet
         {
             return new SQLDataTable($this, 'v'.$name);
         }
+        if($this->_tableExistsNoPrefix($name))
+        {
+            return new SQLDataTable($this, $name);
+        }
         throw new \Exception('No such table '.$name);
     }
 
-    function read($tablename, $where=false, $select='*', $count=false, $skip=false)
+    function read($tablename, $where=false, $select='*', $count=false, $skip=false, $sort=false)
     {
         if($select === false)
         {
@@ -106,6 +122,16 @@ class SQLDataSet extends DataSet
             {
                 $sql.=" LIMIT $skip, $count";
             }
+        }
+        if($sort !== false)
+        {
+            $sql.=' ORDER BY ';
+            $tmp = array();
+            foreach($sort as $sort_col=>$dir)
+            {
+                array_push($tmp, $sort_col.' '.($dir === 1?'ASC':'DESC'));
+            }
+            $sql.=implode($tmp,',');
         }
         $stmt = $this->pdo->query($sql, \PDO::FETCH_ASSOC);
         if($stmt === false)
