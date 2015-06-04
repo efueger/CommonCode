@@ -3,9 +3,21 @@ namespace Auth;
 
 class User extends \SerializableObject
 {
+    public static $titlenames = null;
+
     function isInGroupNamed($name)
     {
         return false;
+    }
+
+    function getDisplayName()
+    {
+        return $this->getNickName();
+    }
+
+    function getGivenName()
+    {
+        return $this->getUid();
     }
 
     function getEmail()
@@ -18,6 +30,97 @@ class User extends \SerializableObject
         return false;
     }
 
+    function getPhoto()
+    {
+        return false;
+    }
+
+    function getPhoneNumber()
+    {
+        return false;
+    }
+
+    function getOrganization()
+    {
+        return false;
+    }
+
+    function getTitles()
+    {
+        return false;
+    }
+
+    function getTitleNames()
+    {
+        $titles = $this->getTitles();
+        if($titles === false)
+        {
+            return false;
+        }
+        if(self::$titlenames === null)
+        {
+            $data_set = \DataSetFactory::get_data_set('profiles');
+            $data_table = $data_set['position'];
+            $titlenames = $data_table->read();
+            self::$titlenames = array();
+            $count = count($titlenames);
+            for($i = 0; $i < $count; $i++)
+            {
+                self::$titlenames[$titlenames[$i]['short_name']] = $titlenames[$i];
+            }
+        }
+        $count = count($titles);
+        for($i = 0; $i < $count; $i++)
+        {
+            if(isset(self::$titlenames[$titles[$i]]))
+            {
+                $title = self::$titlenames[$titles[$i]];
+                $titles[$i] = $title['name'];
+            }
+        }
+        return $titles;
+    }
+
+    function getState()
+    {
+        return false;
+    }
+
+    function getCity()
+    {
+        return false;
+    }
+
+    function getLastName()
+    {
+        return false;
+    }
+
+    function getNickName()
+    {
+        return $this->getUid();
+    }
+
+    function getAddress()
+    {
+        return false;
+    }
+
+    function getPostalCode()
+    {
+        return false;
+    }
+
+    function getCountry()
+    {
+        return false;
+    }
+
+    function getOrganizationUnits()
+    {
+        return false;
+    }
+
     protected function setPass($password)
     {
         return false;
@@ -25,7 +128,13 @@ class User extends \SerializableObject
 
     function isProfileComplete()
     {
-        return false;
+        if($this->getCountry() === false    || $this->getAddress() === false ||
+           $this->getPostalCode() === false || $this->getCity() === false ||
+           $this->getState() === false      || $this->getPhoneNumber() === false)
+        {
+            return false;
+        }
+        return true;
     }
 
     function validate_password($password)
@@ -54,6 +163,31 @@ class User extends \SerializableObject
         }
         print_r($data);
         die();
+    }
+
+    public function jsonSerialize()
+    {
+        $user = array();
+        try{
+        $user['displayName'] = $this->getDisplayName();
+        $user['givenName'] = $this->getGivenName();
+        $user['jpegPhoto'] = base64_encode($this->getPhoto());
+        $user['mail'] = $this->getEmail();
+        $user['mobile'] = $this->getPhoneNumber();
+        $user['uid'] = $this->getUid();
+        $user['o'] = $this->getOrganization();
+        $user['title'] = $this->getTitles();
+        $user['titlenames'] = $this->getTitleNames();
+        $user['st'] = $this->getState();
+        $user['l'] = $this->getCity();
+        $user['sn'] = $this->getLastName();
+        $user['cn'] = $this->getNickName();
+        $user['postalAddress'] = $this->getAddress();
+        $user['postalCode'] = $this->getPostalCode();
+        $user['c'] = $this->getCountry();
+        $user['ou'] = $this->getOrganizationUnits();
+        } catch(\Exception $e) { echo $e->getMessage(); die(); }
+        return $user;
     }
 }
 

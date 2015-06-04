@@ -69,12 +69,40 @@ if(!function_exists('password_hash') || !function_exists('password_verify'))
     }
 }
 
-class SQLAuthenticator
+class SQLAuthenticator extends Authenticator
 {
+    private $data_set = null;
+    private $data_tables = array();
+
+    private function get_data_set()
+    {
+        if($this->data_set !== null)
+        {
+            return $this->data_set;
+        }
+        $this->data_set = \DataSetFactory::get_data_set('authentication');
+        return $this->data_set;
+    }
+
+    private function get_data_table($name)
+    {
+         if(isset($this->data_tables[$name]))
+         {
+             return $this->data_tables[$name];
+         }
+         $data_set = $this->get_data_set();
+         if($data_set === null)
+         {
+             throw new \Exception('Unable to obtain dataset for SQL Authentication!');
+         }
+         $data_table = $data_set[$name];
+         $this->data_tables[$name] = $data_table;
+         return $this->data_tables[$name];
+    }
+
     public function login($username, $password)
     {
-        $auth_data_set = \DataSetFactory::get_data_set('authentication');
-        $user_data_table = $auth_data_set['user'];
+        $user_data_table = $this->get_data_table('user');
         $filter = new \Data\Filter("uid eq '$username'");
         $users = $user_data_table->read($filter, 'uid,pass');
         if($users === false || !isset($users[0]))
@@ -100,6 +128,62 @@ class SQLAuthenticator
     public function get_user($data)
     {
         return new SQLUser($data);
+    }
+
+    public function get_group_by_name($name)
+    {
+        $group_data_table = $this->get_data_table('group');
+        $filter = new \Data\Filter("gid eq '$name'");
+        $groups = $group_data_table->read($filter);
+        if($groups === false || !isset($groups[0]))
+        {
+            return false;
+        }
+        return new SQLGroup($groups[0]);
+    }
+
+    public function get_user_by_name($name)
+    {
+        $user_data_table = $this->get_data_table('user');
+        $filter = new \Data\Filter("uid eq '$username'");
+        $users = $user_data_table->read($filter);
+        if($users === false || !isset($users[0]))
+        {
+            return false;
+        }
+        return new SQLUser($users[0]);
+    }
+
+    public function get_groups_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+    {
+        $group_data_table = $this->get_data_table('group');
+        $groups = $group_data_table->read($filter, $select, $top, $skip, $orderby);
+        if($groups === false)
+        {
+            return false;
+        }
+        $count = count($groups);
+        for($i = 0; $i < $count; $i++)
+        {
+            $groups[$i] = new SQLGroup($groups[$i]);
+        }
+        return $groups;
+    }
+
+    public function get_users_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+    {
+        $user_data_table = $this->get_data_table('user');
+        $users = $user_data_table->read($filter, $select, $top, $skip, $orderby);
+        if($users === false)
+        {
+            return false;
+        }
+        $count = count($users);
+        for($i = 0; $i < $count; $i++)
+        {
+            $users[$i] = new SQLUsers($users[$i]);
+        }
+        return $users;
     }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */

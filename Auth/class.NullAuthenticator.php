@@ -1,7 +1,7 @@
 <?php
 namespace Auth;
 
-class NullAuthenticator
+class NullAuthenticator extends Authenticator
 {
     public function login($username, $password)
     {

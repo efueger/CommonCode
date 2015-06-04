@@ -9,7 +9,14 @@ class LDAPUser extends User
 
     function __construct($data)
     {
-        $this->ldap_obj = $data['extended'];
+        if(isset($data['extended']))
+        {
+            $this->ldap_obj = $data['extended'];
+        }
+        else
+        {
+            $this->ldap_obj = $data;
+        }
         $this->server   = $this->ldap_obj->server;
         if($this->server === null)
         {
@@ -68,14 +75,158 @@ class LDAPUser extends User
         return false;
     }
 
+    function getDisplayName()
+    {
+        if(!isset($this->ldap_obj->displayname) || !isset($this->ldap_obj->displayname[0]))
+        {
+            return $this->getGivenName();
+        }
+        return $this->ldap_obj->displayname[0];
+    }
+
+    function getGivenName()
+    {
+        if(!isset($this->ldap_obj->givenname) || !isset($this->ldap_obj->givenname[0]))
+        {
+            return false;
+        }
+        return $this->ldap_obj->givenname[0];
+    }
+
     function getEmail()
     {
+        if(!isset($this->ldap_obj->mail) || !isset($this->ldap_obj->mail[0]))
+        {
+            return false;
+        }
         return $this->ldap_obj->mail[0];
     }
 
     function getUid()
     {
+        if(!isset($this->ldap_obj->uid) || !isset($this->ldap_obj->uid[0]))
+        {
+            return false;
+        }
         return $this->ldap_obj->uid[0];
+    }
+
+    function getPhoto()
+    {
+        if(!isset($this->ldap_obj->jpegphoto) || !isset($this->ldap_obj->jpegphoto[0]))
+        {
+            return false;
+        }
+        return $this->ldap_obj->jpegphoto[0];
+    }
+
+    function getPhoneNumber()
+    {
+        if(!isset($this->ldap_obj->mobile) || !isset($this->ldap_obj->mobile[0]))
+        {
+            return false;
+        }
+        return $this->ldap_obj->mobile[0];
+    }
+
+    function getOrganization()
+    {
+        if(!isset($this->ldap_obj->o) || !isset($this->ldap_obj->o[0]))
+        {
+            return 'Volunteer';
+        }
+        return $this->ldap_obj->o[0];
+    }
+
+    function getTitles()
+    {
+        if(!isset($this->ldap_obj->title) || !isset($this->ldap_obj->title[0]))
+        {
+            return false;
+        }
+        $titles = $this->ldap_obj->title;
+        if(isset($titles['count']))
+        {
+            unset($titles['count']);
+        }
+        return $titles;
+    }
+
+    function getState()
+    {
+        if(!isset($this->ldap_obj->st) || !isset($this->ldap_obj->st[0]))
+        {
+            return false;
+        }
+        return $this->ldap_obj->st[0];;
+    }
+
+    function getCity()
+    {
+        if(!isset($this->ldap_obj->l) || !isset($this->ldap_obj->l[0]))
+        {
+            return false;
+        }
+        return $this->ldap_obj->l[0];;
+    }
+
+    function getLastName()
+    {
+        if(!isset($this->ldap_obj->sn) || !isset($this->ldap_obj->sn[0]))
+        {
+            return false;
+        }
+        return $this->ldap_obj->sn[0];;
+    }
+
+    function getNickName()
+    {
+        if(!isset($this->ldap_obj->cn) || !isset($this->ldap_obj->cn[0]))
+        {
+            return false;
+        }
+        return $this->ldap_obj->cn[0];;
+    }
+
+    function getAddress()
+    {
+        if(!isset($this->ldap_obj->postaladdress) || !isset($this->ldap_obj->postaladdress[0]))
+        {
+            return false;
+        } 
+        return $this->ldap_obj->postaladdress[0];
+    }
+
+    function getPostalCode()
+    {
+        if(!isset($this->ldap_obj->postalcode) || !isset($this->ldap_obj->postalcode[0]))
+        {
+            return false;
+        }
+        return $this->ldap_obj->postalcode[0];;
+    }
+
+    function getCountry()
+    {
+        if(!isset($this->ldap_obj->c) || !isset($this->ldap_obj->c[0]))
+        {
+            return false;
+        }
+        return $this->ldap_obj->c[0];
+    }
+
+    function getOrganizationUnits()
+    {
+        if(!isset($this->ldap_obj->ou))
+        {
+            return false;
+        }
+        $units = $this->ldap_obj->ou;
+        if(isset($units['count']))
+        {
+            unset($units['count']);
+        }
+        return $units;
     }
 
     function setPass($password)
@@ -92,6 +243,36 @@ class LDAPUser extends User
             return true;
         }
         return false;
+    }
+
+    static function from_name($name, $data=false)
+    {
+        if($data === false)
+        {
+            throw new \Exception('data must be set for LDAPUser');
+        }
+        $filter = new \Data\Filter("uid eq $name");
+        $user = $data->read(\FlipsideSettings::$ldap['base'], $filter);
+        if($user === false || !isset($user[0]))
+        {
+            return false;
+        }
+        return new static($user[0]);
+    }
+
+    static function from_dn($dn, $data=false)
+    {
+        if($data === false)
+        {
+            throw new \Exception('data must be set for LDAPUser');
+        }
+        $filter = new \Data\Filter("dn eq $dn");
+        $user = $data->read(\FlipsideSettings::$ldap['base'], $filter);
+        if($user === false || !isset($user[0]))
+        {
+            return false;
+        }
+        return new static($user[0]);
     }
 }
 

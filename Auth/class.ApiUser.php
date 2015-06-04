@@ -3,18 +3,20 @@ namespace Auth;
 
 class ApiUser extends User
 {
+    private $uid_for_url;
     private $json;
     private $access_token;
     private $root;
 
-    function __construct($access_token, $uri_root)
+    function __construct($access_token, $uri_root, $uid='me')
     {
         $this->root = $uri_root;
         $this->access_token = $access_token;
+        $this->uid_for_url = $uid;
 
         try
         {
-            $resp = $this->send_request('/users/me');
+            $resp = $this->send_request("/users/$uid");
             if($resp->getResponseCode() !== 200)
             {
                 return null;
@@ -50,7 +52,7 @@ class ApiUser extends User
 
     function isInGroupNamed($name)
     {
-        $resp = $this->send_request('/users/me/groups');
+        $resp = $this->send_request('/users/'.$this->uid_for_url.'/groups');
         if(@$resp->getResponseCode() === false)
         {
             \FlipSession::end();
@@ -91,6 +93,10 @@ class ApiUser extends User
 
     function getUid()
     {
+        if($this->uid_for_url !== 'me')
+        {
+            return $this->uid_for_url;
+        }
         if($this->json === false)
         {
             return false;

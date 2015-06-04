@@ -1,7 +1,7 @@
 <?php
 namespace Auth;
 
-class OAuthAuthenticator
+class OAuthAuthenticator extends Authenticator
 {
     public function login($username, $password)
     {
@@ -45,6 +45,18 @@ class OAuthAuthenticator
     {
         $access_token = $data['extended']->access_token;
         return new ApiUser($access_token, 'https://profiles.burningflipside.com/api/v1');
+    }
+
+    public function get_group_by_name($name)
+    {
+        $access_token = $data['extended']->access_token;
+        return new APIGroup($name, $access_token, 'https://profiles.burningflipside.com/api/v1');
+    }
+
+    public function get_user_by_name($name)
+    {
+        $access_token = $data['extended']->access_token;
+        return new APIUser($access_token, 'https://profiles.burningflipside.com/api/v1', $name);
     }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
