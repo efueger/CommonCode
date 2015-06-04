@@ -250,7 +250,14 @@ class FlipPage extends WebPage
             $this->add_header_js_and_style();
         }
         $this->header = $header;
-        $this->sites = array();
+        if(isset(FlipsideSettings::$sites))
+        {
+            $this->sites = FlipsideSettings::$sites;
+        }
+        else
+        {
+            $this->sites = array();
+        }
         $this->links = array();
         $this->notifications = array();
         $this->minified = 'min';
