@@ -1,6 +1,5 @@
 <?php
 require_once('Autoload.php');
-require_once('class.FlipsideLDAPServer.php');
 require_once('class.FlipsideDB.php');
 if (!isset($_SESSION)) { session_start(); }
 if(!isset($_SESSION['ip_address']))
@@ -192,13 +191,13 @@ class FlipSession extends Singleton
         {
             if(!strstr(substr($session_data, $offset), "|"))
             {
-                return FALSE;
+                return false;
             }
             $pos = strpos($session_data, "|", $offset);
             $len = $pos - $offset;
             $name = substr($session_data, $offset, $len);
             $offset += $len+1;
-            $data = unserialize(substr($session_data, $offset));
+            $data = @unserialize(substr($session_data, $offset));
             $res[$name] = $data;
             $offset += strlen(serialize($data));
         }
@@ -217,7 +216,16 @@ class FlipSession extends Singleton
             }
             $id = substr($sess_files[$i], 5);
             $session_data = file_get_contents(ini_get('session.save_path').'/'.$sess_files[$i]);
-            $res[$id] = FlipSession::unserialize_php_session($session_data);
+            if($session_data === false)
+            {
+                array_push($res, array('sid' => $id));
+            }
+            else
+            {
+                $tmp = FlipSession::unserialize_php_session($session_data);
+                $tmp['sid' ] = $id;
+                array_push($res, $tmp);
+            }
         }
         if(count($res) == 0)
         {
