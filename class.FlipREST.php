@@ -1,6 +1,5 @@
 <?php
 require_once('class.FlipSession.php');
-require_once('class.FlipsideUser.php');
 require_once('PHPExcel/PHPExcel.php');
 require_once('XML/Serializer.php');
 require_once('Slim/Slim.php');
