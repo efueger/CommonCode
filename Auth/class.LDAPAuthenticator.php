@@ -166,9 +166,9 @@ class LDAPAuthenticator extends Authenticator
         for($i = 0; $i < $count; $i++)
         {
             $tmp = new LDAPUser($users[$i]);
-            $tmp = $tmp->jsonSerialize();
             if($select !== false)
             {
+                $tmp = $tmp->jsonSerialize();
                 $tmp = array_intersect_key($tmp, $select);
             }
             $users[$i] = $tmp;
