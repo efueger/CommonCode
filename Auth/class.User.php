@@ -121,6 +121,16 @@ class User extends \SerializableObject
         return false;
     }
 
+    function getLoginProviders()
+    {
+        return false;
+    }
+
+    function addLoginProvider($provider)
+    {
+        throw new \Exception('Cannot add provider for this login type!');
+    }
+
     protected function setPass($password)
     {
         return false;
@@ -186,8 +196,23 @@ class User extends \SerializableObject
         $user['postalCode'] = $this->getPostalCode();
         $user['c'] = $this->getCountry();
         $user['ou'] = $this->getOrganizationUnits();
+        $user['host'] = $this->getLoginProviders();
+        $user['class'] = get_class($this);
         } catch(\Exception $e) { echo $e->getMessage(); die(); }
         return $user;
+    }
+
+    public function getVcard()
+    {
+        $ret = "BEGIN:VCARD\nVERSION:2.1\n";
+        $ret.= 'N:'.$this->getLastName().';'.$this->getGivenName()."\n";
+        $ret.= 'FN:'.$this->getGivenName()."\n";
+        $ret.= 'TITLE:'.implode(',', $this->getTitles())."\n";
+        $ret.= "ORG: Austin Artistic Reconstruction\n";
+        $ret.= 'TEL;TYPE=MOBILE,VOICE:'.$this->getPhoneNumber()."\n";
+        $ret.= 'EMAIL;TYPE=PREF,INTERNET:'.$this->getEmail()."\n";
+        $ret.= "END:VCARD\n";
+        return $ret;
     }
 }
 
