@@ -30,22 +30,33 @@ class OAuth2Auth extends \Slim\Middleware
         // no auth header
         if(!isset($this->headers['Authorization']))
         {
-            $this->app->getLog()->error("No authorization header");
             if(FlipSession::is_logged_in())
             {
                 $user = FlipSession::get_user(TRUE);
                 $this->app->user = $user;
             }
+            $this->app->getLog()->error("No authorization header or session");
         } 
         else 
         {
             try
             {
-                $key = substr($this->headers['Authorization'], 7);
-                $user = FlipsideUser::getUserByAccessCode($key);
-                if($user !== FALSE)
+                $auth = AuthProvider::getInstance();
+                $header = $this->headers['Authorization'];
+                if(strncmp($header, 'Basic', 5) === 0)
                 {
-                    $this->app->user = $user;
+                    $data = substr($this->headers['Authorization'], 6);
+                    $userpass = explode(':', base64_decode($data));
+                    $this->app->user = $auth->get_user_by_login($userpass[0], $userpass[1]);
+                }
+                else
+                {
+                    $key = substr($this->headers['Authorization'], 7);
+                    $user = $auth->getUserByAccessCode($key);
+                    if($user !== FALSE)
+                    {
+                        $this->app->user = $user;
+                    }
                 }
             }
             catch(\Exception $e)
@@ -199,6 +210,9 @@ class FlipRESTFormat extends \Slim\Middleware
             {
                 case 'text/csv':
                     $fmt = 'csv';
+                    break;
+                case 'text/x-vCard':
+                    $fmt = 'vcard';
                     break;
                 default:
                     $fmt = 'json';
