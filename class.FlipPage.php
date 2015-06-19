@@ -15,6 +15,7 @@ define('JS_CHART',        9);
 define('JS_METISMENU',    10);
 define('JS_BOOTBOX',         11);
 define('JS_DATATABLE_ODATA', 12);
+define('JS_CRYPTO_MD5_JS',   13);
 define('JS_FLIPSIDE',     20);
 define('JS_LOGIN',        21);
 
@@ -155,6 +156,16 @@ $js_array = array(
              'min' => '/js/common/jquery.dataTables.odata.js',
          )
      ),
+     JS_CRYPTO_MD5_JS => array(
+         'no' => array(
+             'no'  => '/js/common/md5.js',
+             'min' => '/js/common/md5.js',
+         ),
+         'cdn' => array(
+             'no'  => '//cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js',
+             'min' => '//cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js',
+         )
+     ),
      JS_FLIPSIDE => array(
          'no' => array(
              'no'  => '/js/common/flipside.js',
@@ -236,6 +247,7 @@ class FlipPage extends WebPage
     public $links;
     public $notifications;
     public $header;
+    public $login_url;
     protected $minified = null;
     protected $cdn = null;
 
@@ -271,6 +283,10 @@ class FlipPage extends WebPage
             if(isset(FlipsideSettings::$global['use_cdn']) && !FlipsideSettings::$global['use_cdn'])
             {
                 $this->cdn = 'no';
+            }
+            if(isset(FlipsideSettings::$global['login_url']))
+            {
+                $this->login_url = FlipsideSettings::$global['login_url'];
             }
         }
     }
