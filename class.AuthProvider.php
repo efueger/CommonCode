@@ -10,13 +10,42 @@ class AuthProvider extends Singleton
         $this->methods = array();
         if(isset(FlipsideSettings::$auth_providers))
         {
-            $count = count(FlipsideSettings::$auth_providers);
+            $keys = array_keys(FlipsideSettings::$auth_providers);
+            $count = count($keys);
             for($i = 0; $i < $count; $i++)
             {
-                $class = FlipsideSettings::$auth_providers[$i];
-                array_push($this->methods, new $class());
+                $class = $keys[$i];
+                array_push($this->methods, new $class(FlipsideSettings::$auth_providers[$keys[$i]]));
             }
         }
+    }
+
+    public function getAuthenticator($method_name)
+    {
+        $count = count($this->methods);
+        for($i = 0; $i < $count; $i++)
+        {
+            if(strcasecmp(get_class($this->methods[$i]), $method_name) === 0)
+            {
+                return $this->methods[$i];
+            }
+        }
+        return false;
+    }
+
+    public function get_user_by_login($username, $password)
+    {
+        $res = false;
+        $count = count($this->methods);
+        for($i = 0; $i < $count; $i++)
+        {
+            $res = $this->methods[$i]->login($username, $password);
+            if($res !== false)
+            {
+                return $this->methods[$i]->get_user($res);
+            }
+        }
+        return $res;
     }
 
     public function login($username, $password)
@@ -38,13 +67,13 @@ class AuthProvider extends Singleton
 
     public function is_logged_in($method_name, $data)
     {
-        $auth = new $method_name();
+        $auth = $this->getAuthenticator($method_name);
         return $auth->is_logged_in($data);
     }
 
     public function get_user($method_name, $data)
     {
-        $auth = new $method_name();
+        $auth = $this->getAuthenticator($method_name);
         return $auth->get_user($data);
     }
 
@@ -57,6 +86,8 @@ class AuthProvider extends Singleton
             $count = count($this->methods);
             for($i = 0; $i < $count; $i++)
             {
+                if($this->methods[$i]->current === false) continue;
+
                 $res = $this->methods[$i]->get_group_by_name($name);
                 if($res !== false)
                 {
@@ -74,7 +105,7 @@ class AuthProvider extends Singleton
         }
         else
         {
-            $auth = new $method_name();
+            $auth = $this->getAuthenticator($method_name);
             return $auth->get_group_by_name($name);
         }
     }
@@ -88,6 +119,8 @@ class AuthProvider extends Singleton
             $count = count($this->methods);
             for($i = 0; $i < $count; $i++)
             {
+                if($this->methods[$i]->current === false) continue;
+
                 $res = $this->methods[$i]->get_users_by_filter($filter, $select, $top, $skip, $orderby);
                 if($res !== false)
                 {
@@ -105,7 +138,7 @@ class AuthProvider extends Singleton
         }
         else
         {
-            $auth = new $method_name();
+            $auth = $this->getAuthenticator($method_name);
             return $auth->get_users_by_filter($filter, $select, $top, $skip, $orderby);
         }
     }
@@ -119,6 +152,8 @@ class AuthProvider extends Singleton
             $count = count($this->methods);
             for($i = 0; $i < $count; $i++)
             {
+                if($this->methods[$i]->current === false) continue;
+
                 $res = $this->methods[$i]->get_groups_by_filter($filter, $select, $top, $skip, $orderby);
                 if($res !== false)
                 {
@@ -136,7 +171,7 @@ class AuthProvider extends Singleton
         }
         else
         {
-            $auth = new $method_name();
+            $auth = $this->getAuthenticator($method_name);
             return $auth->get_groups_by_filter($filter, $select, $top, $skip, $orderby);
         }
     }
@@ -149,13 +184,15 @@ class AuthProvider extends Singleton
             $count = count($this->methods);
             for($i = 0; $i < $count; $i++)
             {
+                if($this->methods[$i]->current === false) continue;
+
                 $user_count += $this->methods[$i]->get_active_user_count();
             }
             return $user_count;
         }
         else
         {
-            $auth = new $method_name();
+            $auth = $this->getAuthenticator($method_name);
             return $auth->get_active_user_count();
         }
     }
@@ -168,13 +205,15 @@ class AuthProvider extends Singleton
             $count = count($this->methods);
             for($i = 0; $i < $count; $i++)
             {
+                if($this->methods[$i]->pending === false) continue;
+
                 $user_count += $this->methods[$i]->get_pending_user_count();
             }
             return $user_count;
         }
         else
         {
-            $auth = new $method_name();
+            $auth = $this->getAuthenticator($method_name);
             return $auth->get_pending_user_count();
         }
     }
@@ -187,14 +226,42 @@ class AuthProvider extends Singleton
             $count = count($this->methods);
             for($i = 0; $i < $count; $i++)
             {
+                if($this->methods[$i]->current === false) continue;
+
                 $user_count += $this->methods[$i]->get_group_count();
             }
             return $user_count;
         }
         else
         {
-            $auth = new $method_name();
+            $auth = $this->getAuthenticator($method_name);
             return $auth->get_group_count();
+        }
+    }
+
+    public function get_supplementary_links()
+    {
+        $ret = array();
+        $count = count($this->methods);
+        for($i = 0; $i < $count; $i++)
+        {
+            if($this->methods[$i]->supplement === false) continue;
+
+            array_push($ret, $this->methods[$i]->get_supplement_link());
+        }
+        return $ret;
+    }
+
+    public function impersonate_user($user_array)
+    {
+        if(is_object($user_array))
+        {
+            \FlipSession::set_user($user_array);
+        }
+        else
+        {
+            $user = new $user_array['class']($user_array);
+            \FlipSession::set_user($user);
         }
     }
 }
