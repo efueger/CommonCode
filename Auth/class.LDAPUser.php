@@ -9,18 +9,33 @@ class LDAPUser extends User
 
     function __construct($data)
     {
-        if(isset($data['extended']))
+        if(!isset($data['dn']) && !isset($data['extended']))
         {
-            $this->ldap_obj = $data['extended'];
+            //Generic user object
+            $this->server = \LDAP\LDAPServer::getInstance();
+            $filter = new \Data\Filter('mail eq '.$data['mail']);
+            $users = $this->server->read(\FlipsideSettings::$ldap['user_base'], $filter);
+            if($users === false || !isset($users[0]))
+            {
+                throw new \Exception('No such LDAP User!');
+            }
+            $this->ldap_obj = $users[0];
         }
         else
         {
-            $this->ldap_obj = $data;
-        }
-        $this->server   = $this->ldap_obj->server;
-        if($this->server === null)
-        {
-            $this->server = \LDAP\LDAPServer::getInstance();
+            if(isset($data['extended']))
+            {
+                $this->ldap_obj = $data['extended'];
+            }
+            else
+            {
+                $this->ldap_obj = $data;
+            }
+            $this->server   = $this->ldap_obj->server;
+            if($this->server === null)
+            {
+                $this->server = \LDAP\LDAPServer::getInstance();
+            }
         }
     }
 
@@ -227,6 +242,36 @@ class LDAPUser extends User
             unset($units['count']);
         }
         return $units;
+    }
+
+    function getLoginProviders()
+    {
+        if(!isset($this->ldap_obj->host))
+        {
+            return false;
+        }
+        $hosts = $this->ldap_obj->host;
+        if(isset($hosts['count']))
+        {
+            unset($hosts['count']);
+        }
+        return $hosts;
+    }
+
+    function addLoginProvider($provider)
+    {
+        $obj = array('dn'=>$this->ldap_obj->dn);
+        if(isset($this->ldap_obj->host))
+        {
+            $obj['host'] = $this->ldap_obj->host;
+            $obj['host'][$obj['host']['count']] = $provider;
+            $obj['host']['count']++;
+        }
+        else
+        {
+            $obj['host'] = $provider;
+        }
+        return $this->server->update($obj);
     }
 
     function setPass($password)
