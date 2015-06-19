@@ -3,6 +3,21 @@ namespace Auth;
 
 class Authenticator
 {
+    const SUCCESS         = 0;
+    const ALREADY_PRESENT = 1;
+    const LOGIN_FAILED    = 2;
+
+    public $current = false;
+    public $pending = false;
+    public $supplement = false;
+
+    public function __construct($params)
+    {
+        $this->current = $params['current'];
+        $this->pending = $params['pending'];
+        $this->supplement = $params['supplement'];
+    }
+
     public function login($username, $password)
     {
         return false;
@@ -61,6 +76,11 @@ class Authenticator
             return 0;
         }
         return count($groups);
+    }
+
+    public function get_supplement_link()
+    {
+        return false;
     }
 }
 ?>
