@@ -38,6 +38,7 @@ class person extends top
     function __construct($server, $data)
     {
         parent::__construct($server, $data);
+        if(!isset($data["sn"])) throw new Exception('Not a person');
         $this->sn = $data["sn"];
         $this->cn = $data["cn"];
         /*MAY fields, check for NULL*/
