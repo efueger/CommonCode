@@ -157,7 +157,7 @@ class FlipRESTFormat extends \Slim\Middleware
 
     private function create_xml(&$array, $path)
     {
-        if(is_array($array) && is_object($array[0]))
+        if(is_array($array) && isset($array[0]) && is_object($array[0]))
         {
             $count = count($array);
             for($i = 0; $i < $count; $i++)
