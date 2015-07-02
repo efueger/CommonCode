@@ -143,6 +143,39 @@ class AuthProvider extends Singleton
         }
     }
 
+    public function get_pending_users_by_filter($method_name, $filter, $select=false, $top=false, $skip=false, $orderby=false)
+    {
+        if($method_name === false)
+        {
+            $ret = false;
+            $res = false;
+            $count = count($this->methods);
+            for($i = 0; $i < $count; $i++)
+            {
+                if($this->methods[$i]->pending === false) continue;
+
+                $res = $this->methods[$i]->get_pending_users_by_filter($filter, $select, $top, $skip, $orderby);
+                if($res !== false)
+                {
+                    if($ret === false)
+                    {
+                        $ret = $res;
+                    }
+                    else
+                    {
+                        $ret->merge($res);
+                    }
+                }
+            }
+            return $ret;
+        }
+        else
+        {
+            $auth = $this->getAuthenticator($method_name);
+            return $auth->get_pending_users_by_filter($filter, $select, $top, $skip, $orderby);
+        }
+    }
+
     public function get_groups_by_filter($method_name, $filter, $select=false, $top=false, $skip=false, $orderby=false)
     {
         if($method_name === false)
