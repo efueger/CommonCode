@@ -62,8 +62,8 @@ class LDAPAuthenticator extends Authenticator
             return false;
         }
         $filter = new \Data\Filter("uid eq $username or mail eq $username");
-        $user = $server->read(\FlipsideSettings::$ldap['base'], $filter);
-        if($user === false)
+        $user = $server->read(\FlipsideSettings::$ldap['user_base'], $filter);
+        if($user === false || count($user) === 0)
         {
             return false;
         }
@@ -123,6 +123,16 @@ class LDAPAuthenticator extends Authenticator
             $groups[$i] = new LDAPGroup($groups[$i]);
         }
         return $groups;
+    }
+
+    public function get_active_user_count()
+    {
+        $server = $this->get_and_bind_server();
+        if($server === false)
+        {
+            return false;
+        }
+        return $server->count(\FlipsideSettings::$ldap['user_base']);
     }
 
     public function get_users_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
