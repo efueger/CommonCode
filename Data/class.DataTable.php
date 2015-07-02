@@ -5,6 +5,11 @@ class DataTable implements \ArrayAccess
 {
     protected $data = null;
 
+    function count($filter=false)
+    {
+        throw new \Exception('Unimplemented');
+    }
+
     function search($filter=false, $select=false, $count=false, $skip=false, $sort=false, $params=false)
     {
         if($this->data === null)
