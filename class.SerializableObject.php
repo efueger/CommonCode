@@ -17,6 +17,68 @@ class SerializableObject implements ArrayAccess,JsonSerializable
         return $this;
     }
 
+    public function xmlSerialize()
+    {
+        $xml = new XmlWriter();
+        $xml->openMemory();
+        $xml->startDocument('1.0');
+        $this->object2XML($xml, $this);
+        $xml->endElement();
+        return $xml->outputMemory(true);
+    }
+
+    private function object2XML(XMLWriter $xml, $data)
+    {
+        foreach($data as $key => $value)
+        {
+            if(is_object($value))
+            {
+                $xml->startElement($key);
+                $this->getObject2XML($xml, $value);
+		$xml->endElement();
+            }
+            else if(is_array($value))
+            {
+                $this->array2XML($xml, $key, $value);
+            }
+            else
+            {
+                $xml->writeElement($key, $value);
+            }
+        }
+    }
+
+    private function array2XML(XMLWriter $xml, $keyParent, $data)
+    {
+        foreach($data as $key => $value)
+        {
+	    if(is_string($value))
+            {
+                $xml->writeElement($keyParent, $value);
+                continue;
+            }
+            if(is_numeric($key))
+            {
+                $xml->startElement($keyParent);
+            }
+ 
+            if(is_object($value))
+            {
+                $this->object2XML($xml, $value);
+            }
+            else if(is_array($value))
+            {
+                $this->array2XML($xml, $key, $value);
+                continue;
+            }
+ 
+            if(is_numeric($key))
+            {
+                $xml->endElement();
+            }
+        }
+    }
+
     public static function jsonDeserialize($json)
     {
         $array = json_decode($json, true);
