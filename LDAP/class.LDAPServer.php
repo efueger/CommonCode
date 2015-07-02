@@ -100,6 +100,7 @@ class LDAPServer extends \Singleton
             $this->ds = null;
             return false;
         }
+        ldap_set_option($this->ds, LDAP_OPT_PROTOCOL_VERSION, 3);
         return true;
     }
 
@@ -203,7 +204,7 @@ class LDAPServer extends \Singleton
         }
         try
         {
-            $sr = ldap_search($this->ds, $base_dn, $filter_str);
+            $sr = ldap_list($this->ds, $base_dn, $filter_str);
         }
         catch(\Exception $e)
         {
@@ -224,6 +225,32 @@ class LDAPServer extends \Singleton
             }
         }
         return $res;
+    }
+
+    function count($base_dn, $filter=false)
+    {
+        $filter_str = '(objectclass=*)';
+        if($filter !== false)
+        {
+            $filter_str = $filter->to_ldap_string();
+        }
+        if($this->ds === null)
+        {
+            throw new \Exception('Not connected');
+        }
+        try
+        {
+            $sr = ldap_list($this->ds, $base_dn, $filter_str, array('dn'));
+        }
+        catch(\Exception $e)
+        {
+            throw new \Exception($e->getMessage().' '.$filter_str, $e->getCode(), $e);
+        }
+        if($sr === false)
+        {
+            return false;
+        }
+        return ldap_count_entries($this->ds, $sr);
     }
 
     function update($object)
