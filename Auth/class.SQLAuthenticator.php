@@ -72,16 +72,37 @@ if(!function_exists('password_hash') || !function_exists('password_verify'))
 class SQLAuthenticator extends Authenticator
 {
     private $data_set = null;
+    private $pending_data_set = null;
     private $data_tables = array();
+    private $pending_data_tables = array();
+    private $params;
 
-    private function get_data_set()
+    public function __construct($params)
     {
-        if($this->data_set !== null)
+        parent::__construct($params);
+        $this->params = $params;
+        if($this->current)
         {
-            return $this->data_set;
+            if(isset($params['current_data_set']))
+            {
+                $this->data_set = \DataSetFactory::get_data_set($params['current_data_set']);
+            }
+            else
+            {
+                $this->data_set = \DataSetFactory::get_data_set('authentication');
+            }
         }
-        $this->data_set = \DataSetFactory::get_data_set('authentication');
-        return $this->data_set;
+        if($this->pending)
+        {
+            if(isset($params['pending_data_set']))
+            {
+                $this->pending_data_set = \DataSetFactory::get_data_set($params['pending_data_set']);
+            }
+            else
+            {
+                $this->pending_data_set = \DataSetFactory::get_data_set('pending_authentication');
+            }
+        }
     }
 
     private function get_data_table($name)
@@ -90,7 +111,7 @@ class SQLAuthenticator extends Authenticator
          {
              return $this->data_tables[$name];
          }
-         $data_set = $this->get_data_set();
+         $data_set = $this->data_set;
          if($data_set === null)
          {
              throw new \Exception('Unable to obtain dataset for SQL Authentication!');
@@ -100,8 +121,37 @@ class SQLAuthenticator extends Authenticator
          return $this->data_tables[$name];
     }
 
+    private function get_pending_data_table($name)
+    {
+         if(isset($this->pending_data_tables[$name]))
+         {
+             return $this->pending_data_tables[$name];
+         }
+         $data_set = $this->pending_data_set;
+         if($data_set === null)
+         {
+             throw new \Exception('Unable to obtain dataset for SQL Authentication!');
+         }
+         $data_table = $data_set[$name];
+         $this->pending_data_tables[$name] = $data_table;
+         return $this->pending_data_tables[$name];
+    }
+
+    private function get_pending_user_data_table()
+    {
+        if(isset($this->params['pending_user_table']))
+        {
+            return $this->get_pending_data_table($this->params['pending_user_table']);
+        }
+        else
+        {
+            return $this->get_pending_data_table('users');
+        }
+    }
+
     public function login($username, $password)
     {
+        if($this->current === false) return false;
         $user_data_table = $this->get_data_table('user');
         $filter = new \Data\Filter("uid eq '$username'");
         $users = $user_data_table->read($filter, 'uid,pass');
@@ -181,7 +231,32 @@ class SQLAuthenticator extends Authenticator
         $count = count($users);
         for($i = 0; $i < $count; $i++)
         {
-            $users[$i] = new SQLUsers($users[$i]);
+            $users[$i] = new SQLUser($users[$i]);
+        }
+        return $users;
+    }
+
+    public function get_pending_user_count()
+    {
+        if($this->pending === false) return 0;
+        $data_table = $this->get_pending_user_data_table();
+        if($data_table === null) return 0;
+        return $data_table->count();
+    }
+
+    public function get_pending_users_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+    {
+        if($this->pending === false) return false;
+        $user_data_table = $this->get_pending_user_data_table();
+        $users = $user_data_table->read($filter, $select, $top, $skip, $orderby);
+        if($users === false)
+        {
+            return false;
+        }
+        $count = count($users);
+        for($i = 0; $i < $count; $i++)
+        {
+            $users[$i] = new SQLPendingUser($users[$i]);
         }
         return $users;
     }

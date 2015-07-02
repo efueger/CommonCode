@@ -53,6 +53,11 @@ class Authenticator
         return false;
     }
 
+    public function get_pending_users_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+    {
+        return false;
+    }
+
     public function get_active_user_count()
     {
         $users = $this->get_users_by_filter(false);
@@ -65,7 +70,12 @@ class Authenticator
 
     public function get_pending_user_count()
     {
-        return 0;
+        $users = $this->get_pending_users_by_filter(false);
+        if($users === false)
+        {
+            return 0;
+        }
+        return count($users);
     }
 
     public function get_group_count()
