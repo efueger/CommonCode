@@ -96,5 +96,10 @@ class SQLDataTable extends DataTable
          $where = $filter->to_sql_string();
          return $this->dataset->update($this->tablename, $where, $data);
     }
+
+    function create($data)
+    {
+        return $this->dataset->create($this->tablename, $data);
+    }
 }
 ?>

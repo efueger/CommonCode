@@ -149,6 +149,10 @@ class SQLDataSet extends DataSet
     function update($tablename, $where, $data)
     {
         $set = array();
+        if(is_object($data))
+        {
+            $data = (array)$data;
+        }
         $cols = array_keys($data);
         $count = count($cols);
         for($i = 0; $i < $count; $i++)
@@ -157,6 +161,29 @@ class SQLDataSet extends DataSet
         }
         $set = implode(',', $set);
         $sql = "UPDATE $tablename SET $set WHERE $where";
+        if($this->pdo->exec($sql) === false)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    function create($tablename, $data)
+    {
+        $set = array();
+        if(is_object($data))
+        {
+            $data = (array)$data;
+        }
+        $cols = array_keys($data);
+        $count = count($cols);
+        for($i = 0; $i < $count; $i++)
+        {
+            array_push($set, $this->pdo->quote($data[$cols[$i]]));
+        }
+        $cols = implode(',', $cols);
+        $set = implode(',', $set);
+        $sql = "INSERT INTO $tablename ($cols) VALUES ($set);";
         if($this->pdo->exec($sql) === false)
         {
             return false;
