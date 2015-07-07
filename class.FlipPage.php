@@ -257,10 +257,6 @@ class FlipPage extends WebPage
         $this->add_viewport();
         $this->add_jquery_ui();
         $this->add_bootstrap();
-        if($header)
-        {
-            $this->add_header_js_and_style();
-        }
         $this->header = $header;
         if(isset(FlipsideSettings::$sites))
         {
@@ -360,62 +356,68 @@ class FlipPage extends WebPage
         $this->add_css(CSS_BOOTSTRAP);
     }
 
-    function add_header_js_and_style()
-    {
-        $this->add_js(JS_TINYNAV);
-        $script_js_tags = file_get_contents(dirname(__FILE__).'/include.HeaderStyleScript.min.php');
-        $this->add_head_tag($script_js_tags);
-    }
-
     function add_header()
     {
-        $header ="<header>\n";
-        $header.="    <section id=\"flipside_nav\">\n";
-        $header.="        <nav><div class=\"constrain\">\n";
-        $header.="            <ul class=\"sites\">\n";
+        $sites = '';
         $site_names = array_keys($this->sites);
         foreach($site_names as $site_name)
         {
-            $header.="                <li>".$this->create_link($site_name, $this->sites[$site_name])."</li>\n";
+            $sites.='<li>'.$this->create_link($site_name, $this->sites[$site_name]).'</li>';
         }
-        $header.="            </ul>\n";
-        $header.="            <ul class=\"links\">\n";
+        $links = '';
         $link_names = array_keys($this->links);
         foreach($link_names as $link_name)
         {
             if(is_array($this->links[$link_name]))
             {
+                $links.='<li class="dropdown">';
                 if(isset($this->links[$link_name]['_']))
                 {
-                    $header.="                <li class=\"dropdown\">".$this->create_link($link_name, $this->links[$link_name]['_'])."\n";
+                    $links.='<a href="'.$this->links[$link_name]['_'].'" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">'.$link_name.' <span class="caret"></span></a>';
+                    unset($this->links[$link_name]['_']);
                 }
                 else
                 {
-                    $header.="                <li class=\"dropdown\">".$this->create_link($link_name)."\n";
+                    $links.='<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">'.$link_name.' <span class="caret"></span></a>';
                 }
-                $header.="                    <ul>\n";
+                $links.='<ul class="dropdown-menu">';
                 $sub_names = array_keys($this->links[$link_name]);
                 foreach($sub_names as $sub_name)
                 {
-                    if(strcmp($sub_name, '_') == 0)
-                    {
-                        continue;
-                    }
-                    $header.="                    <li>".$this->create_link($sub_name, $this->links[$link_name][$sub_name])."</li>\n";
+                    $links.='<li>'.$this->create_link($sub_name, $this->links[$link_name][$sub_name]).'</li>';
                 }
-                $header.="                    </ul>\n";
-                $header.="                </li>\n";
+                $links.='</ul></li>';
             }
             else
             {
-                $header.="                <li>".$this->create_link($link_name, $this->links[$link_name])."</li>\n";
+                $links.='<li>'.$this->create_link($link_name, $this->links[$link_name]).'</li>';
             }
         }
-        $header.="            </ul>\n";
-        $header.="        </div></nav>\n";
-        $header.="    </section>\n";
-        $header.="</header>\n";
+        $header ='<nav class="navbar navbar-default navbar-fixed-top">
+                      <div class="container-fluid">
+                          <!-- Brand and toggle get grouped for better mobile display -->
+                          <div class="navbar-header">
+                          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+                              <span class="sr-only">Toggle navigation</span>
+                              <span class="icon-bar"></span>
+                              <span class="icon-bar"></span>
+                              <span class="icon-bar"></span>
+                          </button>
+                          <a class="navbar-brand" href="#"><img alt="Burning Flipside" src="img/logo.svg" width="30" height="30"></a>
+                          </div>
+                          <!-- Collect the nav links, forms, and other content for toggling -->
+                          <div class="collapse navbar-collapse" id="navbar-collapse">
+                              <ul id="site_nav" class="nav navbar-nav">
+                              '.$sites.'
+                              </ul>
+                              <ul class="nav navbar-nav navbar-right">
+                              '.$links.'
+                              </ul>
+                          </div>
+                      </div>
+                  </nav>';
         $this->body = $header.$this->body;
+        $this->body_tags.='style="padding-top: 60px;"';
     }
 
     const NOTIFICATION_SUCCESS = "alert-success";
