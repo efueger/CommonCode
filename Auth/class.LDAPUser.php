@@ -1,6 +1,5 @@
 <?php
 namespace Auth;
-require_once("/var/www/secure_settings/class.FlipsideSettings.php");
 
 class LDAPUser extends User
 {
@@ -14,7 +13,7 @@ class LDAPUser extends User
             //Generic user object
             $this->server = \LDAP\LDAPServer::getInstance();
             $filter = new \Data\Filter('mail eq '.$data['mail']);
-            $users = $this->server->read(\FlipsideSettings::$ldap['user_base'], $filter);
+            $users = $this->server->read($this->server->user_base, $filter);
             if($users === false || !isset($users[0]))
             {
                 throw new \Exception('No such LDAP User!');
@@ -43,7 +42,7 @@ class LDAPUser extends User
     {
         for($i = 0; $i < $array['count']; $i++)
         {
-            if(strpos($array[$i], \FlipsideSettings::$ldap['group_base']) !== false)
+            if(strpos($array[$i], $this->server->group_base) !== false)
             {
                 $dn = explode(',', $array[$i]);
                 return $this->isInGroupNamed(substr($dn[0], 3));
@@ -54,7 +53,7 @@ class LDAPUser extends User
     function isInGroupNamed($name)
     {
         $filter = new \Data\Filter('cn eq '.$name);
-        $group = $this->server->read(\FlipsideSettings::$ldap['group_base'], $filter);
+        $group = $this->server->read($this->server->group_base, $filter);
         if(!empty($group))
         {
             $group = $group[0];
@@ -297,7 +296,7 @@ class LDAPUser extends User
             throw new \Exception('data must be set for LDAPUser');
         }
         $filter = new \Data\Filter("uid eq $name");
-        $user = $data->read(\FlipsideSettings::$ldap['base'], $filter);
+        $user = $data->read($this->server->user_base, $filter);
         if($user === false || !isset($user[0]))
         {
             return false;
@@ -312,7 +311,7 @@ class LDAPUser extends User
             throw new \Exception('data must be set for LDAPUser');
         }
         $filter = new \Data\Filter("dn eq $dn");
-        $user = $data->read(\FlipsideSettings::$ldap['base'], $filter);
+        $user = $data->read($this->server->user_base, $filter);
         if($user === false || !isset($user[0]))
         {
             return false;
