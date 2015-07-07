@@ -57,6 +57,8 @@ class LDAPServer extends \Singleton
 {
     protected $ds;
     protected $connect;
+    public $user_base;
+    public $group_base;
 
     protected function __construct()
     {
@@ -72,8 +74,12 @@ class LDAPServer extends \Singleton
         $this->ds = ldap_connect($this->connect);
     }
 
-    private function _get_connect_string($name, $proto='ldap')
+    private function _get_connect_string($name, $proto=false)
     {
+        if(strstr($name, ':') !== false)
+        {
+            return $name;
+        }
         if($proto !== 'ldap')
         {
             return $proto.'://'.$name;
@@ -81,7 +87,7 @@ class LDAPServer extends \Singleton
         return $name;
     }
 
-    function connect($name, $proto='ldap')
+    function connect($name, $proto=false)
     {
         $connect_str = $this->_get_connect_string($name, $proto);
         if($this->ds === null)
@@ -123,7 +129,7 @@ class LDAPServer extends \Singleton
         }
         if($cn === null || $password === null)
         {
-            $res = ldap_bind($this->ds);
+            $res = @ldap_bind($this->ds);
         }
         else
         {
