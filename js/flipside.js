@@ -196,8 +196,8 @@ function flipside_init()
 {
     browser_supported();
     var host = window.location.hostname.split('.')[0];
-    var link = $(".sites a[href^='https://"+host+"']");
-    link.attr('class', 'site_selected');
+    var link = $('#site_nav a[href^="https://'+host+'"]');
+    link.parent().addClass('active');
 }
 
 $(flipside_init);
