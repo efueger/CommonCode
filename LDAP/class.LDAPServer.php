@@ -210,7 +210,7 @@ class LDAPServer extends \Singleton
         }
         try
         {
-            $sr = ldap_list($this->ds, $base_dn, $filter_str);
+            $sr = @ldap_list($this->ds, $base_dn, $filter_str);
         }
         catch(\Exception $e)
         {
