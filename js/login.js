@@ -58,7 +58,7 @@ function login_dialog_shown()
 
 function do_login_init()
 {
-    var login_link = $(".links a[href*='login']");
+    var login_link = $('ul a[href*=login]');
     if(browser_supports_cors())
     {
         login_link.attr('data-toggle','modal');
