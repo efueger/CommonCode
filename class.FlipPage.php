@@ -52,8 +52,8 @@ $js_array = array(
              'min' => '/js/common/bootstrap.min.js'
          ),
          'cdn' => array(
-             'no'  => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.js',
-             'min' => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js'
+             'no'  => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js',
+             'min' => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'
          )
      ),
      JQUERY_VALIDATE => array(
@@ -205,8 +205,8 @@ $css_array = array(
              'min' => '/css/common/bootstrap.min.css'
          ),
          'cdn' => array(
-             'no'  => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.css',
-             'min' => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css'
+             'no'  => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css',
+             'min' => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'
          )
     ),
     CSS_BOOTSTRAP_FH => array(
@@ -305,9 +305,14 @@ class FlipPage extends WebPage
         }
     }
 
-    function add_js_from_src($src)
+    function add_js_from_src($src, $async=true)
     {
-        $js_tag = $this->create_open_tag('script', array('src'=>$src, 'type'=>'text/javascript'));
+        $attributes = array('src'=>$src, 'type'=>'text/javascript');
+        if($async === true)
+        {
+            $attributes['async'] = true;
+        }
+        $js_tag = $this->create_open_tag('script', $attributes);
         $close_tag = $this->create_close_tag('script');
         $this->add_head_tag($js_tag);
         $this->add_head_tag($close_tag);
@@ -315,16 +320,17 @@ class FlipPage extends WebPage
 
     function add_css_from_src($src)
     {
-        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>$src, 'type'=>'text/css'), true);
+        $attributes = array('rel'=>'stylesheet', 'href'=>$src, 'type'=>'text/css');
+        $css_tag = $this->create_open_tag('link', $attributes, true);
         $this->add_head_tag($css_tag);
     }
 
-    function add_js($type)
+    function add_js($type, $async=true)
     {
         global $js_array;
         $this->setup_vars();
         $src = $js_array[$type][$this->cdn][$this->minified];
-        $this->add_js_from_src($src);
+        $this->add_js_from_src($src, $async);
     }
 
     function add_css($type)
@@ -343,11 +349,11 @@ class FlipPage extends WebPage
 
     function add_jquery_ui()
     {
-        $this->add_js(JS_JQUERY);
-        $this->add_js(JS_JQUERY_UI);
-        $this->add_js(JQUERY_TOUCH);
+        $this->add_js(JS_JQUERY, false);
+        //$this->add_js(JS_JQUERY_UI);
+        //$this->add_js(JQUERY_TOUCH);
         $this->add_js(JS_FLIPSIDE);
-        $this->add_css(CSS_JQUERY_UI);
+        //$this->add_css(CSS_JQUERY_UI);
     }
 
     function add_bootstrap()
@@ -482,7 +488,16 @@ class FlipPage extends WebPage
                     <strong>Error!</strong> This site makes extensive use of JavaScript. Please enable JavaScript or this site will not function.
                 </div>
             </noscript>
-        '.$this->body;
+        '.$this->body.'<script>
+  (function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,\'script\',\'//www.google-analytics.com/analytics.js\',\'ga\');
+
+  ga(\'create\', \'UA-64901342-1\', \'auto\');
+  ga(\'send\', \'pageview\');
+
+</script>';
         if($this->header)
         {
             $this->add_header();
