@@ -192,12 +192,23 @@ function browser_supported()
     }
 }
 
+function browser_supports_image_upload()
+{
+    if (navigator.userAgent.match(/(Android (1.0|1.1|1.5|1.6|2.0|2.1))|(Windows Phone (OS 7|8.0))|(XBLWP)|(ZuneWP)|(w(eb)?OSBrowser)|(webOS)|(Kindle\/(1.0|2.0|2.5|3.0))/))
+    {
+        return false;
+    }
+    var elem = document.createElement('input');
+    elem.type = 'file';
+    return !elem.disabled;
+}
+
 function flipside_init()
 {
     browser_supported();
     var host = window.location.hostname.split('.')[0];
-    var link = $(".sites a[href^='https://"+host+"']");
-    link.attr('class', 'site_selected');
+    var link = $('#site_nav a[href^="https://'+host+'"]');
+    link.parent().addClass('active');
 }
 
 $(flipside_init);

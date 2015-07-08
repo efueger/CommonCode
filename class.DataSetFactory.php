@@ -10,7 +10,7 @@ class DataSetFactory
         {
             return $instances[$set_name];
         }
-        if(!isset(FlipsideSettings::$dataset[$set_name]))
+        if(!isset(FlipsideSettings::$dataset) || !isset(FlipsideSettings::$dataset[$set_name]))
         {
             throw new Exception('Unknown dataset name '.$set_name);
         }

@@ -9,7 +9,10 @@
 * @license http://www.opensource.org/licenses/bsd-license New BSD License
 * @link http://www.php.net/manual/en/class.jsonserializable.php
 */
+if(PHP_VERSION_ID < 50400)
+{
 interface JsonSerializable {
     public function jsonSerialize();
+}
 }
 ?>

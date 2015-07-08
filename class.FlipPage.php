@@ -52,8 +52,8 @@ $js_array = array(
              'min' => '/js/common/bootstrap.min.js'
          ),
          'cdn' => array(
-             'no'  => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.js',
-             'min' => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js'
+             'no'  => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js',
+             'min' => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'
          )
      ),
      JQUERY_VALIDATE => array(
@@ -205,8 +205,8 @@ $css_array = array(
              'min' => '/css/common/bootstrap.min.css'
          ),
          'cdn' => array(
-             'no'  => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.css',
-             'min' => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css'
+             'no'  => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css',
+             'min' => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'
          )
     ),
     CSS_BOOTSTRAP_FH => array(
@@ -257,10 +257,6 @@ class FlipPage extends WebPage
         $this->add_viewport();
         $this->add_jquery_ui();
         $this->add_bootstrap();
-        if($header)
-        {
-            $this->add_header_js_and_style();
-        }
         $this->header = $header;
         if(isset(FlipsideSettings::$sites))
         {
@@ -309,9 +305,14 @@ class FlipPage extends WebPage
         }
     }
 
-    function add_js_from_src($src)
+    function add_js_from_src($src, $async=true)
     {
-        $js_tag = $this->create_open_tag('script', array('src'=>$src, 'type'=>'text/javascript'));
+        $attributes = array('src'=>$src, 'type'=>'text/javascript');
+        if($async === true)
+        {
+            $attributes['async'] = true;
+        }
+        $js_tag = $this->create_open_tag('script', $attributes);
         $close_tag = $this->create_close_tag('script');
         $this->add_head_tag($js_tag);
         $this->add_head_tag($close_tag);
@@ -319,16 +320,17 @@ class FlipPage extends WebPage
 
     function add_css_from_src($src)
     {
-        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>$src, 'type'=>'text/css'), true);
+        $attributes = array('rel'=>'stylesheet', 'href'=>$src, 'type'=>'text/css');
+        $css_tag = $this->create_open_tag('link', $attributes, true);
         $this->add_head_tag($css_tag);
     }
 
-    function add_js($type)
+    function add_js($type, $async=true)
     {
         global $js_array;
         $this->setup_vars();
         $src = $js_array[$type][$this->cdn][$this->minified];
-        $this->add_js_from_src($src);
+        $this->add_js_from_src($src, $async);
     }
 
     function add_css($type)
@@ -347,11 +349,11 @@ class FlipPage extends WebPage
 
     function add_jquery_ui()
     {
-        $this->add_js(JS_JQUERY);
-        $this->add_js(JS_JQUERY_UI);
-        $this->add_js(JQUERY_TOUCH);
+        $this->add_js(JS_JQUERY, false);
+        //$this->add_js(JS_JQUERY_UI);
+        //$this->add_js(JQUERY_TOUCH);
         $this->add_js(JS_FLIPSIDE);
-        $this->add_css(CSS_JQUERY_UI);
+        //$this->add_css(CSS_JQUERY_UI);
     }
 
     function add_bootstrap()
@@ -360,62 +362,68 @@ class FlipPage extends WebPage
         $this->add_css(CSS_BOOTSTRAP);
     }
 
-    function add_header_js_and_style()
-    {
-        $this->add_js(JS_TINYNAV);
-        $script_js_tags = file_get_contents(dirname(__FILE__).'/include.HeaderStyleScript.min.php');
-        $this->add_head_tag($script_js_tags);
-    }
-
     function add_header()
     {
-        $header ="<header>\n";
-        $header.="    <section id=\"flipside_nav\">\n";
-        $header.="        <nav><div class=\"constrain\">\n";
-        $header.="            <ul class=\"sites\">\n";
+        $sites = '';
         $site_names = array_keys($this->sites);
         foreach($site_names as $site_name)
         {
-            $header.="                <li>".$this->create_link($site_name, $this->sites[$site_name])."</li>\n";
+            $sites.='<li>'.$this->create_link($site_name, $this->sites[$site_name]).'</li>';
         }
-        $header.="            </ul>\n";
-        $header.="            <ul class=\"links\">\n";
+        $links = '';
         $link_names = array_keys($this->links);
         foreach($link_names as $link_name)
         {
             if(is_array($this->links[$link_name]))
             {
+                $links.='<li class="dropdown">';
                 if(isset($this->links[$link_name]['_']))
                 {
-                    $header.="                <li class=\"dropdown\">".$this->create_link($link_name, $this->links[$link_name]['_'])."\n";
+                    $links.='<a href="'.$this->links[$link_name]['_'].'" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">'.$link_name.' <span class="caret"></span></a>';
+                    unset($this->links[$link_name]['_']);
                 }
                 else
                 {
-                    $header.="                <li class=\"dropdown\">".$this->create_link($link_name)."\n";
+                    $links.='<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">'.$link_name.' <span class="caret"></span></a>';
                 }
-                $header.="                    <ul>\n";
+                $links.='<ul class="dropdown-menu">';
                 $sub_names = array_keys($this->links[$link_name]);
                 foreach($sub_names as $sub_name)
                 {
-                    if(strcmp($sub_name, '_') == 0)
-                    {
-                        continue;
-                    }
-                    $header.="                    <li>".$this->create_link($sub_name, $this->links[$link_name][$sub_name])."</li>\n";
+                    $links.='<li>'.$this->create_link($sub_name, $this->links[$link_name][$sub_name]).'</li>';
                 }
-                $header.="                    </ul>\n";
-                $header.="                </li>\n";
+                $links.='</ul></li>';
             }
             else
             {
-                $header.="                <li>".$this->create_link($link_name, $this->links[$link_name])."</li>\n";
+                $links.='<li>'.$this->create_link($link_name, $this->links[$link_name]).'</li>';
             }
         }
-        $header.="            </ul>\n";
-        $header.="        </div></nav>\n";
-        $header.="    </section>\n";
-        $header.="</header>\n";
+        $header ='<nav class="navbar navbar-default navbar-fixed-top">
+                      <div class="container-fluid">
+                          <!-- Brand and toggle get grouped for better mobile display -->
+                          <div class="navbar-header">
+                          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+                              <span class="sr-only">Toggle navigation</span>
+                              <span class="icon-bar"></span>
+                              <span class="icon-bar"></span>
+                              <span class="icon-bar"></span>
+                          </button>
+                          <a class="navbar-brand" href="#"><img alt="Burning Flipside" src="img/logo.svg" width="30" height="30"></a>
+                          </div>
+                          <!-- Collect the nav links, forms, and other content for toggling -->
+                          <div class="collapse navbar-collapse" id="navbar-collapse">
+                              <ul id="site_nav" class="nav navbar-nav">
+                              '.$sites.'
+                              </ul>
+                              <ul class="nav navbar-nav navbar-right">
+                              '.$links.'
+                              </ul>
+                          </div>
+                      </div>
+                  </nav>';
         $this->body = $header.$this->body;
+        $this->body_tags.='style="padding-top: 60px;"';
     }
 
     const NOTIFICATION_SUCCESS = "alert-success";
@@ -480,7 +488,16 @@ class FlipPage extends WebPage
                     <strong>Error!</strong> This site makes extensive use of JavaScript. Please enable JavaScript or this site will not function.
                 </div>
             </noscript>
-        '.$this->body;
+        '.$this->body.'<script>
+  (function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,\'script\',\'//www.google-analytics.com/analytics.js\',\'ga\');
+
+  ga(\'create\', \'UA-64901342-1\', \'auto\');
+  ga(\'send\', \'pageview\');
+
+</script>';
         if($this->header)
         {
             $this->add_header();

@@ -1,6 +1,5 @@
 <?php
-require_once('class.JsonSerializable.php');
-require_once("class.FlipsideDB.php");
+require_once('Autoload.php');
 class FlipsideCAPTCHA implements JsonSerializable
 {
     public  $random_id;
@@ -18,17 +17,15 @@ class FlipsideCAPTCHA implements JsonSerializable
 
     public static function get_valid_captcha_ids()
     {
-        $res = array();
-        $data = FlipsideDB::seleect_all_from_db('registration', 'captcha', 'id');
-        if($data == FALSE)
+        $dataset = DataSetFactory::get_data_set('profiles');
+        $datatable = $dataset['captcha'];
+        $data = $datatable->read(false, array('id'));
+        $count = count($data);
+        for($i = 0; $i < $count; $i++)
         {
-            return FALSE;
+            $data[$i] = $data[$i]['id'];
         }
-        for($i = 0; $i < count($data); $i++)
-        {
-            $res[$i] = $data[$i]['id'];
-        }
-        return $res;
+        return $data;
     }
 
     public static function get_all()
@@ -46,13 +43,9 @@ class FlipsideCAPTCHA implements JsonSerializable
 
     public static function save_new_captcha($question, $hint, $answer)
     {
-        FlipsideDB::write_to_db('registration', 'captcha', array('question'=>$question,'hint'=>$hint,'answer'=>$answer));
-        $data = FlipsideDB::select_field('registration', 'captcha', 'id', array('question'=>'="'.$question.'"'));
-        if($data == FALSE)
-        {
-            return FALSE; 
-        }
-        return $data['id'];
+        $dataset = DataSetFactory::get_data_set('profiles');
+        $datatable = $dataset['captcha'];
+        return $datatable->create(array('question'=>$question,'hint'=>$hint,'answer'=>$answer));
     }
 
     public function __construct()
@@ -64,32 +57,38 @@ class FlipsideCAPTCHA implements JsonSerializable
 
     public function get_question()
     {
-        $data = FlipsideDB::select_field('registration', 'captcha', 'question', array('id'=>'="'.$this->random_id.'"'));
-        if($data == FALSE)
+        $dataset = DataSetFactory::get_data_set('profiles');
+        $datatable = $dataset['captcha'];
+        $data = $datatable->read(new \Data\Filter('id eq '.$this->random_id), array('question'));
+        if($data === false)
         {
-            return FALSE;
+            return false;
         }
-        return $data['question'];
+        return $data[0]['question'];
     }
 
     public function get_hint()
     {
-        $data = FlipsideDB::select_field('registration', 'captcha', 'hint', array('id'=>'="'.$this->random_id.'"'));
-        if($data == FALSE)
+        $dataset = DataSetFactory::get_data_set('profiles');
+        $datatable = $dataset['captcha'];
+        $data = $datatable->read(new \Data\Filter('id eq '.$this->random_id), array('hint'));
+        if($data === false)
         {
-            return FALSE;
+            return false;
         }
-        return $data['hint'];
+        return $data[0]['hint'];
     }
 
     private function get_answer()
     {
-        $data = FlipsideDB::select_field('registration', 'captcha', 'answer', array('id'=>'="'.$this->random_id.'"'));
-        if($data == FALSE)
+        $dataset = DataSetFactory::get_data_set('profiles');
+        $datatable = $dataset['captcha'];
+        $data = $datatable->read(new \Data\Filter('id eq '.$this->random_id), array('answer'));
+        if($data === false)
         {
-            return FALSE;
+            return false;
         }
-        return $data['answer'];
+        return $data[0]['answer'];
     }
 
     public function is_answer_right($answer)
@@ -97,16 +96,23 @@ class FlipsideCAPTCHA implements JsonSerializable
         return strcasecmp($this->get_answer(),$answer) == 0;
     }
 
-    public function draw_captcha($explination = true, $return = false)
+    public function draw_captcha($explination=true, $return=false, $own_form=false)
     {
         $string = '';
 
-        $string .= '<form id="flipcaptcha" name="flipcaptcha">
-            <label for="captcha" class="col-sm-2 control-label">'.$this->get_question().'</label><div class="col-sm-10"><input type="text" id="captcha" name="captcha"/> '.$this->get_hint().'</div>
-        </form><br/>';
+        if($own_form)
+        {
+            $string.= '<form id="flipcaptcha" name="flipcaptcha">';
+        }
+
+        $string .= '<label for="captcha" class="col-sm-2 control-label">'.$this->get_question().'</label><div class="col-sm-10"><input class="form-control" type="text" id="captcha" name="captcha" placeholder="'.$this->get_hint().'" required/></div>';
+        if($own_form)
+        {
+            $string.='</form>';
+        }
         if($explination)
         {
-            $string .= 'The answer to this question may be found in the Burning Flipside Survival Guide. It may be found <a href="http://www.burningflipside.com/sg">here</a>.<br/>';
+            $string .= '<div class="col-sm-10">The answer to this question may be found in the Burning Flipside Survival Guide. It may be found <a href="http://www.burningflipside.com/sg">here</a>.</div>';
         }
         
         if(!$return)

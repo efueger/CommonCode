@@ -12,6 +12,7 @@ class WebPage
     private $bc;
     public $browser;
     public $body_tags;
+    public $import_support;
 
     function __construct($title)
     {
@@ -22,10 +23,16 @@ class WebPage
         $this->bc->doAutoUpdate = false;
         $this->bc->lowercase = true;
         $this->browser = $this->getBrowser();
+        $this->import_support = false;
         
-        if($this->get_browser_name() === 'IE' && $this->get_browser_major_ver() <= 6)
+        $browser_name = $this->get_browser_name();
+        if($browser_name === 'IE' && $this->get_browser_major_ver() <= 6)
         {
             header( 'Location: /badbrowser.php' ) ;
+        }
+        else if($browser_name === 'Chrome' && $this->get_browser_major_ver() >= 36)
+        {
+            $this->import_support = true;
         }
     }
 

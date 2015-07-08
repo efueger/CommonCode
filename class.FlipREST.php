@@ -1,7 +1,6 @@
 <?php
 require_once('class.FlipSession.php');
 require_once('PHPExcel/PHPExcel.php');
-require_once('XML/Serializer.php');
 require_once('Slim/Slim.php');
 require_once('Autoload.php');
 \Slim\Slim::registerAutoloader();
@@ -160,31 +159,8 @@ class FlipRESTFormat extends \Slim\Middleware
 
     private function create_xml(&$array, $path)
     {
-        if(is_array($array) && is_object($array[0]))
-        {
-            $count = count($array);
-            for($i = 0; $i < $count; $i++)
-            {
-                if(property_exists($array[$i], '_id') && is_object($array[$i]->_id))
-                {
-                    $array[$i]->_id = $array[$i]->_id->{'$id'};
-                }
-            }
-        }
-        else if(is_object($array))
-        {
-            if(property_exists($array, '_id') && is_object($array->_id))
-            {
-                $array->_id = $array->_id->{'$id'};
-            }
-        }
-        $options = array(
-            XML_SERIALIZER_OPTION_ROOT_NAME   => $path,
-            XML_SERIALIZER_OPTION_DEFAULT_TAG => substr($path, 0, strlen($path)-1)
-        );
-        $serializer = new XML_Serializer($options);
-        $serializer->serialize($array);
-        return $serializer->getSerializedData();
+        $obj = new SerializableObject($array);
+        return $obj->xmlSerialize();
     }
 
     public function call()

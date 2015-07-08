@@ -33,20 +33,53 @@ function swap(&$array, $i, $j)
 
 class LDAPAuthenticator extends Authenticator
 {
-    private function get_and_bind_server()
+    private $host;
+    private $user_base;
+    private $group_base;
+
+    public function __construct($params)
     {
-        $server = \LDAP\LDAPServer::getInstance();
-        if(isset(\FlipsideSettings::$ldap['proto']))
+        parent::__construct($params);
+        if(isset($params['host']))
         {
-            $server->connect(\FlipsideSettings::$ldap['host'],
-                             \FlipsideSettings::$ldap['proto']);
+            $this->host = $params['host'];
         }
         else
         {
-            $server->connect(\FlipsideSettings::$ldap['host']);
+            if(isset(\FlipsideSettings::$ldap['proto']))
+            {
+                $this->host = \FlipsideSettings::$ldap['proto'].'://'.\FlipsideSettings::$ldap['host'];
+            }
+            else
+            {
+                $this->host = \FlipsideSettings::$ldap['host'];
+            }
         }
-        $ret = $server->bind(\FlipsideSettings::$ldap_auth['read_write_user'],
-                             \FlipsideSettings::$ldap_auth['read_write_pass']);
+        if(isset($params['user_base']))
+        {
+           $this->user_base = $params['user_base'];
+        }
+        else
+        {
+            $this->user_base = \FlipsideSettings::$ldap['user_base'];
+        }
+        if(isset($params['group_base']))
+        {
+            $this->group_base = $params['group_base'];
+        }
+        else
+        {
+            $this->group_base = \FlipsideSettings::$ldap['group_base'];
+        }
+    }
+
+    private function get_and_bind_server()
+    {
+        $server = \LDAP\LDAPServer::getInstance();
+        $server->user_base = $this->user_base;
+        $server->group_base = $this->group_base;
+        $server->connect($this->host);
+        $ret = $server->bind();
         if($ret === false)
         {
             return false;
@@ -62,7 +95,7 @@ class LDAPAuthenticator extends Authenticator
             return false;
         }
         $filter = new \Data\Filter("uid eq $username or mail eq $username");
-        $user = $server->read(\FlipsideSettings::$ldap['user_base'], $filter);
+        $user = $server->read($this->user_base, $filter);
         if($user === false || count($user) === 0)
         {
             return false;
@@ -112,7 +145,7 @@ class LDAPAuthenticator extends Authenticator
         {
             $filter = new \Data\Filter('cn eq *');
         }
-        $groups = $server->read(\FlipsideSettings::$ldap['group_base'], $filter);
+        $groups = $server->read($this->group_base, $filter);
         if($groups === false)
         {
             return false;
@@ -132,7 +165,7 @@ class LDAPAuthenticator extends Authenticator
         {
             return false;
         }
-        return $server->count(\FlipsideSettings::$ldap['user_base']);
+        return $server->count($this->user_base);
     }
 
     public function get_users_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
@@ -146,7 +179,7 @@ class LDAPAuthenticator extends Authenticator
         {
             $filter = new \Data\Filter('cn eq *');
         }
-        $users = $server->read(\FlipsideSettings::$ldap['user_base'], $filter);
+        $users = $server->read($this->user_base, $filter);
         if($users === false)
         {
             return false;
