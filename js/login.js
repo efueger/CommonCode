@@ -24,15 +24,15 @@ function login_submit_done(jqXHR)
             }
             if(data.extended)
             {
-                url += '?extended='+data.extended;
             }
 	    window.location = url;
 	}
     }
 }
 
-function login_submitted(form)
+function login_submitted(e)
 {
+    e.preventDefault();
     var url = $('body').data('login-url');
     if(url === undefined)
     {
@@ -43,12 +43,14 @@ function login_submitted(form)
         dir = dir.replace('/'+name,"");
         url = dir+'/api/v1/login';
     }
+    var form = e.target.form;
     $.ajax({
         url: url,
         data: $(form).serialize(),
         type: 'post',
         dataType: 'json',
         complete: login_submit_done});
+    return false;
 }
 
 function login_dialog_shown()
@@ -77,15 +79,11 @@ function do_login_init()
     }
     if($('#login_main_form').length > 0)
     {
-        $("#login_main_form").validate({
-            submitHandler: login_submitted
-        });
+        $('#login_main_form :submit').on('click', login_submitted);
     }
     if($('#login_dialog_form').length > 0)
     {
-        $("#login_dialog_form").validate({
-            submitHandler: login_submitted
-        });
+        $('#login_dialog_form :submit').on('click', login_submitted);
     }
     if($('#login-dialog').length > 0)
     {
