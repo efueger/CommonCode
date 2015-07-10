@@ -32,8 +32,8 @@ $js_array = array(
              'min' => '/js/common/jquery.min.js'
          ),
          'cdn' => array(
-             'no'  => '//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js',
-             'min' => '//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js'
+             'no'  => '//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.js',
+             'min' => '//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'
          )
      ),
      JS_JQUERY_UI => array(
@@ -42,8 +42,8 @@ $js_array = array(
              'min' => '/js/common/jquery-ui.min.js'
          ),
          'cdn' => array(
-             'no'  => '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.js',
-             'min' => '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js'
+             'no'  => '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js',
+             'min' => '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js'
          )
      ),
      JS_BOOTSTRAP => array(
@@ -112,8 +112,8 @@ $js_array = array(
              'min' => '/js/common/jquery.dataTables.min.js'
          ),
          'cdn' => array(
-             'no'  => '//cdn.datatables.net/1.10.5/js/jquery.dataTables.js',
-             'min' => '//cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js'
+             'no'  => '//cdn.datatables.net/1.10.7/js/jquery.dataTables.js',
+             'min' => '//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js'
          )
      ),
      JS_CHART => array(
@@ -132,8 +132,8 @@ $js_array = array(
              'min' => '/js/common/metisMenu.min.js'
          ),
          'cdn' => array(
-             'no'  => '//cdnjs.cloudflare.com/ajax/libs/metisMenu/1.1.3/metisMenu.js',
-             'min' => '//cdnjs.cloudflare.com/ajax/libs/metisMenu/1.1.3/metisMenu.min.js'
+             'no'  => '//cdnjs.cloudflare.com/ajax/libs/metisMenu/2.0.2/metisMenu.js',
+             'min' => '//cdnjs.cloudflare.com/ajax/libs/metisMenu/2.0.2/metisMenu.min.js'
          )
      ),
      JS_BOOTBOX => array(
@@ -195,8 +195,8 @@ $css_array = array(
              'min' => '/css/common/jquery-ui.min.css'
          ),
          'cdn' => array(
-             'no'  => '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css',
-             'min' => '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.min.css'
+             'no'  => '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css',
+             'min' => '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.min.css'
          )
     ),
     CSS_BOOTSTRAP => array(
@@ -235,8 +235,8 @@ $css_array = array(
              'min' => '/css/common/jquery.dataTables.min.css'
          ),
          'cdn' => array(
-             'no'  => '//cdn.datatables.net/1.10.5/css/jquery.dataTables.css',
-             'min' => '//cdn.datatables.net/1.10.5/css/jquery.dataTables.min.css'
+             'no'  => '//cdn.datatables.net/1.10.7/css/jquery.dataTables.css',
+             'min' => '//cdn.datatables.net/1.10.7/css/jquery.dataTables.min.css'
          )
     )
 );
@@ -318,9 +318,13 @@ class FlipPage extends WebPage
         $this->add_head_tag($close_tag);
     }
 
-    function add_css_from_src($src)
+    function add_css_from_src($src, $import=false)
     {
         $attributes = array('rel'=>'stylesheet', 'href'=>$src, 'type'=>'text/css');
+        if($import === true && $this->import_support === true)
+        {
+            $attributes['rel'] = 'import';
+        }
         $css_tag = $this->create_open_tag('link', $attributes, true);
         $this->add_head_tag($css_tag);
     }
@@ -333,12 +337,12 @@ class FlipPage extends WebPage
         $this->add_js_from_src($src, $async);
     }
 
-    function add_css($type)
+    function add_css($type, $import=false)
     {
         global $css_array;
         $this->setup_vars();
         $src = $css_array[$type][$this->cdn][$this->minified];
-        $this->add_css_from_src($src);
+        $this->add_css_from_src($src, $import);
     }
 
     function add_viewport()
@@ -358,7 +362,7 @@ class FlipPage extends WebPage
 
     function add_bootstrap()
     {
-        $this->add_js(JS_BOOTSTRAP);
+        $this->add_js(JS_BOOTSTRAP, false);
         $this->add_css(CSS_BOOTSTRAP);
     }
 
