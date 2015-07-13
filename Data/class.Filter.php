@@ -191,5 +191,10 @@ class Filter
         }
         return $res;
     }
+
+    public function contains($substr)
+    {
+        return strstr($this->string, $substr) !== false;
+    }
 }
 ?>
