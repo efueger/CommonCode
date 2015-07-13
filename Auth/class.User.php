@@ -165,6 +165,46 @@ class User extends \SerializableObject
         return true;
     }
 
+    function setDisplayName($name)
+    {
+        return $this->setNickName($name);
+    }
+
+    function setGivenName($name)
+    {
+        return $this->getUid($name);
+    }
+
+    function setEmail($email)
+    {
+        return false;
+    }
+
+    function setUid($uid)
+    {
+        return false;
+    }
+
+    function setPhoto($photo)
+    {
+        return false;
+    }
+
+    function setPhoneNumber($phone)
+    {
+        return false;
+    }
+
+    function setOrganization($org)
+    {
+        return false;
+    }
+
+    function setTitles($titles)
+    {
+        return false;
+    }
+
     function edit_user($data)
     {
         if(isset($data->oldpass) && isset($data->password))

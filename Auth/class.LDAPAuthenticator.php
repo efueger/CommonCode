@@ -36,6 +36,8 @@ class LDAPAuthenticator extends Authenticator
     private $host;
     private $user_base;
     private $group_base;
+    private $bind_dn;
+    private $bind_pass;
 
     public function __construct($params)
     {
@@ -71,15 +73,38 @@ class LDAPAuthenticator extends Authenticator
         {
             $this->group_base = \FlipsideSettings::$ldap['group_base'];
         }
+        if(isset($params['bind_dn']))
+        {
+            $this->bind_dn = $params['bind_dn'];
+        }
+        else
+        {
+            $this->bind_dn = \FlipsideSettings::$ldap_auth['read_write_user'];
+        }
+        if(isset($params['bind_pass']))
+        {
+            $this->bind_pass = $params['bind_pass'];
+        }
+        else
+        {
+            $this->bind_pass = \FlipsideSettings::$ldap_auth['read_write_pass'];
+        }
     }
 
-    private function get_and_bind_server()
+    private function get_and_bind_server($bind_write=false)
     {
         $server = \LDAP\LDAPServer::getInstance();
         $server->user_base = $this->user_base;
         $server->group_base = $this->group_base;
         $server->connect($this->host);
-        $ret = $server->bind();
+        if($bind_write === false)
+        {
+            $ret = $server->bind();
+        }
+        else
+        {
+            $ret = $server->bind($this->bind_dn, $this->bind_pass);
+        }
         if($ret === false)
         {
             return false;
@@ -217,6 +242,21 @@ class LDAPAuthenticator extends Authenticator
             $users[$i] = $tmp;
         }
         return $users;
+    }
+
+    public function activate_pending_user($user)
+    {
+        $this->get_and_bind_server(true);
+        $new_user = new LDAPUser();
+        $new_user->setUID($user->getUID());
+        $new_user->setEmail($user->getEmail());
+        $new_user->setPass($user->getPassword());
+        $ret = $new_user->flushUser();
+        if($ret)
+        {
+            $user->delete();
+        }
+        return $ret;
     }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */

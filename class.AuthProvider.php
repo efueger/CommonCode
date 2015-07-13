@@ -297,6 +297,54 @@ class AuthProvider extends Singleton
             \FlipSession::set_user($user);
         }
     }
+
+    public function create_pending_user($method_name, $user)
+    {
+        if($method_name === false)
+        {
+            $count = count($this->methods);
+            for($i = 0; $i < $count; $i++)
+            {
+                if($this->methods[$i]->pending === false) continue;
+
+                $ret = $this->methods[$i]->create_pending_user($user);
+                if($ret !== false)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else
+        {
+            $auth = $this->getAuthenticator($method_name);
+            return $auth->create_pending_user($user);
+        }
+    }
+
+    public function activate_pending_user($method_name, $user)
+    {
+        if($method_name === false)
+        {
+            $count = count($this->methods);
+            for($i = 0; $i < $count; $i++)
+            {
+                if($this->methods[$i]->current === false) continue;
+
+                $ret = $this->methods[$i]->activate_pending_user($user);
+                if($ret !== false)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else
+        {
+            $auth = $this->getAuthenticator($method_name);
+            return $auth->activate_pending_user($user);
+        }
+    }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>

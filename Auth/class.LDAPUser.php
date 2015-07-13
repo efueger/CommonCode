@@ -6,9 +6,9 @@ class LDAPUser extends User
     private $ldap_obj;
     private $server;
 
-    function __construct($data)
+    function __construct($data=false)
     {
-        if(!isset($data['dn']) && !isset($data['extended']))
+        if($data !== false && !isset($data['dn']) && !isset($data['extended']))
         {
             //Generic user object
             $this->server = \LDAP\LDAPServer::getInstance();
@@ -30,7 +30,10 @@ class LDAPUser extends User
             {
                 $this->ldap_obj = $data;
             }
-            $this->server   = $this->ldap_obj->server;
+            if(is_object($this->ldap_obj))
+            {
+                $this->server   = $this->ldap_obj->server;
+            }
             if($this->server === null)
             {
                 $this->server = \LDAP\LDAPServer::getInstance();
@@ -275,9 +278,20 @@ class LDAPUser extends User
 
     function setPass($password)
     {
-        $obj = array('dn'=>$this->ldap_obj->dn);
-        $obj['userPassword'] = '{SHA}'.base64_encode(pack('H*',sha1($password)));
-        return $this->server->update($obj);
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['userPassword'] = '{SHA}'.base64_encode(pack('H*',sha1($password)));
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj['userPassword'] = '{SHA}'.base64_encode(pack('H*',sha1($password)));
+            return $this->server->update($obj);
+        }
     }
 
     function validate_password($password)
@@ -317,6 +331,120 @@ class LDAPUser extends User
             return false;
         }
         return new static($user[0]);
+    }
+
+    function setDisplayName($name)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['displayName'] = $name;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj['displayName'] = $name;
+            $this->ldap_obj->displayname = array($name);
+            return $this->server->update($obj);
+        }
+    }
+
+    function setGivenName($name)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['givenName'] = $name;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj['givenName'] = $name;
+            $this->ldap_obj->givenname = array($name);
+            return $this->server->update($obj);
+        }
+    }
+
+    function setEmail($email)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['mail'] = $email;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj['mail'] = $email;
+            $this->ldap_obj->mail = array($email);
+            return $this->server->update($obj);
+        }
+    }
+
+    function setUid($uid)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['uid'] = $uid;
+        }
+        else
+        {
+            throw new \Exception('Unsupported!');
+        }
+    }
+
+    function setPhoto($photo)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['jpegPhoto'] = $photo;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj['jpegPhoto'] = $photo;
+            $this->ldap_obj->jpegphoto = array($photo);
+            return $this->server->update($obj);
+        }
+    }
+
+    function flushUser()
+    {
+        if(is_object($this->ldap_obj))
+        {
+            //In this mode we are always up to date
+            return true;
+        }
+        $obj = $this->ldap_obj;
+        $obj['objectClass'] = array('top', 'inetOrgPerson', 'extensibleObject');
+        $obj['dn'] = 'uid='.$this->ldap_obj['uid'].','.$this->server->user_base;
+        if(!isset($obj['sn']))
+        {
+            $obj['sn'] = $obj['uid'];
+        }
+        if(!isset($obj['cn']))
+        {
+            $obj['cn'] = $obj['uid'];
+        }
+        $ret = $this->server->create($obj);
+        return $ret;
     }
 }
 

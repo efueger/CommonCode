@@ -92,5 +92,15 @@ class Authenticator
     {
         return false;
     }
+
+    public function create_pending_user($user)
+    {
+        return false;
+    }
+
+    public function activate_pending_user($user)
+    {
+        return false;
+    }
 }
 ?>

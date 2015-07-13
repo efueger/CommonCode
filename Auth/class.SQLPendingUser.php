@@ -41,6 +41,20 @@ class SQLPendingUser extends PendingUser
         }
         return $this->blob->uid;
     }
+
+    function getPassword()
+    {
+        if(is_array($this->blob->password))
+        {
+            return $this->blob->password[0];
+        }
+        return $this->blob->password;
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->blob->$offset;
+    }
 }
 
 ?>

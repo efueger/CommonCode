@@ -244,9 +244,44 @@ class SQLAuthenticator extends Authenticator
         return $data_table->count();
     }
 
+    private function search_pending_users($filter, $select, $top, $skip, $orderby)
+    {
+        $user_data_table = $this->get_pending_user_data_table();
+        $field_data = $filter->to_mongo_filter();
+        $first_filter = new \Data\Filter('substringof(data,"'.implode($field_data,' ').'")');
+        $users = $user_data_table->read($first_filter, $select, $top, $skip, $orderby);
+        if($users === false)
+        {
+            return false;
+        }
+        $ret = array();
+        $count = count($users);
+        for($i = 0; $i < $count; $i++)
+        {
+            $user = new SQLPendingUser($users[$i]);
+            $err = false;
+            foreach($field_data as $field=>$data)
+            {
+                if(strcasecmp($user[$field], $data) !== 0)
+                {
+                    $err = true; break;
+                }
+            }
+            if(!$err)
+            {
+                array_push($ret, $user);
+            }
+        }
+        return $ret;
+    }
+
     public function get_pending_users_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
     {
         if($this->pending === false) return false;
+        if($filter !== false && !$filter->contains('hash'))
+        {
+            return $this->search_pending_users($filter, $select, $top, $skip, $orderby);
+        }
         $user_data_table = $this->get_pending_user_data_table();
         $users = $user_data_table->read($filter, $select, $top, $skip, $orderby);
         if($users === false)
@@ -259,6 +294,30 @@ class SQLAuthenticator extends Authenticator
             $users[$i] = new SQLPendingUser($users[$i]);
         }
         return $users;
+    }
+
+    public function create_pending_user($user)
+    {
+        if($this->pending === false) return false;
+        $user_data_table = $this->get_pending_user_data_table();
+        if(isset($user->password2))
+        {
+            unset($user->password2);
+        }
+        $json = json_encode($user);
+        $hash = hash('sha512', $json);
+        $array = array('hash'=>$hash, 'data'=>$json);
+        $ret = $user_data_table->create($array);
+        if($ret !== false)
+        {
+            $users = $this->get_pending_users_by_filter(new \Data\Filter("hash eq '$hash'"));
+            if($users === false || !isset($users[0]))
+            {
+                throw new \Exception('Error retreiving user object after successful create!');
+            }
+            $users[0]->sendEmail();
+        }
+        return $ret;
     }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
