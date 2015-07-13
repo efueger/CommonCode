@@ -243,11 +243,13 @@ $css_array = array(
 
 class FlipPage extends WebPage
 {
+    public $user;
     public $sites;
     public $links;
     public $notifications;
     public $header;
     public $login_url;
+    public $logout_url;
     protected $minified = null;
     protected $cdn = null;
 
@@ -284,7 +286,30 @@ class FlipPage extends WebPage
             {
                 $this->login_url = FlipsideSettings::$global['login_url'];
             }
+            if(isset(FlipsideSettings::$global['logout_url']))
+            {
+                $this->logout_url = FlipsideSettings::$global['logout_url'];
+            }
         }
+        $this->user = FlipSession::get_user();
+        if($this->user === false)
+        {
+            if(strstr($_SERVER['REQUEST_URI'], 'logout.php') === false)
+            {
+                $this->add_link('Login', $this->login_url);
+            }
+        }
+        else
+        {
+            $this->add_links();
+            $this->add_link('Logout', $this->logout_url);
+        }
+        $about_menu = array(
+            'Burning Flipside'=>'http://www.burningflipside.com/about/event',
+            'AAR, LLC'=>'http://www.burningflipside.com/LLC',
+            'Privacy Policy'=>'http://www.burningflipside.com/about/privacy'
+        );
+        $this->add_link('About', 'http://www.burningflipside.com/about', $about_menu);
     }
 
     function setup_vars()
@@ -394,13 +419,27 @@ class FlipPage extends WebPage
                 $sub_names = array_keys($this->links[$link_name]);
                 foreach($sub_names as $sub_name)
                 {
-                    $links.='<li>'.$this->create_link($sub_name, $this->links[$link_name][$sub_name]).'</li>';
+                    if($this->links[$link_name][$sub_name] === false)
+                    {
+                        $links.='<li>'.$sub_name.'</li>';
+                    }
+                    else
+                    {
+                        $links.='<li>'.$this->create_link($sub_name, $this->links[$link_name][$sub_name]).'</li>';
+                    }
                 }
                 $links.='</ul></li>';
             }
             else
             {
-                $links.='<li>'.$this->create_link($link_name, $this->links[$link_name]).'</li>';
+                if($this->links[$link_name] === false)
+                {
+                    $links.='<li>'.$link_name.'</li>';
+                }
+                else
+                {
+                    $links.='<li>'.$this->create_link($link_name, $this->links[$link_name]).'</li>';
+                }
             }
         }
         $header ='<nav class="navbar navbar-default navbar-fixed-top">
@@ -413,7 +452,7 @@ class FlipPage extends WebPage
                               <span class="icon-bar"></span>
                               <span class="icon-bar"></span>
                           </button>
-                          <a class="navbar-brand" href="#"><img alt="Burning Flipside" src="img/logo.svg" width="30" height="30"></a>
+                          <a class="navbar-brand" href="#"><img alt="Burning Flipside" src="/img/logo.svg" width="30" height="30"></a>
                           </div>
                           <!-- Collect the nav links, forms, and other content for toggling -->
                           <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -514,7 +553,7 @@ class FlipPage extends WebPage
         $this->sites[$name] = $url;
     }
 
-    function add_link($name, $url, $submenu=false)
+    function add_link($name, $url=false, $submenu=false)
     {
         if(is_array($submenu))
         {
@@ -559,6 +598,10 @@ class FlipPage extends WebPage
                                 </div>
                             </div>
                         </div>';
+    }
+
+    function add_links()
+    {
     }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
