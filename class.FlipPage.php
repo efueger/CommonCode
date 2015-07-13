@@ -526,6 +526,40 @@ class FlipPage extends WebPage
             $this->links[$name] = $url;
         }
     }
+
+    function add_login_form()
+    {
+        $auth = \AuthProvider::getInstance();
+        $auth_links = $auth->get_supplementary_links();
+        $auth_links_str = '';
+        $count = count($auth_links);
+        for($i = 0; $i < $count; $i++)
+        {
+            $auth_links_str .= $auth_links[$i];
+        }
+        $this->body .= '<div class="modal fade" role="dialog" id="login-dialog" title="Login" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span aria-hidden="true">&times;</span>
+                                            <span class="sr-only">Close</span>
+                                        </button>
+                                        <h4 class="modal-title">Login</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="login_dialog_form" role="form">
+                                            <input class="form-control" type="text" name="username" placeholder="Username or Email" required autofocus/>
+                                            <input class="form-control" type="password" name="password" placeholder="Password" required/>
+                                            <input type="hidden" name="return" value="'.$this->current_url().'"/>
+                                            <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+                                        </form>
+                                        '.$auth_links_str.'
+                                    </div>
+                                </div>
+                            </div>
+                        </div>';
+    }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>

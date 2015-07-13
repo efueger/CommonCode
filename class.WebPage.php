@@ -167,6 +167,15 @@ class WebPage
         echo $prefix.$prefix.$this->body."\n";
         echo $prefix."</BODY>\n";
     }
+
+    function current_url()
+    {
+        if($_SERVER['REQUEST_URI'][0] === '/')
+        {
+            return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+        }
+        return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}";
+    }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>
