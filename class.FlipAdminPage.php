@@ -26,7 +26,7 @@ class FlipAdminPage extends FlipPage
         {
             $this->add_css_from_src('/css/common/admin.css');
         }
-        $this->add_js(JS_METISMENU);
+        $this->add_js(JS_METISMENU, false);
     }
 
     function add_header()
