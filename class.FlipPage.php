@@ -16,6 +16,7 @@ define('JS_METISMENU',    10);
 define('JS_BOOTBOX',         11);
 define('JS_DATATABLE_ODATA', 12);
 define('JS_CRYPTO_MD5_JS',   13);
+define('JS_JCROP',           14);
 define('JS_FLIPSIDE',     20);
 define('JS_LOGIN',        21);
 
@@ -24,6 +25,7 @@ define('CSS_BOOTSTRAP',    1);
 define('CSS_BOOTSTRAP_FH', 2);
 define('CSS_BOOTSTRAP_SW', 3);
 define('CSS_DATATABLE',    4);
+define('CSS_JCROP',        5);
 
 $js_array = array(
      JS_JQUERY => array(
@@ -166,6 +168,16 @@ $js_array = array(
              'min' => '//cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js',
          )
      ),
+     JS_JCROP => array(
+         'no' => array(
+             'no'  => '/js/common/jquery.Jcrop.min.js',
+             'min' => '/js/common/jquery.Jcrop.min.js'
+         ),
+         'cdn' => array(
+             'no'  => '//cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.12/js/jquery.Jcrop.min.js',
+             'min' => '//cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.12/js/jquery.Jcrop.min.js'
+         )
+     ),
      JS_FLIPSIDE => array(
          'no' => array(
              'no'  => '/js/common/flipside.js',
@@ -238,6 +250,16 @@ $css_array = array(
              'no'  => '//cdn.datatables.net/1.10.7/css/jquery.dataTables.css',
              'min' => '//cdn.datatables.net/1.10.7/css/jquery.dataTables.min.css'
          )
+    ),
+    CSS_JCROP => array(
+        'no'  => array(
+            'no'  => '/css/common/jquery.Jcrop.min.css',
+            'min' => '/css/common/jquery.Jcrop.min.css'
+        ),
+        'cdn' => array(
+            'no'  => '//cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.12/css/jquery.Jcrop.min.css',
+            'min' => '//cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.12/css/jquery.Jcrop.min.css'
+        ) 
     )
 );
 
@@ -292,7 +314,7 @@ class FlipPage extends WebPage
             }
         }
         $this->user = FlipSession::get_user();
-        if($this->user === false)
+        if($this->user === false || $this->user === null)
         {
             if(strstr($_SERVER['REQUEST_URI'], 'logout.php') === false)
             {
