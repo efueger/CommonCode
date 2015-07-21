@@ -314,6 +314,11 @@ class FlipPage extends WebPage
             }
         }
         $this->user = FlipSession::get_user();
+        $this->add_all_links();
+    }
+
+    function add_all_links()
+    {
         if($this->user === false || $this->user === null)
         {
             if(strstr($_SERVER['REQUEST_URI'], 'logout.php') === false)
@@ -474,7 +479,12 @@ class FlipPage extends WebPage
                               <span class="icon-bar"></span>
                               <span class="icon-bar"></span>
                           </button>
-                          <a class="navbar-brand" href="#"><img alt="Burning Flipside" src="/img/logo.svg" width="30" height="30"></a>
+                          <a class="navbar-brand" href="#">
+                              <picture>
+                                  <source srcset="/img/common/logo.svg" style="width: 30px; height:30px"/>
+                                  <img alt="Burning Flipside" src="/img/common/logo.png" style="width: 30px; height:30px"/>
+                              </picture>
+                          </a>
                           </div>
                           <!-- Collect the nav links, forms, and other content for toggling -->
                           <div class="collapse navbar-collapse" id="navbar-collapse">
