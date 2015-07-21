@@ -29,6 +29,19 @@ class FlipAdminPage extends FlipPage
         $this->add_js(JS_METISMENU, false);
     }
 
+    function add_all_links()
+    {
+        if($this->user === false || $this->user === null)
+        {
+            $this->add_link('<span class="glyphicon glyphicon-log-in"></span> Login', $this->login_url);
+        }
+        else
+        {
+            $this->add_links();
+            $this->add_link('<span class="glyphicon glyphicon-log-out"></span> Logout', $this->logout_url);
+        }
+    }
+
     function add_header()
     {
         $sites = '';
@@ -68,6 +81,14 @@ class FlipAdminPage extends FlipPage
                 $side_nav .= '<li>'.$this->create_link($link_name, $this->links[$link_name]).'</li>';
             }
         }
+        if($this->user === false || $this->user === null)
+        {
+            $log = '<a href="https://profiles.burningflipside.com/login.php?return='.$this->current_url().'"><span class="glyphicon glyphicon-log-in"></span></a>';
+        }
+        else
+        {
+            $log = '<a href="https://profiles.burningflipside.com/logout.php"><span class="glyphicon glyphicon-log-out"></span></a>';
+        }
         $this->body = '<div id="wrapper">
                   <nav class="navbar navbar-default navbar-static-top" role=navigation" style="margin-bottom: 0">
                       <div class="navbar-header">
@@ -80,9 +101,10 @@ class FlipAdminPage extends FlipPage
                           <a class="navbar-brand" href="index.php">'.$this->title.'</a>
                       </div>
                       <ul class="nav navbar-top-links navbar-right">
-                           <a href="..">
+                          <a href="..">
                               <span class="glyphicon glyphicon-home"></span>
-                           </a>
+                          </a>
+                          &nbsp;&nbsp;'.$log.'
                           <li class="dropdown">
                               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                   <span class="glyphicon glyphicon-link"></span>
