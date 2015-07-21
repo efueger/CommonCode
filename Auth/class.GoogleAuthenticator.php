@@ -48,20 +48,27 @@ class GoogleAuthenticator extends Authenticator
         $local_users = $auth->get_users_by_filter(false, new \Data\Filter('mail eq '.$google_user->email));
         if($local_users !== false && isset($local_users[0]))
         {
-            if(isset($local_users[0]['host']))
+            if($local_users[0]->canLoginWith('google.com'))
             {
-                $count = count($local_users[0]['host']);
-                for($i = 0; $i < $count; $i++)
-                {
-                    if(strcasecmp('google.com', $local_users[0]['host'][$i]) === 0)
-                    {
-                        $auth->impersonate_user($local_users[0]);
-                        return self::SUCCESS;
-                    }
-                }
+                $auth->impersonate_user($local_users[0]);
+                return self::SUCCESS;
             }
             $current_user = $local_users[0];
             return self::ALREADY_PRESENT;
+        }
+        else
+        {
+            $user = new PendingUser();
+            $user->setEmail($google_user->email);
+            $user->setGivenName($google_user->givenName);
+            $user->setLastName($google_user->familyName);
+            $user->addLoginProvider('google.com');
+            $ret = $auth->activate_pending_user(false, $user);
+            if($ret === false)
+            {
+                 throw new \Exception('Unable to create user! '.$res);
+            }
+            return self::SUCCESS;
         }
     }
 

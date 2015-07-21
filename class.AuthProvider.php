@@ -334,6 +334,7 @@ class AuthProvider extends Singleton
                 $ret = $this->methods[$i]->activate_pending_user($user);
                 if($ret !== false)
                 {
+                    $this->impersonate_user($ret);
                     return true;
                 }
             }

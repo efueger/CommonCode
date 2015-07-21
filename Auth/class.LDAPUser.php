@@ -262,18 +262,29 @@ class LDAPUser extends User
 
     function addLoginProvider($provider)
     {
-        $obj = array('dn'=>$this->ldap_obj->dn);
-        if(isset($this->ldap_obj->host))
+        if(!is_object($this->ldap_obj))
         {
-            $obj['host'] = $this->ldap_obj->host;
-            $obj['host'][$obj['host']['count']] = $provider;
-            $obj['host']['count']++;
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['host'] = $provider;
         }
         else
         {
-            $obj['host'] = $provider;
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            if(isset($this->ldap_obj->host))
+            {
+                $obj['host'] = $this->ldap_obj->host;
+                $obj['host'][$obj['host']['count']] = $provider;
+                $obj['host']['count']++;
+            }
+            else
+            {
+                $obj['host'] = $provider;
+            }
+            return $this->server->update($obj);
         }
-        return $this->server->update($obj);
     }
 
     function setPass($password)
@@ -367,6 +378,25 @@ class LDAPUser extends User
             $obj = array('dn'=>$this->ldap_obj->dn);
             $obj['givenName'] = $name;
             $this->ldap_obj->givenname = array($name);
+            return $this->server->update($obj);
+        }
+    }
+
+    function setLastName($sn)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['sn'] = $sn;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj['sn'] = $sn;
+            $this->ldap_obj->sn = array($sn);
             return $this->server->update($obj);
         }
     }

@@ -18,10 +18,73 @@ class PendingUser extends User
         return false;
     }
 
+    public function getEmail()
+    {
+        if(isset($this->email))
+        {
+            return $this->email;
+        }
+        return parent::getEmail();
+    }
+
+    public function getGivenName()
+    {
+        if(isset($this->givenName))
+        {
+            return $this->givenName;
+        }
+        return parent::getGivenName();
+    }
+
+    public function getLastName()
+    {
+        if(isset($this->sn))
+        {
+            return $this->sn;
+        }
+        return parent::getLastName();
+    }
+
     //I need to be able to get the unhashed password so that I can let the current backend hash it
     public function getPassword()
     {
         return false;
+    }
+
+    function getLoginProviders()
+    {
+        if(isset($this->host))
+        {
+            return $this->host;
+        }
+        return parent::getLoginProviders();
+    }
+
+    function addLoginProvider($provider)
+    {
+        if(isset($this->host))
+        {
+            array_push($this->host, $provider);
+        }
+        else
+        {
+            $this->host = array($provider);
+        }
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    public function setGivenName($givenName)
+    {
+        $this->givenName = $givenName;
+    }
+
+    public function setLastName($sn)
+    {
+        $this->sn = $sn;
     }
 
     public function jsonSerialize()
@@ -52,6 +115,10 @@ class PendingUser extends User
                 Burning Flipside Technology Team'
                 );
         return $mail->send_HTML($mail_data);
+    }
+
+    public function delete()
+    {
     }
 }
 

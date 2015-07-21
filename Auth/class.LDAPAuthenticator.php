@@ -249,14 +249,43 @@ class LDAPAuthenticator extends Authenticator
         $this->get_and_bind_server(true);
         $new_user = new LDAPUser();
         $new_user->setUID($user->getUID());
-        $new_user->setEmail($user->getEmail());
-        $new_user->setPass($user->getPassword());
+        $email = $user->getEmail();
+        $new_user->setEmail($email);
+        $pass = $user->getPassword();
+        if($pass !== false)
+        {
+            $new_user->setPass($pass);
+        }
+        $sn = $user->getLastName();
+        if($sn !== false)
+        {
+            $new_user->setLastName($sn);
+        }
+        $givenName = $user->getGivenName();
+        if($givenName !== false)
+        {
+            $new_user->setGivenName($givenName);
+        }
+        $hosts = $user->getLoginProviders();
+        if($hosts !== false)
+        {
+            $count = count($hosts);
+            for($i = 0; $i < $count; $i++)
+            {
+                $new_user->addLoginProvider($hosts[$i]);
+            }
+        }
         $ret = $new_user->flushUser();
         if($ret)
         {
             $user->delete();
         }
-        return $ret;
+        $users = $this->get_users_by_filter(new \Data\Filter('mail eq '.$email));
+        if($users === false || !isset($users[0]))
+        {
+            throw new \Exception('Error creating user!');
+        }
+        return $users[0];
     }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */

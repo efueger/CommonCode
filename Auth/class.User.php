@@ -27,7 +27,7 @@ class User extends \SerializableObject
 
     function getUid()
     {
-        return false;
+        return $this->getEmail();
     }
 
     function getPhoto()
@@ -131,6 +131,18 @@ class User extends \SerializableObject
         throw new \Exception('Cannot add provider for this login type!');
     }
 
+    function canLoginWith($provider)
+    {
+        $hosts = $this->getLoginProviders();
+        if($hosts === false) return false;
+        $count = count($hosts);
+        for($i = 0; $i < $count; $i++)
+        {
+            if(strcasecmp($hosts[$i], $provider) === 0) return true;
+        }
+        return false;
+    }
+
     protected function setPass($password)
     {
         return false;
@@ -201,6 +213,41 @@ class User extends \SerializableObject
     }
 
     function setTitles($titles)
+    {
+        return false;
+    }
+
+    function setState($state)
+    {
+        return false;
+    }
+
+    function setCity($city)
+    {
+        return false;
+    }
+
+    function setLastName($sn)
+    {
+        return false;
+    }
+
+    function setNickName($displayName)
+    {
+        return $this->setUid($displayName);
+    }
+
+    function setAddress($address)
+    {
+        return false;
+    }
+
+    function setPostalCode($postalcode)
+    {
+        return false;
+    }
+
+    function setCountry($c)
     {
         return false;
     }
