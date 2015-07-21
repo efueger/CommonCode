@@ -321,7 +321,7 @@ class LDAPUser extends User
             throw new \Exception('data must be set for LDAPUser');
         }
         $filter = new \Data\Filter("uid eq $name");
-        $user = $data->read($this->server->user_base, $filter);
+        $user = $data->read($data->user_base, $filter);
         if($user === false || !isset($user[0]))
         {
             return false;
@@ -336,7 +336,7 @@ class LDAPUser extends User
             throw new \Exception('data must be set for LDAPUser');
         }
         $filter = new \Data\Filter("dn eq $dn");
-        $user = $data->read($this->server->user_base, $filter);
+        $user = $data->read($data->user_base, $filter);
         if($user === false || !isset($user[0]))
         {
             return false;
