@@ -28,7 +28,7 @@ class GoogleAuthenticator extends Authenticator
     public function get_supplement_link()
     {
         $auth_url = $this->client->createAuthUrl();
-        return '<a href="'.filter_var($auth_url, FILTER_SANITIZE_URL).'"><img src="//developers.google.com/+/images/branding/sign-in-buttons/Red-signin_Long_base_44dp.png" style="width: 16em;"/></a>';
+        return '<a href="'.filter_var($auth_url, FILTER_SANITIZE_URL).'"><img src="/img/common/google_sign_in.png" style="width: 16em;"/></a>';
     }
 
     public function authenticate($code, &$current_user = false)
