@@ -56,20 +56,7 @@ class FlipSession extends Singleton
     {
         if(isset($_SESSION['flipside_user']))
         {
-            if($fixServer)
-            {
-                $user = $_SESSION['flipside_user'];
-                if($user instanceof FlipsideLDAPUser)
-                {
-                    $server = new FlipsideLDAPServer();
-                    $user->resetServer($server);
-                }
-                return $user;
-            }
-            else
-            {
-                return $_SESSION['flipside_user'];
-            }
+            return $_SESSION['flipside_user'];
         }
         else if(isset($_SESSION['AuthMethod']) && isset($_SESSION['AuthData']))
         {
@@ -92,14 +79,12 @@ class FlipSession extends Singleton
         if(isset($_SESSION['flipside_user']))
         {
             $user = $_SESSION['flipside_user'];
-            $server = new FlipsideLDAPServer();
-            $user = $server->getUsers("(uid=".$user->uid[0].")");
-            $_SESSION['flipside_user'] = $user[0];
+            $user->refresh();
             return $user;
         }
         else
         {
-            return FALSE;
+            return false;
         }
     }
 
@@ -115,14 +100,7 @@ class FlipSession extends Singleton
 
     static function user_is_lead()
     {
-        $user = FlipSession::get_user();
-        if($user == FALSE)
-        {
-            return FALSE;
-        }
-        $server = new FlipsideLDAPServer();
-        $user->resetServer($server);
-        return $user->isAARMember() || $user->isAreaFacilitator() || $user->isLead();
+        return $user->isInGroupNamed('AAR') || $user->isInGroupNamed('AFs') || $user->isInGroupNamed('Leads');
     }
 
     static function get_uid_int()
