@@ -1,7 +1,7 @@
 <?php
 require_once('class.FlipSession.php');
 require_once('PHPExcel/PHPExcel.php');
-require_once('Slim/Slim.php');
+require_once('libs/Slim/Slim/Slim.php');
 require_once('Autoload.php');
 \Slim\Slim::registerAutoloader();
 

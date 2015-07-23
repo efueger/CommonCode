@@ -7,3 +7,6 @@
 [submodule "libs/browscap-php"]
 	path = libs/browscap-php
 	url = https://github.com/browscap/browscap-php.git
+[submodule "libs/Slim"]
+	path = libs/Slim
+	url = https://github.com/slimphp/Slim.git
