@@ -1,6 +1,5 @@
 <?php
 require_once('Autoload.php');
-require_once('class.FlipsideDB.php');
 if (!isset($_SESSION)) { session_start(); }
 if(!isset($_SESSION['ip_address']))
 {
@@ -101,36 +100,6 @@ class FlipSession extends Singleton
     static function user_is_lead()
     {
         return $user->isInGroupNamed('AAR') || $user->isInGroupNamed('AFs') || $user->isInGroupNamed('Leads');
-    }
-
-    static function get_uid_int()
-    {
-        if(isset($_SESSION['flipside_uid']))
-        {
-            return $_SESSION['flipside_uid'];
-        }
-        $user = FlipSession::get_user();
-        if($user == FALSE)
-        {
-            return FALSE;
-        }
-        $uid = FlipsideDB::select_field('rdn_uid', 'uid', 'uid', array('rdn'=>'=\''.$user->dn.'\''));
-        if($uid === FALSE)
-        {
-            FlipsideDB::write_to_db('rdn_uid', 'uid', array('rdn'=>$user->dn));
-            $uid = FlipsideDB::select_field('rdn_uid', 'uid', 'uid', array('rdn'=>'=\''.$user->dn.'\''));
-            if($uid === FALSE)
-            {
-                return FALSE;
-            }
-            $_SESSION['flipside_uid'] = $uid['uid'];
-            return $uid['uid'];
-        }
-        else
-        {
-            $_SESSION['flipside_uid'] = $uid['uid'];
-            return $uid['uid'];
-        }
     }
 
     static function get_user_email()
