@@ -133,7 +133,7 @@ class FlipAdminPage extends FlipPage
             $this->body = '
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">You must <a href="'.$this->login_url.'?return='.$this->current_url().'">log in <span class="glyphicon glyphicon-log-in"></span></a> to access the '.$title.' Admin system!</h1>
+                <h1 class="page-header">You must <a href="'.$this->login_url.'?return='.$this->current_url().'">log in <span class="glyphicon glyphicon-log-in"></span></a> to access the '.$this->title.' Admin system!</h1>
             </div>
         </div>';
         }
