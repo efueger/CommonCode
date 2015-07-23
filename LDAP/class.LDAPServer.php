@@ -160,14 +160,13 @@ class LDAPServer extends \Singleton
         return ldap_error($this->ds);
     }
 
-    private function _fix_object($object)
+    private function _fix_object($object, &$delete = false)
     {
         $entity = $object;
         if(!is_array($object))
         {
             $entity = $object->to_array();
         }
-        $entity = array_filter($entity);
         unset($entity['dn']);
         $keys = array_keys($entity);
         for($i = 0; $i < count($keys); $i++)
@@ -180,6 +179,11 @@ class LDAPServer extends \Singleton
                 {
                     $entity[$keys[$i]][$j] = $array[$j];
                 }
+            }
+            else if($delete !== false && $entity[$keys[$i]] === null)
+            {
+                $delete[$keys[$i]] = array();
+                unset($entity[$keys[$i]]);
             }
         }
         return $entity;
@@ -262,11 +266,16 @@ class LDAPServer extends \Singleton
     function update($object)
     {
         $dn = ldap_escape($object['dn'], true);
-        $entity = $this->_fix_object($object);
+        $delete = array();
+        $entity = $this->_fix_object($object, $delete);
         $ret = ldap_mod_replace($this->ds, $dn, $entity);
         if($ret === false)
         {
             throw new \Exception('Failed to update object with dn='.$dn);
+        }
+        if(!empty($delete))
+        {
+            $ret = ldap_mod_del($this->ds, $dn, $delete);
         }
         return $ret;
     }

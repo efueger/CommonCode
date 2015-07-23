@@ -102,5 +102,10 @@ class Authenticator
     {
         return false;
     }
+
+    public function get_user_by_reset_hash($hash)
+    {
+        return false;
+    }
 }
 ?>

@@ -346,6 +346,30 @@ class AuthProvider extends Singleton
             return $auth->activate_pending_user($user);
         }
     }
+
+    public function get_user_by_reset_hash($method_name, $hash)
+    {
+        if($method_name === false)
+        {
+            $count = count($this->methods);
+            for($i = 0; $i < $count; $i++)
+            {
+                if($this->methods[$i]->current === false) continue;
+
+                $ret = $this->methods[$i]->get_user_by_reset_hash($hash);
+                if($ret !== false)
+                {
+                    return $ret;
+                }
+            }
+            return false;
+        }
+        else
+        {
+            $auth = $this->getAuthenticator($method_name);
+            return $auth->get_user_by_reset_hash($hash);
+        }
+    }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>

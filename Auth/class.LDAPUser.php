@@ -301,6 +301,14 @@ class LDAPUser extends User
         {
             $obj = array('dn'=>$this->ldap_obj->dn);
             $obj['userPassword'] = '{SHA}'.base64_encode(pack('H*',sha1($password)));
+            if(isset($this->ldap_obj->uniqueidentifier))
+            {
+               $obj['uniqueIdentifier'] = null;
+            }
+            //Make sure we are bound in write mode
+            $auth = \AuthProvider::getInstance();
+            $ldap = $auth->getAuthenticator('Auth\LDAPAuthenticator');
+            $ldap->get_and_bind_server(true);
             return $this->server->update($obj);
         }
     }
@@ -308,6 +316,15 @@ class LDAPUser extends User
     function validate_password($password)
     {
         if($this->server->bind($this->ldap_obj->dn, $password))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    function validate_reset_hash($hash)
+    {
+        if(isset($this->ldap_obj->uniqueidentifier) && strcmp($this->ldap_obj->uniqueidentifier[0], $hash) === 0)
         {
             return true;
         }

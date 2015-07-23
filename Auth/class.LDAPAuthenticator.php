@@ -91,7 +91,7 @@ class LDAPAuthenticator extends Authenticator
         }
     }
 
-    private function get_and_bind_server($bind_write=false)
+    public function get_and_bind_server($bind_write=false)
     {
         $server = \LDAP\LDAPServer::getInstance();
         $server->user_base = $this->user_base;
@@ -284,6 +284,16 @@ class LDAPAuthenticator extends Authenticator
         if($users === false || !isset($users[0]))
         {
             throw new \Exception('Error creating user!');
+        }
+        return $users[0];
+    }
+
+    public function get_user_by_reset_hash($hash)
+    {
+        $users = $this->get_users_by_filter(new \Data\Filter("uniqueIdentifier eq $hash"));
+        if($users === false || !isset($users[0]))
+        {
+            return false;
         }
         return $users[0];
     }

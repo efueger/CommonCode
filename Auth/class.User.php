@@ -164,11 +164,20 @@ class User extends \SerializableObject
         return false;
     }
 
-    function change_pass($oldpass, $newpass)
+    function validate_reset_hash($hash)
     {
-        if($this->validate_password($oldpass) === false)
+        return false;
+    }
+
+    function change_pass($oldpass, $newpass, $is_hash=false)
+    {
+        if($is_hash === false && $this->validate_password($oldpass) === false)
         {
             throw new \Exception('Invalid Password!', 3);
+        }
+        if($is_hash === true && $this->validate_reset_hash($oldpass) === false)
+        {
+            throw new \Exception('Invalid Reset Hash!', 3);
         }
         if($this->setPass($newpass) === false)
         {
@@ -258,8 +267,10 @@ class User extends \SerializableObject
         {
             $this->change_pass($data->oldpass, $data->password);
         }
-        print_r($data);
-        die();
+        else if(isset($data->hash) && isset($data->password))
+        {
+            $this->change_pass($data->hash, $data->password, true);
+        }
     }
 
     public function jsonSerialize()
