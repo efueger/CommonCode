@@ -4,3 +4,6 @@
 [submodule "libs/google"]
 	path = libs/google
 	url = https://github.com/google/google-api-php-client.git
+[submodule "libs/browscap-php"]
+	path = libs/browscap-php
+	url = https://github.com/browscap/browscap-php.git

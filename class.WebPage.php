@@ -1,6 +1,6 @@
 <?php
 
-require('Browscap.php');
+require('libs/browscap-php/src/phpbrowscap/Browscap.php');
 use phpbrowscap\Browscap;
 
 class WebPage
