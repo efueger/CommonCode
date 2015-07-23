@@ -100,21 +100,23 @@ class PendingUser extends User
 
     public function sendEmail()
     {
-        $mail = new FlipsideMail();
-        //TODO read the mail text from a database like the ticket system
-        $mail_data = array(
-                'to'       => $_POST['email'],
-                'subject'  => 'Burning Flipside Registration',
-                'body'     => 'Thank you for signing up with Burning Flipside. Your registration is not complete until you follow the link below.<br/>
-                <a href="https://profiles.burningflipside.com/finish.php?hash='.$hash.'">Complete Registration</a><br/>
-                Thank you,<br/>
-                Burning Flipside Technology Team',
-                'alt_body' => 'Thank you for signing up with Burning Flipside. Your registration is not complete until you goto the address below.
-                https://profiles.burningflipside.com/finish.php?hash='.$hash.'
+        $email_msg = new \Email\Email();
+        $email_msg->addToAddress($this->getEmail());
+        $email_msg->setTextBody('Thank you for signing up with Burning Flipside. Your registration is not complete until you goto the address below.
+                https://profiles.burningflipside.com/finish.php?hash='.$this->getHash().'
                 Thank you,
-                Burning Flipside Technology Team'
-                );
-        return $mail->send_HTML($mail_data);
+                Burning Flipside Technology Team');
+        $email_msg->setHTMLBody('Thank you for signing up with Burning Flipside. Your registration is not complete until you follow the link below.<br/>
+                <a href="https://profiles.burningflipside.com/finish.php?hash='.$this->getHash().'">Complete Registration</a><br/>
+                Thank you,<br/>
+                Burning Flipside Technology Team');
+        $email_msg->setSubject('Burning Flipside Registration');
+        $email_provider = EmailProvider::getInstance();
+        if($email_provider->sendEmail(false, $email_msg) === false)
+        {
+            throw new \Exception('Unable to send email!');
+        }
+        return true;
     }
 
     public function delete()

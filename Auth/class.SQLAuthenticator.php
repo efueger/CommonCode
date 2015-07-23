@@ -319,6 +319,16 @@ class SQLAuthenticator extends Authenticator
         }
         return $ret;
     }
+
+    public function get_temp_user_by_hash($hash)
+    {
+        $users = $this->get_pending_users_by_filter(new \Data\Filter('hash eq '.$hash));
+        if($users === false || !isset($users[0]))
+        {
+            return false;
+        }
+        return $users[0];
+    }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>

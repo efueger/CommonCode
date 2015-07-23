@@ -107,5 +107,10 @@ class Authenticator
     {
         return false;
     }
+
+    public function get_temp_user_by_hash($hash)
+    {
+        return false;
+    }
 }
 ?>

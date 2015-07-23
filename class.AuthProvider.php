@@ -298,6 +298,30 @@ class AuthProvider extends Singleton
         }
     }
 
+    public function get_temp_user_by_hash($method_name, $hash)
+    {
+        if($method_name === false)
+        {
+            $count = count($this->methods);
+            for($i = 0; $i < $count; $i++)
+            {
+                if($this->methods[$i]->pending === false) continue;
+
+                $ret = $this->methods[$i]->get_temp_user_by_hash($hash);
+                if($ret !== false)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else
+        {
+            $auth = $this->getAuthenticator($method_name);
+            return $auth->get_temp_user_by_hash($hash);
+        }
+    }
+
     public function create_pending_user($method_name, $user)
     {
         if($method_name === false)
