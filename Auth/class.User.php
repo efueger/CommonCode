@@ -273,6 +273,11 @@ class User extends \SerializableObject
         }
     }
 
+    public function getPasswordResetHash()
+    {
+        return false;
+    }
+
     public function jsonSerialize()
     {
         $user = array();

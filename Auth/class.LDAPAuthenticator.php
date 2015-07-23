@@ -34,8 +34,8 @@ function swap(&$array, $i, $j)
 class LDAPAuthenticator extends Authenticator
 {
     private $host;
-    private $user_base;
-    private $group_base;
+    public  $user_base;
+    public  $group_base;
     private $bind_dn;
     private $bind_pass;
 

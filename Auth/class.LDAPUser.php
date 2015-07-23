@@ -493,6 +493,24 @@ class LDAPUser extends User
         $ret = $this->server->create($obj);
         return $ret;
     }
+
+    public function getPasswordResetHash()
+    {
+        //Make sure we are bound in write mode
+        $auth = \AuthProvider::getInstance();
+        $ldap = $auth->getAuthenticator('Auth\LDAPAuthenticator');
+        $ldap->get_and_bind_server(true);
+        $ldap_obj = $this->server->read($ldap->user_base, new \Data\Filter('uid eq '.$this->getUid()));
+        $ldap_obj = $ldap_obj[0];
+        $hash = hash('sha512', $ldap_obj->dn.';'.$ldap_obj->userpassword[0].';'.$ldap_obj->mail[0]);
+        $obj = array('dn'=>$this->ldap_obj->dn);
+        $obj['uniqueIdentifier'] = $hash;
+        if($this->server->update($obj) === false)
+        {
+            throw new \Exception('Unable to create hash in LDAP object!');
+        }
+        return $hash;
+    }
 }
 
 ?>
