@@ -1,6 +1,5 @@
 <?php
 require_once('class.FlipSession.php');
-require_once('PHPExcel/PHPExcel.php');
 require_once('libs/Slim/Slim/Slim.php');
 require_once('Autoload.php');
 \Slim\Slim::registerAutoloader();
@@ -152,11 +151,6 @@ class FlipRESTFormat extends \Slim\Middleware
         return ob_get_clean();
     }
 
-    private function create_xlsx(&$array)
-    {
-        $xlsx = new PHPExcel();
-    }
-
     private function create_xml(&$array, $path)
     {
         $obj = new SerializableObject($array);
@@ -219,14 +213,6 @@ class FlipRESTFormat extends \Slim\Middleware
                     $path = substr($path, 1);
                     $this->app->response->headers->set('Content-Disposition', 'attachment; filename='.$path.'.csv');
                     $text = $this->create_csv($data);
-                    break;
-                case 'xlsx':
-                    $this->app->response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                    $path = $this->app->request->getPathInfo();
-                    $path = strrchr($path, '/');
-                    $path = substr($path, 1);
-                    $this->app->response->headers->set('Content-Disposition', 'attachment; filename='.$path.'.xslx');
-                    $text = $this->create_xslx($data);
                     break;
                 case 'xml':
                     $this->app->response->headers->set('Content-Type', 'application/xml');
