@@ -287,6 +287,14 @@ class LDAPUser extends User
         }
     }
 
+    private function generateLDAPPass($pass)
+    {
+        mt_srand((double)microtime()*1000000);
+        $salt = pack("CCCC", mt_rand(), mt_rand(), mt_rand(), mt_rand());
+        $hash = base64_encode(pack('H*',sha1($pass.$salt)).$salt);
+        return '{SSHA}'.$hash;
+    }
+
     function setPass($password)
     {
         if(!is_object($this->ldap_obj))
@@ -295,12 +303,12 @@ class LDAPUser extends User
             {
                 $this->ldap_obj = array();
             }
-            $this->ldap_obj['userPassword'] = '{SHA}'.base64_encode(pack('H*',sha1($password)));
+            $this->ldap_obj['userPassword'] = $this->generateLDAPPass($password);
         }
         else
         {
             $obj = array('dn'=>$this->ldap_obj->dn);
-            $obj['userPassword'] = '{SHA}'.base64_encode(pack('H*',sha1($password)));
+            $obj['userPassword'] = $this->generateLDAPPass($password);
             if(isset($this->ldap_obj->uniqueidentifier))
             {
                $obj['uniqueIdentifier'] = null;
