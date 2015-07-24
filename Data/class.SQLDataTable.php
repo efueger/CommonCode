@@ -101,5 +101,15 @@ class SQLDataTable extends DataTable
     {
         return $this->dataset->create($this->tablename, $data);
     }
+
+    function delete($filter)
+    {
+        $where = false;
+        if($filter !== false)
+        {
+            $where = $filter->to_sql_string();
+        }
+        return $this->dataset->delete($this->tablename, $where);
+    }
 }
 ?>

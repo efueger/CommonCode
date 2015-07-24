@@ -191,6 +191,16 @@ class SQLDataSet extends DataSet
         return true;
     }
 
+    function delete($tablename, $where)
+    {
+        $sql = "DELETE FROM $tablename WHERE $where";
+        if($this->pdo->exec($sql) === false)
+        {
+            return false;
+        }
+        return true;
+    }
+
     function raw_query($sql)
     {
         $stmt = $this->pdo->query($sql, \PDO::FETCH_ASSOC);
