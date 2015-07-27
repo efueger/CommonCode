@@ -177,7 +177,10 @@ class LDAPServer extends \Singleton
                 unset($entity[$keys[$i]]);
                 for($j = 0; $j < count($array); $j++)
                 {
-                    $entity[$keys[$i]][$j] = $array[$j];
+                    if(isset($array[$j]))
+                    {
+                        $entity[$keys[$i]][$j] = $array[$j];
+                    }
                 }
             }
             else if($delete !== false && $entity[$keys[$i]] === null)
