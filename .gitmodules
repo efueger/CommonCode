@@ -10,3 +10,9 @@
 [submodule "libs/Slim"]
 	path = libs/Slim
 	url = https://github.com/slimphp/Slim.git
+[submodule "libs/twitter"]
+	path = libs/twitter
+	url = https://github.com/abraham/twitteroauth.git
+[submodule "libs/httpful"]
+	path = libs/httpful
+	url = https://github.com/nategood/httpful.git
