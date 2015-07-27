@@ -394,6 +394,21 @@ class AuthProvider extends Singleton
             return $auth->get_user_by_reset_hash($hash);
         }
     }
+
+    public function getSuplementalProviderByHost($host)
+    {
+        $count = count($this->methods);
+        for($i = 0; $i < $count; $i++)
+        {
+            if($this->methods[$i]->supplement === false) continue;
+
+            if($this->methods[$i]->getHostName() === $host)
+            {
+                return $this->methods[$i];
+            }
+        }
+        return false;
+    }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>

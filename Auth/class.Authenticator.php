@@ -112,5 +112,10 @@ class Authenticator
     {
         return false;
     }
+
+    public function getHostName()
+    {
+        return false;
+    }
 }
 ?>
