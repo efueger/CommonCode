@@ -608,6 +608,10 @@ class FlipPage extends WebPage
         {
             $auth_links_str .= $auth_links[$i];
         }
+        if($count > 0)
+        {
+            $auth_links_str = 'Sign in with '.$auth_links_str;
+        }
         $this->body .= '<div class="modal fade" role="dialog" id="login-dialog" title="Login" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
