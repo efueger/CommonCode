@@ -260,10 +260,10 @@ class FlipREST extends \Slim\Slim
         return $this->post($uri, $handler);
     }
 
-    function get_json_body()
+    function get_json_body($array=false)
     {
         $body = $this->request->getBody();
-        return json_decode($body);
+        return json_decode($body, $array);
     }
 
     function error_handler($e)
