@@ -3,8 +3,8 @@ namespace Data;
 
 class Filter
 {
-    private $children = array();
-    private $string;
+    protected $children = array();
+    protected $string;
 
     function __construct($string = false)
     {
@@ -195,6 +195,19 @@ class Filter
     public function contains($substr)
     {
         return strstr($this->string, $substr) !== false;
+    }
+
+    public function getClause($substr)
+    {
+        $count = count($this->children);
+        for($i = 0; $i < $count; $i++)
+        {
+            if(strstr($this->children[$i]->var1, $substr) !== false ||
+               strstr($this->children[$i]->var2, $substr) !== false)
+            {
+                return $this->children[$i];
+            }
+        }
     }
 }
 ?>
