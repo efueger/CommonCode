@@ -17,59 +17,24 @@ class Filter
 
     static public function process_string($string)
     {
-        $and = strstr($string, ' and ');
-        $or  = strstr($string, ' or ');
-        if($and === false && $or === false)
+        $parens = false;
+        //First check for parenthesis...
+        if($string[0] === '(' && substr($string, -1) === ')')
+        {
+            $string = substr($string, 1, strlen($string)-2);
+            $parens = true;
+        }
+        if(preg_match('/(.+)( and | or )(.+)/', $string, $clauses) === 0)
         {
             return array(new FilterClause($string));
         }
-        else if($and !== false)
-        {
-            $and_pos  = strpos($string, $and);
-            $first    = substr($string, 0, $and_pos);
-            $second   = substr($string, $and_pos+5);
-            $children = array();
-            array_push($children, new FilterClause($first));
-            array_push($children, 'and');
-            $children = array_merge($children, self::process_string($second));
-            return $children;
-        }
-        else if($or !== false)
-        {
-            $or_pos   = strpos($string, $or);
-            $first    = substr($string, 0, $or_pos);
-            $second   = substr($string, $or_pos+4);
-            $children = array();
-            array_push($children, new FilterClause($first));
-            array_push($children, 'or');
-            $children = array_merge($children, self::process_string($second));
-            return $children;
-        }
-        else
-        {
-            $and_pos = strpos($string, $and);
-            $or_pos  = strpos($string, $or);
-            if($and_pos < $or_pos)
-            {
-                $first    = substr($string, 0, $and_pos);
-                $second   = substr($string, $and_pos+5);
-                $children = array();
-                array_push($children, new FilterClause($first));
-                array_push($children, 'and');
-                $children = array_merge($children, self::process_string($second));
-                return $children;
-            }
-            else
-            {
-                $first    = substr($string, 0, $or_pos);
-                $second   = substr($string, $or_pos+4);
-                $children = array();
-                array_push($children, new FilterClause($first));
-                array_push($children, 'or');
-                $children = array_merge($children, self::process_string($second));
-                return $children;
-            }
-        }
+        $children = array();
+        if($parens) array_push($children, '(');
+        $children = array_merge($children, self::process_string($clauses[1]));
+        array_push($children, trim($clauses[2]));
+        $children = array_merge($children, self::process_string($clauses[3]));
+        if($parens) array_push($children, ')');
+        return $children;
     }
 
     function to_sql_string()
@@ -78,7 +43,11 @@ class Filter
         $count = count($this->children);
         for($i = 0; $i < $count; $i++)
         {
-            if($this->children[$i] === 'and')
+            if($this->children[$i] === '(' || $this->children[$i] === ')')
+            {
+                $ret.=$this->children[$i];
+            }
+            else if($this->children[$i] === 'and')
             {
                 $ret.=' AND ';
             }
