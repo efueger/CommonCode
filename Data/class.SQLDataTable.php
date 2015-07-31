@@ -111,5 +111,10 @@ class SQLDataTable extends DataTable
         }
         return $this->dataset->delete($this->tablename, $where);
     }
+
+    function raw_query($sql)
+    {
+        return $this->dataset->raw_query($sql);
+    }
 }
 ?>
