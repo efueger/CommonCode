@@ -7,9 +7,9 @@ class FilterClause
     public $var2;
     public $op;
 
-    function __construct($string)
+    function __construct($string=false)
     {
-        $this->process_filter_string($string);
+        if($string !== false) $this->process_filter_string($string);
     }
 
     static function str_startswith($haystack, $needle)
