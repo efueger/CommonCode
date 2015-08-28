@@ -33,12 +33,12 @@ class FlipAdminPage extends FlipPage
     {
         if($this->user === false || $this->user === null)
         {
-            $this->add_link('<span class="glyphicon glyphicon-log-in"></span> Login', $this->login_url);
+            $this->add_link('<i class="fa fa-sign-in"></i> Login', $this->login_url);
         }
         else
         {
             $this->add_links();
-            $this->add_link('<span class="glyphicon glyphicon-log-out"></span> Logout', $this->logout_url);
+            $this->add_link('<i class="fa fa-sign-out"></i> Logout', $this->logout_url);
         }
     }
 
@@ -58,11 +58,11 @@ class FlipAdminPage extends FlipPage
                 $side_nav .= '<li>';
                 if(isset($this->links[$link_name]['_']))
                 {
-                    $side_nav .= $this->create_link($link_name.' <span class="glyphicon arrow"></span>', $this->links[$link_name]['_']);
+                    $side_nav .= $this->create_link($link_name.' <i class="fa fa-arrow-right"></i>', $this->links[$link_name]['_']);
                 }
                 else
                 {
-                    $side_nav .= $this->create_link($link_name.' <span class="glyphicon arrow"></span>');
+                    $side_nav .= $this->create_link($link_name.' <i class="fa fa-arrow-right"></i>');
                 }
                 $side_nav .= '<ul>';
                 $sub_names = array_keys($this->links[$link_name]);
