@@ -83,11 +83,11 @@ class FlipAdminPage extends FlipPage
         }
         if($this->user === false || $this->user === null)
         {
-            $log = '<a href="https://profiles.burningflipside.com/login.php?return='.$this->current_url().'"><span class="glyphicon glyphicon-log-in"></span></a>';
+            $log = '<a href="https://profiles.burningflipside.com/login.php?return='.$this->current_url().'"><i class="fa fa-sign-in"></i></a>';
         }
         else
         {
-            $log = '<a href="https://profiles.burningflipside.com/logout.php"><span class="glyphicon glyphicon-log-out"></span></a>';
+            $log = '<a href="https://profiles.burningflipside.com/logout.php"><i class="fa fa-sign-out"></i></a>';
         }
         $this->body = '<div id="wrapper">
                   <nav class="navbar navbar-default navbar-static-top" role=navigation" style="margin-bottom: 0">
@@ -102,12 +102,12 @@ class FlipAdminPage extends FlipPage
                       </div>
                       <ul class="nav navbar-top-links navbar-right">
                           <a href="..">
-                              <span class="glyphicon glyphicon-home"></span>
+                              <i class="fa fa-home"></i>
                           </a>
                           &nbsp;&nbsp;'.$log.'
                           <li class="dropdown">
                               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                  <span class="glyphicon glyphicon-link"></span>
+                                  <i class="fa fa-link"></i>
                                   <b class="caret"></b>
                               </a>
                               <ul class="dropdown-menu dropdown-sites">

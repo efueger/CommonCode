@@ -26,6 +26,7 @@ define('CSS_BOOTSTRAP_FH', 2);
 define('CSS_BOOTSTRAP_SW', 3);
 define('CSS_DATATABLE',    4);
 define('CSS_JCROP',        5);
+define('CSS_FONTAWESOME',  6);
 
 $js_array = array(
      JS_JQUERY => array(
@@ -260,6 +261,16 @@ $css_array = array(
             'no'  => '//cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.12/css/jquery.Jcrop.min.css',
             'min' => '//cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.12/css/jquery.Jcrop.min.css'
         ) 
+    ),
+    CSS_FONTAWESOME => array(
+        'no'  => array(
+            'no'  => '/css/common/font-awesome.min.css',
+            'min' => '/css/common/font-awesome.min.css'
+        ),
+        'cdn' => array(
+            'no'  => '//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css',
+            'min' => '//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css'
+        )
     )
 );
 
@@ -416,6 +427,7 @@ class FlipPage extends WebPage
     {
         $this->add_js(JS_BOOTSTRAP, false);
         $this->add_css(CSS_BOOTSTRAP);
+        $this->add_css(CSS_FONTAWESOME);
     }
 
     function add_header()
