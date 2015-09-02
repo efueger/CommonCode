@@ -4,10 +4,18 @@ namespace Data;
 class MongoDataTable extends DataTable
 {
     protected $collection;
+    protected $namespace;
 
-    function __construct($collection)
+    function __construct($collection, $collection_name=false)
     {
-        $this->collection = $collection;
+        if($collection_name !== false)
+        {
+            $this->namespace = $collection.'.'.$collection_name;
+        }
+        else
+        {
+            $this->collection = $collection;
+        }
     }
 
     function count($filter=false)
@@ -15,12 +23,19 @@ class MongoDataTable extends DataTable
         $criteria = array();
         if($filter !== false)
         {
-            $criteria = $filter->to_mongo_filter();
+            if($filter instanceof Data\Filter)
+            {
+                $criteria = $filter->to_mongo_filter();
+            }
+            else
+            {
+                $criteria = $filter;
+            }
         }
         return $this->collection->count($criteria);
     }
 
-    function search($filter=false, $select=false, $count=false, $skip=false, $sort=false, $params)
+    function search($filter=false, $select=false, $count=false, $skip=false, $sort=false, $params=false)
     {
         $fields   = array();
         $criteria = array();

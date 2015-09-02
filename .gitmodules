@@ -16,3 +16,6 @@
 [submodule "libs/httpful"]
 	path = libs/httpful
 	url = https://github.com/nategood/httpful.git
+[submodule "libs/mongofill"]
+	path = libs/mongofill
+	url = https://github.com/mongofill/mongofill.git
