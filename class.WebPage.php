@@ -135,7 +135,7 @@ class WebPage
 
     function print_ie_compatability($prefix='')
     {
-       //IE 7 doesn't support HTML 5. Install the shim...
+       //IE 8 doesn't support HTML 5. Install the shim...
        if($this->get_browser_major_ver() < 9)
        {
            echo $prefix.'<script src="js/html5.js"></script>';
