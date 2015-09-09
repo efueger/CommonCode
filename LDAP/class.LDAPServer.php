@@ -215,6 +215,7 @@ class LDAPServer extends \Singleton
         {
             throw new \Exception('Not connected');
         }
+        $sr = false;
         try
         {
             $sr = @ldap_list($this->ds, $base_dn, $filter_str);
