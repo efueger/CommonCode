@@ -43,7 +43,7 @@ class FlipSession extends Singleton
         else if(isset($_SESSION['AuthMethod']) && isset($_SESSION['AuthData']))
         {
             $auth = AuthProvider::getInstance();
-            return $auth->is_logged_in($_SESSION['AuthMethod'], $_SESSION['AuthData']);
+            return $auth->isLoggedIn($_SESSION['AuthData'], $_SESSION['AuthMethod']);
         }
         else
         {
@@ -60,7 +60,7 @@ class FlipSession extends Singleton
         else if(isset($_SESSION['AuthMethod']) && isset($_SESSION['AuthData']))
         {
             $auth = AuthProvider::getInstance();
-            $user = $auth->get_user($_SESSION['AuthMethod'], $_SESSION['AuthData']);
+            $user = $auth->getUser($_SESSION['AuthData'], $_SESSION['AuthMethod']);
             if($user !== null)
             {
                 $_SESSION['flipside_user'] = $user;

@@ -45,7 +45,7 @@ class OAuth2Auth extends \Slim\Middleware
                 {
                     $data = substr($this->headers['Authorization'], 6);
                     $userpass = explode(':', base64_decode($data));
-                    $this->app->user = $auth->get_user_by_login($userpass[0], $userpass[1]);
+                    $this->app->user = $auth->getUserByLogin($userpass[0], $userpass[1]);
                 }
                 else
                 {
@@ -172,10 +172,20 @@ class FlipRESTFormat extends \Slim\Middleware
         if($fmt === null && isset($params['$format']))
         {
             $fmt = $params['$format'];
+            if(strstr($fmt, 'odata.streaming=true'))
+            {
+                $this->app->response->setStatus(406);
+                return;
+            }
         }
         if($fmt === null)
         {
             $mime_type = $this->app->request->headers->get('Accept');
+            if(strstr($mime_type, 'odata.streaming=true'))
+            {
+                $this->app->response->setStatus(406);
+                return;
+            }
             switch($mime_type)
             {
                 case 'text/csv':
@@ -232,7 +242,7 @@ class FlipRESTFormat extends \Slim\Middleware
         }
         else if($this->app->response->getStatus() == 200)
         {
-            $this->app->response->headers->set('Content-Type', 'application/json');
+            $this->app->response->headers->set('Content-Type', 'application/json;odata.metadata=none');
         }
     }
 }
