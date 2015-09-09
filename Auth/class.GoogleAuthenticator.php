@@ -27,41 +27,41 @@ class GoogleAuthenticator extends Authenticator
 
     public function getSupplementLink()
     {
-        $auth_url = $this->client->createAuthUrl();
-        return '<a href="'.filter_var($auth_url, FILTER_SANITIZE_URL).'"><img src="/img/common/google_sign_in.png" style="width: 2em;"/></a>';
+        $authUrl = $this->client->createAuthUrl();
+        return '<a href="'.filter_var($authUrl, FILTER_SANITIZE_URL).'"><img src="/img/common/google_sign_in.png" style="width: 2em;"/></a>';
     }
 
-    public function authenticate($code, &$current_user = false)
+    public function authenticate($code, &$currentUser = false)
     {
-        $google_user = false;
+        $googleUser = false;
         try{
             $this->client->authenticate($code);
             $this->token = $this->client->getAccessToken();
             \FlipSession::setVar('GoogleToken', $this->token);
-            $oauth2_service = new \Google_Service_Oauth2($this->client);
-            $google_user = $oauth2_service->userinfo->get();
+            $oauth2Service = new \Google_Service_Oauth2($this->client);
+            $googleUser = $oauth2Service->userinfo->get();
         } catch(\Exception $ex) {
             return self::LOGIN_FAILED;
         }
 
         $auth = \AuthProvider::getInstance();
-        $local_users = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$google_user->email));
-        if($local_users !== false && isset($local_users[0]))
+        $localUsers = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$googleUser->email));
+        if($localUsers !== false && isset($localUsers[0]))
         {
-            if($local_users[0]->canLoginWith('google.com'))
+            if($localUsers[0]->canLoginWith('google.com'))
             {
-                $auth->impersonate_user($local_users[0]);
+                $auth->impersonate_user($localUsers[0]);
                 return self::SUCCESS;
             }
-            $current_user = $local_users[0];
+            $currentUser = $localUsers[0];
             return self::ALREADY_PRESENT;
         }
         else
         {
             $user = new PendingUser();
-            $user->setEmail($google_user->email);
-            $user->setGivenName($google_user->givenName);
-            $user->setLastName($google_user->familyName);
+            $user->setEmail($googleUser->email);
+            $user->setGivenName($googleUser->givenName);
+            $user->setLastName($googleUser->familyName);
             $user->addLoginProvider('google.com');
             $ret = $auth->activatePendingUser($user);
             if($ret === false)
@@ -80,15 +80,15 @@ class GoogleAuthenticator extends Authenticator
         }
         try {
             $this->client->setAccessToken($data);
-            $oauth2_service = new \Google_Service_Oauth2($this->client);
-            $google_user = $oauth2_service->userinfo->get();
-            $profile_user = array();
-            $profile_user['mail'] = $google_user->email;
-            $profile_user['sn'] = $google_user->familyName;
-            $profile_user['givenName'] = $google_user->givenName;
-            $profile_user['displayName'] = $google_user->name;
-            $profile_user['jpegPhoto'] = base64_encode(file_get_contents($google_user->picture));
-            return $profile_user;
+            $oauth2Service = new \Google_Service_Oauth2($this->client);
+            $googleUser = $oauth2Service->userinfo->get();
+            $profileUser = array();
+            $profileUser['mail'] = $googleUser->email;
+            $profileUser['sn'] = $googleUser->familyName;
+            $profileUser['givenName'] = $googleUser->givenName;
+            $profileUser['displayName'] = $googleUser->name;
+            $profileUser['jpegPhoto'] = base64_encode(file_get_contents($googleUser->picture));
+            return $profileUser;
         } catch(\Exception $e)
         {
             return false;
