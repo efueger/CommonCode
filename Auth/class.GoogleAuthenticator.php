@@ -25,7 +25,7 @@ class GoogleAuthenticator extends Authenticator
         $this->client->setRedirectUri($params['redirect_url']);
     }
 
-    public function get_supplement_link()
+    public function getSupplementLink()
     {
         $auth_url = $this->client->createAuthUrl();
         return '<a href="'.filter_var($auth_url, FILTER_SANITIZE_URL).'"><img src="/img/common/google_sign_in.png" style="width: 2em;"/></a>';
@@ -45,7 +45,7 @@ class GoogleAuthenticator extends Authenticator
         }
 
         $auth = \AuthProvider::getInstance();
-        $local_users = $auth->get_users_by_filter(false, new \Data\Filter('mail eq '.$google_user->email));
+        $local_users = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$google_user->email));
         if($local_users !== false && isset($local_users[0]))
         {
             if($local_users[0]->canLoginWith('google.com'))
@@ -63,7 +63,7 @@ class GoogleAuthenticator extends Authenticator
             $user->setGivenName($google_user->givenName);
             $user->setLastName($google_user->familyName);
             $user->addLoginProvider('google.com');
-            $ret = $auth->activate_pending_user(false, $user);
+            $ret = $auth->activatePendingUser($user);
             if($ret === false)
             {
                  throw new \Exception('Unable to create user! '.$res);
@@ -72,7 +72,7 @@ class GoogleAuthenticator extends Authenticator
         }
     }
 
-    public function get_user($data = false)
+    public function getUser($data = false)
     {
         if($data === false)
         {

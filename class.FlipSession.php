@@ -119,17 +119,17 @@ class FlipSession extends Singleton
         {
             return $_SESSION['flipside_email'];
         }
-        $user = FlipSession::get_user(TRUE);
-        if($user == FALSE)
+        $user = FlipSession::getUser();
+        if($user === false || $user === null)
         {
-            return FALSE;
+            return false;
         }
         if(isset($user->mail) && isset($user->mail[0]))
         {
             $_SESSION['flipside_email'] = $user->mail[0];
             return $_SESSION['flipside_email'];
         }
-        return FALSE;
+        return false;
     }
 
     /**

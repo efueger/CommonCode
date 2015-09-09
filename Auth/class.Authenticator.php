@@ -23,44 +23,44 @@ class Authenticator
         return false;
     }
 
-    public function is_logged_in($data)
+    public function isLoggedIn($data)
     {
         return false;
     }
 
-    public function get_user($data)
+    public function getUser($data)
     {
         return null;
     }
 
-    public function get_group_by_name($name)
+    public function getGroupByName($name)
     {
         return null;
     }
 
-    public function get_user_by_name($name)
+    public function getUserByName($name)
     {
         return null;
     }
 
-    public function get_groups_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+    public function getGroupsByFilter($filter, $select=false, $top=false, $skip=false, $orderby=false)
     {
         return false;
     }
 
-    public function get_users_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+    public function getUsersByFilter($filter, $select=false, $top=false, $skip=false, $orderby=false)
     {
         return false;
     }
 
-    public function get_pending_users_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+    public function getPendingUsersByFilter($filter, $select=false, $top=false, $skip=false, $orderby=false)
     {
         return false;
     }
 
-    public function get_active_user_count()
+    public function getActiveUserCount()
     {
-        $users = $this->get_users_by_filter(false);
+        $users = $this->getUsersByFilter(false);
         if($users === false)
         {
             return 0;
@@ -68,9 +68,9 @@ class Authenticator
         return count($users);
     }
 
-    public function get_pending_user_count()
+    public function getPendingUserCount()
     {
-        $users = $this->get_pending_users_by_filter(false);
+        $users = $this->getPendingUsersByFilter(false);
         if($users === false)
         {
             return 0;
@@ -78,9 +78,9 @@ class Authenticator
         return count($users);
     }
 
-    public function get_group_count()
+    public function getGroupCount()
     {
-        $groups = $this->get_groups_by_filter(false);
+        $groups = $this->getGroupsByFilter(false);
         if($groups === false)
         {
             return 0;
@@ -88,27 +88,27 @@ class Authenticator
         return count($groups);
     }
 
-    public function get_supplement_link()
+    public function getSupplementLink()
     {
         return false;
     }
 
-    public function create_pending_user($user)
+    public function createPendingUser($user)
     {
         return false;
     }
 
-    public function activate_pending_user($user)
+    public function activatePendingUser($user)
     {
         return false;
     }
 
-    public function get_user_by_reset_hash($hash)
+    public function getUserByResetHash($hash)
     {
         return false;
     }
 
-    public function get_temp_user_by_hash($hash)
+    public function getTempUserByHash($hash)
     {
         return false;
     }

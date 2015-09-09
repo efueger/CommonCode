@@ -32,7 +32,7 @@ class OAuthAuthenticator extends Authenticator
         }
     }
 
-    public function is_logged_in($data)
+    public function isLoggedIn($data)
     {
         if(isset($data['extended']->access_token))
         {
@@ -41,19 +41,19 @@ class OAuthAuthenticator extends Authenticator
         return false;
     }
 
-    public function get_user($data)
+    public function getUser($data)
     {
         $access_token = $data['extended']->access_token;
         return new ApiUser($access_token, 'https://profiles.burningflipside.com/api/v1');
     }
 
-    public function get_group_by_name($name)
+    public function getGroupByName($name)
     {
         $access_token = $data['extended']->access_token;
         return new APIGroup($name, $access_token, 'https://profiles.burningflipside.com/api/v1');
     }
 
-    public function get_user_by_name($name)
+    public function getUserByName($name)
     {
         $access_token = $data['extended']->access_token;
         return new APIUser($access_token, 'https://profiles.burningflipside.com/api/v1', $name);

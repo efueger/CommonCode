@@ -8,7 +8,7 @@ class NullAuthenticator extends Authenticator
         return array('res'=>true, 'extended'=>null);
     }
 
-    public function is_logged_in($data)
+    public function isLoggedIn($data)
     {
         if(isset($data['res']))
         {
@@ -17,7 +17,7 @@ class NullAuthenticator extends Authenticator
         return false;
     }
 
-    public function get_user($data)
+    public function getUser($data)
     {
         return null;
     }

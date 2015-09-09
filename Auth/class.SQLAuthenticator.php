@@ -166,7 +166,7 @@ class SQLAuthenticator extends Authenticator
         return false;
     }
 
-    public function is_logged_in($data)
+    public function isLoggedIn($data)
     {
         if(isset($data['res']))
         {
@@ -175,12 +175,12 @@ class SQLAuthenticator extends Authenticator
         return false;
     }
 
-    public function get_user($data)
+    public function getUser($data)
     {
         return new SQLUser($data);
     }
 
-    public function get_group_by_name($name)
+    public function getGroupByName($name)
     {
         $group_data_table = $this->get_data_table('group');
         $filter = new \Data\Filter("gid eq '$name'");
@@ -192,7 +192,7 @@ class SQLAuthenticator extends Authenticator
         return new SQLGroup($groups[0]);
     }
 
-    public function get_user_by_name($name)
+    public function getUserByName($name)
     {
         $user_data_table = $this->get_data_table('user');
         $filter = new \Data\Filter("uid eq '$username'");
@@ -204,7 +204,7 @@ class SQLAuthenticator extends Authenticator
         return new SQLUser($users[0]);
     }
 
-    public function get_groups_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+    public function getGroupsByFilter($filter, $select=false, $top=false, $skip=false, $orderby=false)
     {
         $group_data_table = $this->get_data_table('group');
         $groups = $group_data_table->read($filter, $select, $top, $skip, $orderby);
@@ -220,7 +220,7 @@ class SQLAuthenticator extends Authenticator
         return $groups;
     }
 
-    public function get_users_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+    public function getUsersByFilter($filter, $select=false, $top=false, $skip=false, $orderby=false)
     {
         $user_data_table = $this->get_data_table('user');
         $users = $user_data_table->read($filter, $select, $top, $skip, $orderby);
@@ -236,7 +236,7 @@ class SQLAuthenticator extends Authenticator
         return $users;
     }
 
-    public function get_pending_user_count()
+    public function getPendingUserCount()
     {
         if($this->pending === false) return 0;
         $data_table = $this->get_pending_user_data_table();
@@ -275,7 +275,8 @@ class SQLAuthenticator extends Authenticator
         return $ret;
     }
 
-    public function get_pending_users_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+    public function getPendingUsersByFilter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+
     {
         if($this->pending === false) return false;
         if($filter !== false && !$filter->contains('hash'))
@@ -296,7 +297,7 @@ class SQLAuthenticator extends Authenticator
         return $users;
     }
 
-    public function create_pending_user($user)
+    public function createPendingUser($user)
     {
         if($this->pending === false) return false;
         $user_data_table = $this->get_pending_user_data_table();
@@ -310,7 +311,7 @@ class SQLAuthenticator extends Authenticator
         $ret = $user_data_table->create($array);
         if($ret !== false)
         {
-            $users = $this->get_pending_users_by_filter(new \Data\Filter("hash eq '$hash'"));
+            $users = $this->getPendingUsersByFilter(new \Data\Filter("hash eq '$hash'"));
             if($users === false || !isset($users[0]))
             {
                 throw new \Exception('Error retreiving user object after successful create!');
@@ -320,9 +321,9 @@ class SQLAuthenticator extends Authenticator
         return $ret;
     }
 
-    public function get_temp_user_by_hash($hash)
+    public function getTempUserByHash($hash)
     {
-        $users = $this->get_pending_users_by_filter(new \Data\Filter('hash eq '.$hash));
+        $users = $this->getPendingUsersByFilter(new \Data\Filter('hash eq '.$hash));
         if($users === false || !isset($users[0]))
         {
             return false;

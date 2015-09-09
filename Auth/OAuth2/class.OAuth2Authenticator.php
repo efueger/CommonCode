@@ -19,7 +19,7 @@ abstract class OAuth2Authenticator extends \Auth\Authenticator
         }
     }
 
-    public function get_supplement_link()
+    public function getSupplementLink()
     {
         $auth_url = $this->getAuthorizationUrl();
         return '<a href="'.filter_var($auth_url, FILTER_SANITIZE_URL).'"><img src="'.$this->getSignInImg().'" style="width: 2em;"/></a>';
@@ -53,7 +53,7 @@ abstract class OAuth2Authenticator extends \Auth\Authenticator
             return self::LOGIN_FAILED;
         }
         $auth = \AuthProvider::getInstance();
-        $local_users = $auth->get_users_by_filter(false, new \Data\Filter('mail eq '.$user->getEmail()));
+        $local_users = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$user->getEmail()));
         if($local_users !== false && isset($local_users[0]))
         {
             if($local_users[0]->canLoginWith($this->getHostName()))
@@ -64,7 +64,7 @@ abstract class OAuth2Authenticator extends \Auth\Authenticator
             $current_user = $local_users[0];
             return self::ALREADY_PRESENT;
         }
-        $ret = $auth->activate_pending_user(false, $user);
+        $ret = $auth->activatePendingUser($user);
         if($ret === false)
         {
             throw new \Exception('Unable to create user! '.$res);

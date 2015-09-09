@@ -135,7 +135,7 @@ class LDAPAuthenticator extends Authenticator
         return false;
     }
 
-    public function is_logged_in($data)
+    public function isLoggedIn($data)
     {
         if(isset($data['res']))
         {
@@ -144,12 +144,12 @@ class LDAPAuthenticator extends Authenticator
         return false;
     }
 
-    public function get_user($data)
+    public function getUser($data)
     {
         return new LDAPUser($data);
     }
 
-    public function get_group_by_name($name)
+    public function getGroupByName($name)
     {
         $server = $this->get_and_bind_server();
         if($server === false)
@@ -159,7 +159,7 @@ class LDAPAuthenticator extends Authenticator
         return LDAPGroup::from_name($name, $server);
     }
 
-    public function get_groups_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+    public function getGroupsByFilter($filter, $select=false, $top=false, $skip=false, $orderby=false)
     {
         $server = $this->get_and_bind_server();
         if($server === false)
@@ -183,7 +183,7 @@ class LDAPAuthenticator extends Authenticator
         return $groups;
     }
 
-    public function get_active_user_count()
+    public function getActiveUserCount()
     {
         $server = $this->get_and_bind_server();
         if($server === false)
@@ -193,7 +193,7 @@ class LDAPAuthenticator extends Authenticator
         return $server->count($this->user_base);
     }
 
-    public function get_users_by_filter($filter, $select=false, $top=false, $skip=false, $orderby=false)
+    public function getUsersByFilter($filter, $select=false, $top=false, $skip=false, $orderby=false)
     {
         $server = $this->get_and_bind_server();
         if($server === false)
@@ -244,7 +244,7 @@ class LDAPAuthenticator extends Authenticator
         return $users;
     }
 
-    public function activate_pending_user($user)
+    public function activatePendingUser($user)
     {
         $this->get_and_bind_server(true);
         $new_user = new LDAPUser();
@@ -280,7 +280,7 @@ class LDAPAuthenticator extends Authenticator
         {
             $user->delete();
         }
-        $users = $this->get_users_by_filter(new \Data\Filter('mail eq '.$email));
+        $users = $this->getUsersByFilter(new \Data\Filter('mail eq '.$email));
         if($users === false || !isset($users[0]))
         {
             throw new \Exception('Error creating user!');
@@ -288,9 +288,9 @@ class LDAPAuthenticator extends Authenticator
         return $users[0];
     }
 
-    public function get_user_by_reset_hash($hash)
+    public function getUserByResetHash($hash)
     {
-        $users = $this->get_users_by_filter(new \Data\Filter("uniqueIdentifier eq $hash"));
+        $users = $this->getUsersByFilter(new \Data\Filter("uniqueIdentifier eq $hash"));
         if($users === false || !isset($users[0]))
         {
             return false;
