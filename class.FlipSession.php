@@ -12,14 +12,24 @@ if(!isset($_SESSION['init_time']))
 
 class FlipSession extends Singleton
 {
-    static function does_var_exist($name)
+    /**
+     * Does the variable exist in the session
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    static function doesVarExist($name)
     {
         return isset($_SESSION[$name]);
     }
 
-    static function get_var($name, $default = FALSE)
+    /**
+     * Get a variable from the session
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    static function getVar($name, $default = false)
     {
-        if(FlipSession::does_var_exist($name))
+        if(FlipSession::doesVarExist($name))
         {
             return $_SESSION[$name];
         }
@@ -29,12 +39,22 @@ class FlipSession extends Singleton
         }
     }
 
-    static function set_var($name, $value)
+    /**
+     * Set a variable in the session
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    static function setVar($name, $value)
     {
         $_SESSION[$name] = $value;
     }
 
-    static function is_logged_in()
+    /**
+     * Is a user currently logged in?
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    static function isLoggedIn()
     {
         if(isset($_SESSION['flipside_user']))
         {
@@ -51,7 +71,12 @@ class FlipSession extends Singleton
         }
     }
 
-    static function get_user($fixServer = FALSE)
+    /**
+     * Get the currently logged in user
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    static function getUser()
     {
         if(isset($_SESSION['flipside_user']))
         {
@@ -73,36 +98,22 @@ class FlipSession extends Singleton
         }
     }
 
-    static function refresh_user()
-    {
-        if(isset($_SESSION['flipside_user']))
-        {
-            $user = $_SESSION['flipside_user'];
-            $user->refresh();
-            return $user;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    static function get_user_copy()
-    {
-        return clone FlipSession::get_user();
-    }
-
-    static function set_user($user)
+    /**
+     * Set the currently logged in user
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    static function setUser($user)
     {
         $_SESSION['flipside_user'] = $user;
     }
 
-    static function user_is_lead()
-    {
-        return $user->isInGroupNamed('AAR') || $user->isInGroupNamed('AFs') || $user->isInGroupNamed('Leads');
-    }
-
-    static function get_user_email()
+    /**
+     * Obtain the current users email address
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    static function getUserEmail()
     {
         if(isset($_SESSION['flipside_email']))
         {
@@ -121,6 +132,11 @@ class FlipSession extends Singleton
         return FALSE;
     }
 
+    /**
+     * This will end your session
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
     static function end()
     {
         if(isset($_SESSION) && !empty($_SESSION))
@@ -130,64 +146,65 @@ class FlipSession extends Singleton
         }
     }
 
-    static function unserialize_php_session($session_data)
+    static function unserializePhpSession($sessionData)
     {
         $res = array();
         $offset = 0;
-        while($offset < strlen($session_data))
+        while($offset < strlen($sessionData))
         {
-            if(!strstr(substr($session_data, $offset), "|"))
+            if(!strstr(substr($sessionData, $offset), "|"))
             {
                 return false;
             }
-            $pos = strpos($session_data, "|", $offset);
+            $pos = strpos($sessionData, "|", $offset);
             $len = $pos - $offset;
-            $name = substr($session_data, $offset, $len);
+            $name = substr($sessionData, $offset, $len);
             $offset += $len+1;
-            $data = @unserialize(substr($session_data, $offset));
+            $data = @unserialize(substr($sessionData, $offset));
             $res[$name] = $data;
             $offset += strlen(serialize($data));
         }
         return $res;
     }
 
-    static function get_all_sessions()
+    static function getAllSessions()
     {
         $res = array();
-        $sess_files = scandir(ini_get('session.save_path'));
-        for($i = 0; $i < count($sess_files); $i++)
+        $sessFiles = scandir(ini_get('session.save_path'));
+        $count = count($sessFiles);
+        for($i = 0; $i < $count; $i++)
         {
-            if($sess_files[$i][0] == '.')
+            if($sessFiles[$i][0] === '.')
             {
                 continue;
             }
-            $id = substr($sess_files[$i], 5);
-            $session_data = file_get_contents(ini_get('session.save_path').'/'.$sess_files[$i]);
-            if($session_data === false)
+            $sessionId = substr($sessFiles[$i], 5);
+            $sessionData = file_get_contents(ini_get('session.save_path').'/'.$sessFiles[$i]);
+            if($sessionData === false)
             {
-                array_push($res, array('sid' => $id));
+                array_push($res, array('sid' => $sessionId));
             }
             else
             {
-                $tmp = FlipSession::unserialize_php_session($session_data);
-                $tmp['sid' ] = $id;
+                $tmp = FlipSession::unserializePhpSession($sessionData);
+                $tmp['sid' ] = $sessionId;
                 array_push($res, $tmp);
             }
         }
         if(count($res) == 0)
         {
-            return FALSE;
+            return false;
         }
         return $res;
     }
 
-    static function get_session_by_id($sid)
+    static function getSessionById($sid)
     {
-        $session_data = file_get_contents(ini_get('session.save_path').'/sess_'.$sid);
-        return FlipSession::unserialize_php_session($session_data);
+        $sessionData = file_get_contents(ini_get('session.save_path').'/sess_'.$sid);
+        return FlipSession::unserializePhpSession($sessionData);
     }
 
-    static function delete_session_by_id($sid)
+    static function deleteSessionById($sid)
     {
        return unlink(ini_get('session.save_path').'/sess_'.$sid); 
     }

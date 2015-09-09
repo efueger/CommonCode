@@ -8,7 +8,7 @@ class FlipAdminPage extends FlipPage
 
     function __construct($title, $admin_group='LDAPAdmins')
     {
-        $this->user = FlipSession::get_user(true);
+        $this->user = FlipSession::getUser();
         if($this->user === false || $this->user === null)
         {
             $this->is_admin = false;

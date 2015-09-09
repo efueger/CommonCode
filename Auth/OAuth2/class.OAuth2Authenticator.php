@@ -46,7 +46,7 @@ abstract class OAuth2Authenticator extends \Auth\Authenticator
         {
             return self::LOGIN_FAILED; 
         }
-        \FlipSession::set_var('OAuthToken', $resp->body);
+        \FlipSession::setVar('OAuthToken', $resp->body);
         $user = $this->getUserFromToken($resp->body);
         if($user === false)
         {

@@ -57,8 +57,8 @@ class AuthProvider extends Singleton
             $res = $this->methods[$i]->login($username, $password);
             if($res !== false)
             {
-                FlipSession::set_var('AuthMethod', get_class($this->methods[$i]));
-                FlipSession::set_var('AuthData', $res);
+                FlipSession::setVar('AuthMethod', get_class($this->methods[$i]));
+                FlipSession::setVar('AuthData', $res);
                 break;
             }
         }
@@ -289,12 +289,12 @@ class AuthProvider extends Singleton
     {
         if(is_object($userArray))
         {
-            \FlipSession::set_user($userArray);
+            \FlipSession::setUser($userArray);
         }
         else
         {
             $user = new $userArray['class']($userArray);
-            \FlipSession::set_user($user);
+            \FlipSession::setUser($user);
         }
     }
 

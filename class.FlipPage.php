@@ -313,7 +313,7 @@ class FlipPage extends WebPage
                 $this->logout_url = FlipsideSettings::$global['logout_url'];
             }
         }
-        $this->user = FlipSession::get_user();
+        $this->user = FlipSession::getUser();
         $this->add_all_links();
     }
 

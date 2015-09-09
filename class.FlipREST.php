@@ -28,9 +28,9 @@ class OAuth2Auth extends \Slim\Middleware
         // no auth header
         if(!isset($this->headers['Authorization']))
         {
-            if(FlipSession::is_logged_in())
+            if(FlipSession::isLoggedIn())
             {
-                $user = FlipSession::get_user(TRUE);
+                $user = FlipSession::getUser();
                 $this->app->user = $user;
             }
             $this->app->getLog()->error("No authorization header or session");

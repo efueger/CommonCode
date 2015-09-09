@@ -37,7 +37,7 @@ class LiveAuthenticator extends OAuth2Authenticator
     {
         if($token === false)
         {
-            $token = \FlipSession::get_var('OAuthToken');
+            $token = \FlipSession::getVar('OAuthToken');
         }
         $resp = \Httpful\Request::get('https://apis.live.net/v5.0/me')->addHeader('Authorization', 'Bearer '.$token->access_token)->send();
         $live_user = $resp->body;

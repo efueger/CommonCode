@@ -18,7 +18,7 @@ class GoogleAuthenticator extends Authenticator
         {
             $params['redirect_url'] = 'https://'.$_SERVER['HTTP_HOST'].'/oauth2callback.php?src=google';
         }
-        $this->token = \FlipSession::get_var('GoogleToken', null);
+        $this->token = \FlipSession::getVar('GoogleToken', null);
         $this->client = new \Google_Client();
         $this->client->setAuthConfigFile($params['client_secrets_path']);
         $this->client->addScope(array(\Google_Service_Oauth2::USERINFO_PROFILE, \Google_Service_Oauth2::USERINFO_EMAIL));
@@ -37,7 +37,7 @@ class GoogleAuthenticator extends Authenticator
         try{
             $this->client->authenticate($code);
             $this->token = $this->client->getAccessToken();
-            \FlipSession::set_var('GoogleToken', $this->token);
+            \FlipSession::setVar('GoogleToken', $this->token);
             $oauth2_service = new \Google_Service_Oauth2($this->client);
             $google_user = $oauth2_service->userinfo->get();
         } catch(\Exception $ex) {

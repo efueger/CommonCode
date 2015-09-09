@@ -32,7 +32,7 @@ class GitHubAuthenticator extends OAuth2Authenticator
     {
         if($token === false)
         {
-            $token = \FlipSession::get_var('OAuthToken');
+            $token = \FlipSession::getVar('OAuthToken');
         }
         $resp = \Httpful\Request::get('https://api.github.com/user')->addHeader('Authorization', 'token '.$token['access_token'])->send();
         $github_user = $resp->body;
