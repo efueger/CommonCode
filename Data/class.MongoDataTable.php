@@ -41,7 +41,14 @@ class MongoDataTable extends DataTable
         $criteria = array();
         if($filter !== false)
         {
-            $criteria = $filter->to_mongo_filter();
+            if(is_array($filter))
+            {
+                $criteria = $filter;
+            }
+            else
+            {
+                $criteria = $filter->to_mongo_filter();
+            }
         }
         if($select !== false)
         {
