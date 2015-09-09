@@ -260,6 +260,28 @@ class LDAPUser extends User
         return $hosts;
     }
 
+    function getGroups()
+    {
+        $res = array();
+        $groups = $this->server->read($this->server->group_base);
+        if(!empty($groups))
+        {
+            $count = count($groups);
+            for($i = 0; $i < $count; $i++)
+            {
+                if($this->isInGroupNamed($groups[$i]['cn'][0]))
+                {
+                    array_push($res, new LDAPGroup($groups[$i]));
+                }
+            }
+            return $res;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     function addLoginProvider($provider)
     {
         if(!is_object($this->ldap_obj))

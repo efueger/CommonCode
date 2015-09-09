@@ -126,6 +126,11 @@ class User extends \SerializableObject
         return false;
     }
 
+    function getGroups()
+    {
+        return false;
+    }
+
     function addLoginProvider($provider)
     {
         throw new \Exception('Cannot add provider for this login type!');
