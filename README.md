@@ -13,10 +13,11 @@ To setup a dev environment for the Burning Flipside Web Environment please do th
 10. Run sudo chown \`whoami\`:\`whoami\` secure
 11. Run git clone git@gitlab.com:BurningFlipside/SecureFramework.git secure
 12. Goto /var/www/common, /var/www/html/profiles, /var/www/html/secure and switch to the current development branch (The current development branch is **version2**). The command for this is git checkout origin/version2
-13. Goto /var/www
-14. Run sudo mkdir secure_settings
-15. Run sudo chown \`whoami\`:\`whoami\` secure_settings
-16. Use the following as class.FlipsideSettings.php in the secure_settings folder:
+13. Run git submodule update --init in each of the three directories as well
+14. Goto /var/www
+15. Run sudo mkdir secure_settings
+16. Run sudo chown \`whoami\`:\`whoami\` secure_settings
+17. Use the following as class.FlipsideSettings.php in the secure_settings folder:
 
     <?php
     class FlipsideSettings
@@ -42,3 +43,5 @@ To setup a dev environment for the Burning Flipside Web Environment please do th
     }
     /* vim: set tabstop=4 shiftwidth=4 expandtab: */
     ?>
+    
+18. Run sudo /var/www/common/cron.sh
