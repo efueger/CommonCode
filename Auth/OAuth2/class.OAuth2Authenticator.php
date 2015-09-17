@@ -1,6 +1,9 @@
 <?php
 namespace Auth\OAuth2;
-require('/var/www/common/libs/httpful/bootstrap.php');
+if(!class_exists('Httpful\Request'))
+{
+    require('/var/www/common/libs/httpful/bootstrap.php');
+}
 
 abstract class OAuth2Authenticator extends \Auth\Authenticator
 {
