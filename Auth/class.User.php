@@ -261,12 +261,12 @@ class User extends \SerializableObject
         return false;
     }
 
-    function setCountry($c)
+    function setCountry($country)
     {
         return false;
     }
 
-    function edit_user($data)
+    function editUser($data)
     {
         if(isset($data->oldpass) && isset($data->password))
         {
@@ -286,7 +286,6 @@ class User extends \SerializableObject
     public function jsonSerialize()
     {
         $user = array();
-        try{
         $user['displayName'] = $this->getDisplayName();
         $user['givenName'] = $this->getGivenName();
         $user['jpegPhoto'] = base64_encode($this->getPhoto());
@@ -306,7 +305,6 @@ class User extends \SerializableObject
         $user['ou'] = $this->getOrganizationUnits();
         $user['host'] = $this->getLoginProviders();
         $user['class'] = get_class($this);
-        } catch(\Exception $e) { echo $e->getMessage(); die(); }
         return $user;
     }
 
