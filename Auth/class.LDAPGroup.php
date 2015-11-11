@@ -136,8 +136,7 @@ class LDAPGroup extends Group
         {
             throw new \Exception('data must be set for LDAPGroup');
         }
-        $filter = new \Data\Filter("dn eq $dn");
-        $group = $data->read($data->group_base, $filter);
+        $group = $data->read($dn, false, true);
         if($group === false || !isset($group[0]))
         {
             return false;

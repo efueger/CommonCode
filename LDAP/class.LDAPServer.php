@@ -204,7 +204,7 @@ class LDAPServer extends \Singleton
         return $ret;
     }
 
-    function read($base_dn, $filter=false)
+    function read($base_dn, $filter=false, $single=false)
     {
         $filter_str = '(objectclass=*)';
         if($filter !== false)
@@ -218,7 +218,14 @@ class LDAPServer extends \Singleton
         $sr = false;
         try
         {
-            $sr = @ldap_list($this->ds, $base_dn, $filter_str);
+            if($single === true)
+            {
+                $sr = @ldap_read($this->ds, $base_dn, $filter_str);
+            }
+            else
+            {
+                $sr = @ldap_list($this->ds, $base_dn, $filter_str);
+            }
         }
         catch(\Exception $e)
         {
