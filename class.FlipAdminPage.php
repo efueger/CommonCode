@@ -126,6 +126,59 @@ class FlipAdminPage extends FlipPage
                   <div id="page-wrapper" style="min-height: 538px;">'.$this->body.'</div></div>';
     }
 
+    const CARD_GREEN  = 'panel-green';
+    const CARD_BLUE   = 'panel-primary';
+    const CARD_YELLOW = 'panel-yellow';
+    const CARD_RED    = 'panel-red';
+
+    function add_card($icon_name, $big_text, $little_text, $link='#', $color = self::CARD_BLUE, $text_color=false)
+    {
+        if($text_color === false)
+        {
+            switch($color)
+            {
+                default:
+                    $text_color='';
+                    break;
+                case self::CARD_BLUE:
+                    $text_color='text-primary';
+                    break;
+                case self::CARD_GREEN:
+                    $text_color='text-success';
+                    break;
+                case self::CARD_YELLOW:
+                    $text_color='text-warning';
+                    break;
+                case self::CARD_RED:
+                    $text_color='text-danger';
+                    break;
+            }
+        }
+        $card = '<div class="col-lg-3 col-md-6">
+                     <div class="panel '.$color.'">
+                         <div class="panel-heading">
+                             <div class="row">
+                                 <div class="col-xs-3">
+                                     <i class="fa '.$icon_name.'" style="font-size: 5em;"></i>
+                                 </div>
+                                 <div class="col-xs-9 text-right">
+                                     <div style="font-size: 40px;">'.$big_text.'</div>
+                                     <div>'.$little_text.'</div>
+                                 </div>
+                             </div>
+                         </div>
+                         <a href="'.$link.'">
+                         <div class="panel-footer">
+                             <span class="pull-left">View Details</span>
+                             <span class="pull-right fa fa-arrow-circle-right"></span>
+                             <div class="clearfix"></div>
+                         </div>
+                         </a>
+                     </div>
+                 </div>';
+        $this->body .= $card;
+    }
+
     function print_page($header=true)
     {
         if($this->user === false || $this->user === null)
