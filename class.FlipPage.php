@@ -397,12 +397,17 @@ class FlipPage extends WebPage
         $this->add_head_tag($css_tag);
     }
 
-    function add_js($type, $async=true)
+    function addJS($type, $async=true)
     {
         global $js_array;
         $this->setup_vars();
         $src = $js_array[$type][$this->cdn][$this->minified];
         $this->add_js_from_src($src, $async);
+    }
+
+    function add_js($type, $async=true)
+    {
+        $this->addJS($type, $async);
     }
 
     function add_css($type, $import=false)
