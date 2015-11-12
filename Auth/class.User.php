@@ -266,15 +266,113 @@ class User extends \SerializableObject
         return false;
     }
 
+    function setOrganizationUnits($ous)
+    {
+        return false;
+    }
+
     function editUser($data)
     {
+        //Make sure we are bound in write mode
+        $auth = \AuthProvider::getInstance();
+        $ldap = $auth->getAuthenticator('Auth\LDAPAuthenticator');
+        $ldap->get_and_bind_server(true);
         if(isset($data->oldpass) && isset($data->password))
         {
             $this->change_pass($data->oldpass, $data->password);
+            unset($data->oldpass);
+            unset($data->password);
         }
         else if(isset($data->hash) && isset($data->password))
         {
             $this->change_pass($data->hash, $data->password, true);
+            return;
+        }
+        if(isset($data->displayName))
+        {
+            $this->setDisplayName($data->displayName);
+            unset($data->displayName);
+        }
+        if(isset($data->givenName))
+        {
+            $this->setGivenName($data->givenName);
+            unset($data->givenName);
+        }
+        if(isset($data->jpegPhoto))
+        {
+            $this->setPhoto(base64_decode($data->jpegPhoto));
+            unset($data->jpegPhoto);
+        }
+        if(isset($data->mail))
+        {
+            if($data->mail !== $this->getEmail())
+            {
+                throw new \Exception('Unable to change email!');
+            }
+            unset($data->mail);
+        }
+        if(isset($data->uid))
+        {
+            if($data->uid !== $this->getUid())
+            {
+                throw new \Exception('Unable to change uid!');
+            }
+            unset($data->uid);
+        }
+        if(isset($data->mobile))
+        {
+            $this->setPhoneNumber($data->mobile);
+            unset($data->mobile);
+        }
+        if(isset($data->o))
+        {
+            $this->setOrganization($data->o);
+            unset($data->o);
+        }
+        if(isset($data->title))
+        {
+            $this->setTitles($data->title);
+            unset($data->title);
+        }
+        if(isset($data->st))
+        {
+            $this->setState($data->st);
+            unset($data->st);
+        }
+        if(isset($data->l))
+        {
+            $this->setCity($data->l);
+            unset($data->l);
+        }
+        if(isset($data->sn))
+        {
+            $this->setLastName($data->sn);
+            unset($data->sn);
+        }
+        if(isset($data->cn))
+        {
+            $this->setNickName($data->cn);
+            unset($data->cn);
+        }
+        if(isset($data->postalAddress))
+        {
+            $this->setAddress($data->postalAddress);
+            unset($data->postalAddress);
+        }
+        if(isset($data->postalCode))
+        {
+            $this->setPostalCode($data->postalCode);
+            unset($data->postalCode);
+        }
+        if(isset($data->c))
+        {
+            $this->setCountry($data->c);
+            unset($data->c);
+        }
+        if(isset($data->ou))
+        {
+            $this->setOrganizationUnits($data->ou);
+            unset($data->ou);
         }
     }
 
