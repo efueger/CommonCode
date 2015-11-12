@@ -368,7 +368,7 @@ class FlipPage extends WebPage
         }
     }
 
-    function add_js_from_src($src, $async=true)
+    function addJSFromSrc($src, $async=true)
     {
         $attributes = array('src'=>$src, 'type'=>'text/javascript');
         if($async === true)
@@ -379,6 +379,11 @@ class FlipPage extends WebPage
         $close_tag = $this->create_close_tag('script');
         $this->add_head_tag($js_tag);
         $this->add_head_tag($close_tag);
+    }
+
+    function add_js_from_src($src, $async=true)
+    {
+        $this->addJSFromSrc($src, $async);
     }
 
     function add_css_from_src($src, $import=false)
