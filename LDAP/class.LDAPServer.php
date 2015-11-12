@@ -209,7 +209,14 @@ class LDAPServer extends \Singleton
         $filter_str = '(objectclass=*)';
         if($filter !== false)
         {
-            $filter_str = $filter->to_ldap_string();
+            if(is_string($filter))
+            {
+                $filter_str = $filter;
+            }
+            else
+            {
+                $filter_str = $filter->to_ldap_string();
+            }
         }
         if($this->ds === null)
         {
