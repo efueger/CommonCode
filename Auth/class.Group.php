@@ -39,6 +39,11 @@ class Group extends \SerializableObject
         return $group;
     }
 
+    public function getNonMemebers()
+    {
+        return array();
+    }
+
     static function from_name($name, $data=false)
     {
         return false;

@@ -130,6 +130,42 @@ class LDAPGroup extends Group
         return $members;
     }
 
+    public function getNonMemebers()
+    {
+        $data = array();
+        $group_filter = '(&(cn=*)(!(cn='.$this->getGroupName().'))';
+        $user_filter = '(&(cn=*)';
+        $members = $this->members();
+        $count = count($members);
+        for($i = 0; $i < $count; $i++)
+        {
+            $dn_comps = explode(',',$members[$i]);
+            if(strncmp($members[$i], "uid=", 4) == 0)
+            {
+                $user_filter.='(!('.$dn_comps[0].'))';
+            }
+            else
+            {
+                $group_filter.='(!('.$dn_comps[0].'))';
+            }
+        }
+        $user_filter.=')';
+        $group_filter.=')';
+        $groups = $this->server->read($this->server->group_base, $group_filter);
+        $count = count($groups);
+        for($i = 0; $i < $count; $i++)
+        {
+            array_push($data, new LDAPGroup($groups[$i]));
+        }
+        $users = $this->server->read($this->server->user_base, $user_filter);
+        $count = count($users);
+        for($i = 0; $i < $count; $i++)
+        {
+            array_push($data, new LDAPUser($users[$i]));
+        } 
+        return $data;
+    }
+
     static function from_dn($dn, $data=false)
     {
         if($data === false)
