@@ -13,12 +13,22 @@ class Group extends \SerializableObject
         return false;
     }
 
-    public function getMemberUids()
+    public function setGroupName($name)
+    {
+        return false;
+    }
+
+    public function setDescription($desc)
+    {
+        return false;
+    }
+
+    public function getMemberUids($recursive=true)
     {
         return array();
     }
 
-    public function members($details=false)
+    public function members($details=false, $recursive=true)
     {
         return array();
     }
@@ -42,6 +52,41 @@ class Group extends \SerializableObject
     public function getNonMemebers()
     {
         return array();
+    }
+
+    public function addMember($name, $isGroup=false)
+    {
+        return false;
+    }
+
+    public function editGroup($group)
+    {
+        //Make sure we are bound in write mode
+        $auth = \AuthProvider::getInstance();
+        $ldap = $auth->getAuthenticator('Auth\LDAPAuthenticator');
+        $ldap->get_and_bind_server(true);
+        if(isset($group->description))
+        {
+            $this->setDescription($group->description);
+            unset($group->description);
+        }
+        if(isset($group->member))
+        {
+            $count = count($group->member);
+            for($i = 0; $i < $count; $i++)
+            {
+                if($group->member[$i]->type === 'Group')
+                {
+                    $this->addMember($group->member[$i]->cn, true);
+                }
+                else
+                {
+                    $this->addMember($group->member[$i]->uid);
+                }
+            }
+            unset($group->member);
+        }
+        return true;
     }
 
     static function from_name($name, $data=false)
