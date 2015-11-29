@@ -35,8 +35,8 @@ $js_array = array(
              'min' => '/js/common/jquery.min.js'
          ),
          'cdn' => array(
-             'no'  => '//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.js',
-             'min' => '//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'
+             'no'  => '//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.js',
+             'min' => '//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js'
          )
      ),
      JS_JQUERY_UI => array(
