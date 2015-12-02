@@ -1,5 +1,24 @@
 <?php
+/**
+ * Old Style Flipside DB
+ *
+ * PHP version 5
+ *
+ * @author Patrick Boyd / problem@burningflipside.com
+ * @copyright Copyright (c) 2015, Austin Artistic Reconstruction
+ * @license http://www.apache.org/licenses/ Apache 2.0 License
+ */
+
+/**
+ * Need FlipsideSettings
+ */
 require_once("/var/www/secure_settings/class.FlipsideSettings.php");
+
+/**
+ * Old Style DB access
+ *
+ * @deprecated 1.0.0 Will be removed as soon as all internal references are removed
+ */
 class FlipsideDB
 {
     protected $db_name;

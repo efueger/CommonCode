@@ -2,7 +2,7 @@
 namespace Email;
 
 require('/var/www/common/libs/aws/aws-autoloader.php');
-class AmazonSES
+class AmazonSES extends EmailService
 {
     protected $ses;
 

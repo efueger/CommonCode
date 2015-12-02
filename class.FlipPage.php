@@ -1,5 +1,26 @@
 <?php
-require_once("/var/www/secure_settings/class.FlipsideSettings.php");
+/**
+ * A WebPage class specific to this framework
+ *
+ * This file describes an abstraction for creating a webpage with JQuery, Bootstrap,
+ * and other framework specific abilities
+ *
+ * PHP version 5 and 7
+ *
+ * @author Patrick Boyd / problem@burningflipside.com
+ * @copyright Copyright (c) 2015, Austin Artistic Reconstruction
+ * @license http://www.apache.org/licenses/ Apache 2.0 License
+ */
+
+/**
+ * We use the FlipsideSettings class for a list of sites and settings
+ * about CDNs and minified JS/CSS
+ */
+require_once('/var/www/secure_settings/class.FlipsideSettings.php');
+
+/**
+ * We need the parent class
+ */
 require_once('class.WebPage.php');
 
 define('JS_JQUERY',       0);
@@ -263,24 +284,44 @@ $css_array = array(
     )
 );
 
+/**
+ * A framework specific webpage abstraction layer
+ *
+ * This class abstracts out some basic webpage creation with JQuery, Bootstrap, and other helpers
+ */
 class FlipPage extends WebPage
 {
+    /** The currently logged in user or null if no user is logged in */
     public $user;
+    /** An array of websites to link to globally*/
     public $sites;
+    /** An array of links to put in the header */
     public $links;
+    /** An array of notifications to draw on the page */
     public $notifications;
+    /** Should we draw the header? */
     public $header;
+    /** The login page URL */
     public $login_url;
+    /** The logout page URL */
     public $logout_url;
+    /** Should we use minified JS/CSS? */
     protected $minified = null;
+    /** Should we use local JS/CSS or Content Delivery Networks? */
     protected $cdn = null;
 
+    /**
+     * Create a webpage with JQuery, Bootstrap, etc
+     *
+     * @param string $title The webpage title
+     * @param boolean $header Draw the header bar?
+     */
     function __construct($title, $header=true)
     {
         parent::__construct($title);
-        $this->add_viewport();
-        $this->add_jquery_ui();
-        $this->add_bootstrap();
+        $this->add_js(JS_JQUERY, false);
+        $this->add_js(JS_FLIPSIDE);
+        $this->addBootstrap();
         $this->header = $header;
         if(isset(FlipsideSettings::$sites))
         {
@@ -314,32 +355,40 @@ class FlipPage extends WebPage
             }
         }
         $this->user = FlipSession::getUser();
-        $this->add_all_links();
+        $this->addAllLinks();
     }
 
-    function add_all_links()
+    /**
+     * Add the links to be used in the header
+     *
+     * @todo Consider pulling the about menu from the settings file or a DB
+     */
+    protected function addAllLinks()
     {
         if($this->user === false || $this->user === null)
         {
             if(strstr($_SERVER['REQUEST_URI'], 'logout.php') === false)
             {
-                $this->add_link('Login', $this->login_url);
+                $this->addLink('Login', $this->login_url);
             }
         }
         else
         {
             $this->add_links();
-            $this->add_link('Logout', $this->logout_url);
+            $this->addLink('Logout', $this->logout_url);
         }
         $about_menu = array(
             'Burning Flipside'=>'http://www.burningflipside.com/about/event',
             'AAR, LLC'=>'http://www.burningflipside.com/LLC',
             'Privacy Policy'=>'http://www.burningflipside.com/about/privacy'
         );
-        $this->add_link('About', 'http://www.burningflipside.com/about', $about_menu);
+        $this->addLink('About', 'http://www.burningflipside.com/about', $about_menu);
     }
 
-    function setup_vars()
+    /**
+     * Setup minified and cdn class varibles from defaults or the settings file
+     */
+    private function setupVars()
     {
         if($this->minified !== null && $this->cdn !== null) return;
         $this->minified = 'min';
@@ -357,68 +406,135 @@ class FlipPage extends WebPage
         }
     }
 
+    /**
+     * Add a JavaScript file from its src URI
+     *
+     * @param string $src The webpath to the JavaScript file
+     * @param boolean $async Can the JavaScript be loaded asynchronously?
+     *
+     * @deprecated 2.0.0 Please use addJSByURI() instead
+     */
     function add_js_from_src($src, $async=true)
     {
-        $attributes = array('src'=>$src, 'type'=>'text/javascript');
+        $this->addJSByURI($src, $async);
+    }
+
+    /**
+     * Add a JavaScript file from its src URI
+     *
+     * @param string $uri The webpath to the JavaScript file
+     * @param boolean $async Can the JavaScript be loaded asynchronously?
+     */
+    public function addJSByURI($uri, $async=true)
+    {
+        $attributes = array('src'=>$uri, 'type'=>'text/javascript');
         if($async === true)
         {
             $attributes['async'] = true;
         }
-        $js_tag = $this->create_open_tag('script', $attributes);
-        $close_tag = $this->create_close_tag('script');
-        $this->add_head_tag($js_tag);
-        $this->add_head_tag($close_tag);
+        $js_tag = $this->createOpenTag('script', $attributes);
+        $close_tag = $this->createCloseTag('script');
+        $this->addHeadTag($js_tag);
+        $this->addHeadTag($close_tag);
     }
 
+    /**
+     * Add a Cascading Style Sheet file from its src URI
+     *
+     * @param string $src The webpath to the Cascading Style Sheet file
+     * @param boolean $import Can the CSS be loaded asynchronously?
+     *
+     * @deprecated 2.0.0 Please use addCSSByURI() instead
+     */
     function add_css_from_src($src, $import=false)
     {
-        $attributes = array('rel'=>'stylesheet', 'href'=>$src, 'type'=>'text/css');
-        if($import === true && $this->import_support === true)
+        $this->addCSSByURI($src, $import);
+    }
+
+    /**
+     * Add a Cascading Style Sheet file from its src URI
+     *
+     * @param string $src The webpath to the Cascading Style Sheet file
+     * @param boolean $async Can the CSS be loaded asynchronously?
+     */
+    public function addCSSByURI($uri, $async=false)
+    {
+        $attributes = array('rel'=>'stylesheet', 'href'=>$uri, 'type'=>'text/css');
+        if($async === true && $this->import_support === true)
         {
             $attributes['rel'] = 'import';
         }
-        $css_tag = $this->create_open_tag('link', $attributes, true);
-        $this->add_head_tag($css_tag);
+        $css_tag = $this->createOpenTag('link', $attributes, true);
+        $this->addHeadTag($css_tag);
     }
 
+    /**
+     * Add a JavaScript file from a set of files known to the framework
+     *
+     * @param string $type the ID of the JS file
+     * @param boolean $async Can the JS file be loaded asynchronously?
+     *
+     * @deprecated 2.0.0 Please use addWellKnownJS() instead
+     */
     function add_js($type, $async=true)
     {
-        global $js_array;
-        $this->setup_vars();
-        $src = $js_array[$type][$this->cdn][$this->minified];
-        $this->add_js_from_src($src, $async);
+        $this->addWellKnownJS($type, $async);
     }
 
+    /**
+     * Add a JavaScript file from a set of files known to the framework
+     *
+     * @param string $jsFileID the ID of the JS file
+     * @param boolean $async Can the JS file be loaded asynchronously?
+     */
+    public function addWellKnownJS($jsFileID, $async=true)
+    {
+        global $js_array;
+        $this->setupVars();
+        $src = $js_array[$jsFileID][$this->cdn][$this->minified];
+        $this->addJSByURI($src, $async);
+    }
+
+    /**
+     * Add a CSS file from a set of files known to the framework
+     *
+     * @param string $type the ID of the CSS file
+     * @param boolean $import Can the CSS file be loaded asynchronously?
+     *
+     * @deprecated 2.0.0 Please use addWellKnownCSS() instead
+     */
     function add_css($type, $import=false)
     {
+        $this->addWellKnownCSS($type, $import);
+    }
+
+    /**
+     * Add a CSS file from a set of files known to the framework
+     *
+     * @param string $cssFileID the ID of the CSS file
+     * @param boolean $async Can the CSS file be loaded asynchronously?
+     */
+    public function addWellKnownCSS($cssFileID, $async=true)
+    {
         global $css_array;
-        $this->setup_vars();
-        $src = $css_array[$type][$this->cdn][$this->minified];
-        $this->add_css_from_src($src, $import);
+        $this->setupVars();
+        $src = $css_array[$cssFileID][$this->cdn][$this->minified];
+        $this->addCSSByURI($src, $async);
     }
 
-    function add_viewport()
-    {
-        $view_tag = $this->create_open_tag('meta', array('name'=>'viewport', 'content'=>'width=device-width, initial-scale=1.0'), true);
-        $this->add_head_tag($view_tag);
-    }
-
-    function add_jquery_ui()
-    {
-        $this->add_js(JS_JQUERY, false);
-        //$this->add_js(JS_JQUERY_UI);
-        //$this->add_js(JQUERY_TOUCH);
-        $this->add_js(JS_FLIPSIDE);
-        //$this->add_css(CSS_JQUERY_UI);
-    }
-
-    function add_bootstrap()
+    /**
+     * Add files needed by the Bootstrap framework
+     */
+    private function addBootstrap()
     {
         $this->add_js(JS_BOOTSTRAP, false);
         $this->add_css(CSS_BOOTSTRAP);
     }
 
-    function add_header()
+    /**
+     * Draw the header for the page
+     */
+    protected function addHeader()
     {
         $sites = '';
         $site_names = array_keys($this->sites);
@@ -501,18 +617,48 @@ class FlipPage extends WebPage
         $this->body_tags.='style="padding-top: 60px;"';
     }
 
-    const NOTIFICATION_SUCCESS = "alert-success";
-    const NOTIFICATION_INFO    = "alert-info";
-    const NOTIFICATION_WARNING = "alert-warning";
-    const NOTIFICATION_FAILED  = "alert-danger";
+    /** Notification that is green for success */
+    const NOTIFICATION_SUCCESS = 'alert-success';
+    /** Notification that is blue for infomrational messages */
+    const NOTIFICATION_INFO    = 'alert-info';
+    /** Notification that is yellow for warning */
+    const NOTIFICATION_WARNING = 'alert-warning';
+    /** Notification that is red for error */
+    const NOTIFICATION_FAILED  = 'alert-danger';
 
+    /**
+     * Add a notification to the page
+     *
+     * @param string $msg The message to show in the notifcation
+     * @param string $sev The severity of the notifcation
+     * @param boolean $dismissible Can the user dismiss the notificaton?
+     *
+     * @deprecated 2.0.0 Use the addNotification function instead 
+     */
     function add_notification($msg, $sev=self::NOTIFICATION_INFO, $dismissible=1)
     {
         $notice = array('msg'=>$msg, 'sev'=>$sev, 'dismissible'=>$dismissible);
         array_push($this->notifications, $notice);
     }
 
-    private function render_notifications()
+    /**
+     * Add a notification to the page
+     *
+     * @param string $message The message to show in the notifcation
+     * @param string $sevity The severity of the notifcation
+     * @param boolean $dismissible Can the user dismiss the notificaton?
+     *
+     * @deprecated 2.0.0 Use the addNotification function instead
+     */
+    public function addNotification($message, $severity=self::NOTIFICATION_INFO, $dismissible=true)
+    {
+        array_push($this->notificatons, array('msg'=>$message, 'sev'=>$severity, 'dismissible'=>$dismissible)); 
+    }
+
+    /**
+     * Draw all notifications to the page
+     */
+    private function renderNotifications()
     {
         for($i = 0; $i < count($this->notifications); $i++)
         {
@@ -550,11 +696,16 @@ class FlipPage extends WebPage
         }
     }
 
+    /**
+     * Draw the page
+     *
+     * @param boolean $header Draw the header
+     */
     function print_page($header=true)
     {
         if(count($this->notifications) > 0)
         {
-            $this->render_notifications();
+            $this->renderNotifications();
         }
         $this->body = '
             <noscript>
@@ -573,19 +724,75 @@ class FlipPage extends WebPage
   ga(\'send\', \'pageview\');
 
 </script>';
-        if($this->header)
+        if($this->header || $header)
         {
-            $this->add_header();
+            $this->addHeader();
         }
-        parent::print_page();
+        parent::printPage();
     }
 
-    function add_site($name, $url)
+    /**
+     * Draw the page
+     *
+     * @param boolean $header Draw the header
+     * @param boolean $analytics Include analytics on the page
+     */
+    public function printPage($header=true, $analytics=true)
     {
-        $this->sites[$name] = $url;
+        if(count($this->notifications) > 0)
+        {
+            $this->renderNotifications();
+        }
+        $this->body = '
+            <noscript>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <strong>Error!</strong> This site makes extensive use of JavaScript. Please enable JavaScript or this site will not function.
+                </div>
+            </noscript>
+        '.$this->body;
+        if($analytics)
+        {
+            $this->body.='<script>
+  (function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,\'script\',\'//www.google-analytics.com/analytics.js\',\'ga\');
+
+  ga(\'create\', \'UA-64901342-1\', \'auto\');
+  ga(\'send\', \'pageview\');
+
+</script>';
+        }
+        if($this->header || $header)
+        {
+            $this->addHeader();
+        }
+        parent::printPage();
     }
 
+    /**
+     * Add a link to the header
+     *
+     * @param string $name The name of the link
+     * @param false|string $url The URL to link to
+     * @param false|array $subment Any submenu items for the dropdown
+     *
+     * @deprecated 1.0.0 Use addLink instead
+     */
     function add_link($name, $url=false, $submenu=false)
+    {
+        $this->addLink($name, $url, $submenu);
+    }
+
+    /**
+     * Add a link to the header
+     *
+     * @param string $name The name of the link
+     * @param false|string $url The URL to link to
+     * @param false|array $subment Any submenu items for the dropdown
+     */
+    public function addLink($name, $url=false, $submenu=false)
     {
         if(is_array($submenu))
         {
@@ -598,6 +805,9 @@ class FlipPage extends WebPage
         }
     }
 
+    /**
+     * Add the login form to the page
+     */
     function add_login_form()
     {
         $auth = \AuthProvider::getInstance();
@@ -636,6 +846,9 @@ class FlipPage extends WebPage
                         </div>';
     }
 
+    /**
+     * Add additional links
+     */
     function add_links()
     {
     }

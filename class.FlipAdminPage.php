@@ -29,7 +29,7 @@ class FlipAdminPage extends FlipPage
         $this->add_js(JS_METISMENU, false);
     }
 
-    function add_all_links()
+    function addAllLinks()
     {
         if($this->user === false || $this->user === null)
         {
@@ -42,7 +42,7 @@ class FlipAdminPage extends FlipPage
         }
     }
 
-    function add_header()
+    function addHeader()
     {
         $sites = '';
         foreach($this->sites as $link => $site_name)

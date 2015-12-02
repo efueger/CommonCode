@@ -1,19 +1,51 @@
 <?php
+/**
+ * WebPage class
+ *
+ * This file describes an abstraction for creating a webpage
+ *
+ * PHP version 5 and 7
+ *
+ * @author Patrick Boyd / problem@burningflipside.com
+ * @copyright Copyright (c) 2015, Austin Artistic Reconstruction
+ * @license http://www.apache.org/licenses/ Apache 2.0 License
+ */
 
+/**
+ * We use the Browscap abstraction to determine browser versions 
+ */
 require('libs/browscap-php/src/phpbrowscap/Browscap.php');
 use phpbrowscap\Browscap;
 
+/**
+ * A generic abstraction layer for creating a webpage.
+ *
+ * This class abstracts out some basic webpage creation
+ */
 class WebPage
 {
+    /** The webpage title */
     public $title;
-
+    /** An array of tags to be added to the HTML head section */
     public $head_tags;
+    /** A string represnting the body of the page */
     public $body;
+    /** The browsecap object */
     private $bc;
+    /** Data about the browser used to load the page */
     public $browser;
+    /** A string to add to the body open tag */
     public $body_tags;
+    /** Does the browser support import of CSS or HTML? */
     public $import_support;
 
+    /**
+     * Create a new WebPage
+     *
+     * Create a new webpage abstraction object
+     *
+     * @param string $title The webpage title
+     */
     function __construct($title)
     {
         $this->title = $title;
@@ -25,17 +57,20 @@ class WebPage
         $this->browser = $this->getBrowser();
         $this->import_support = false;
         
-        $browser_name = $this->get_browser_name();
-        if($browser_name === 'IE' && $this->get_browser_major_ver() <= 6)
+        $browser_name = $this->getBrowserName();
+        if($browser_name === 'IE' && $this->getBrowserMajorVer() <= 7)
         {
             header( 'Location: /badbrowser.php' ) ;
         }
-        else if($browser_name === 'Chrome' && $this->get_browser_major_ver() >= 36)
+        else if($browser_name === 'Chrome' && $this->getBrowserMajorVer() >= 36)
         {
             $this->import_support = true;
         }
     }
 
+    /**
+     * Use the Browsecap library to determine what browser is being used to load this page
+     */
     private function getBrowser()
     {
         static $browser;//No accident can arise from depending on an unset variable.
@@ -46,7 +81,10 @@ class WebPage
         return $browser;
     }
 
-    private function get_browser_name()
+    /**
+     * Get the name of the browser used to load this page
+     */
+    private function getBrowserName()
     {
         if(isset($this->browser->Browser))
         {
@@ -58,7 +96,13 @@ class WebPage
         }
     }
 
-    private function get_browser_major_ver()
+    /**
+     * Get the first part of the browser version number
+     *
+     * Determine what version of the browser is being used to load the page. This
+     * is used to determine if the version of IE is too old to be used
+     */
+    private function getBrowserMajorVer()
     {
         if(isset($this->browser->MajorVer))
         {
@@ -70,38 +114,103 @@ class WebPage
         }
     }
 
-    function print_doctype()
+    /**
+     * Print the HTML doctype header
+     */
+    protected function printDoctype()
     {
-        echo "<!DOCTYPE html>\n";
+        echo '<!DOCTYPE html>';
+        echo "\n";
     }
 
-    function print_open_html()
+    /**
+     * Print the opening HTML tag
+     */
+    protected function printOpenHtml()
     {
-        echo "<HTML>\n";
+        echo '<HTML>';
     }
 
-    function print_close_html()
+    /**
+     * Print the closing HTML tag
+     */
+    protected function printCloseHtml()
     {
-        echo "</HTML>\n";
+        echo '</HTML>';
     }
 
+    /**
+     * Print the page
+     *
+     * @deprecated 1.0.0 This funciton is deprectated and will be remoted. Please use printPage() instead
+     */
     function print_page()
     {
-        $this->print_doctype();
-        $this->print_open_html();
-        $this->print_head('    ');
-        $this->print_body('    ');
-        $this->print_close_html();
+        $this->printPage();
     }
 
+    /**
+     * Print the webpage to standard out
+     */
+    public function printPage()
+    {
+        $this->printDoctype();
+        $this->printOpenHtml();
+        $this->printHead('    ');
+        $this->printBody('    ');
+        $this->printCloseHtml();
+    }
+
+    /**
+     * Add a tag to the head element
+     *
+     * @param string $tag The tag to add to the page header
+     *
+     * @deprecated 1.0.0 This funciton is deprectated and will be remoted. Please use addHeadTag() instead
+     */
     function add_head_tag($tag)
+    {
+        $this->addHeadTag($tag);
+    }
+
+    /**
+     * Add a tag to the head element
+     *
+     * @param string $tag The tag to add to the page header
+     */
+    protected function addHeadTag($tag)
     {
         array_push($this->head_tags, $tag);
     }
 
-    function create_open_tag($tag_name, $attribs=array(), $self_close=false)
+    /**
+     * Create a tag to be added to the document
+     *
+     * @param string $tagName The tag's name (i.e. the string right after the open sign
+     * @param array $attribs Attributes to be added to the tag in the form key=value
+     * @param boolean $selfClose Does this tag end with a close (/>)?
+     *
+     * @return string The tag as a string
+     *
+     * @deprecated 1.0.0 This funciton is deprectated and will be remoted. Please use createOpenTag() instead
+     */
+    function create_open_tag($tagName, $attribs=array(), $selfClose=false)
     {
-        $tag = '<'.$tag_name;
+        return $this->createOpenTag($tagName, $attribs, $selfClose);
+    }
+
+    /**
+     * Create a tag to be added to the document
+     *
+     * @param string $tagName The tag's name (i.e. the string right after the open sign
+     * @param array $attribs Attributes to be added to the tag in the form key=value
+     * @param boolean $selfClose Does this tag end with a close (/>)?
+     *
+     * @return string The tag as a string
+     */
+    protected function createOpenTag($tagName, $attribs=array(), $selfClose=false)
+    {
+        $tag = '<'.$tagName;
         $attrib_names = array_keys($attribs);
         foreach($attrib_names as $attrib_name)
         {
@@ -111,7 +220,7 @@ class WebPage
                 $tag.='="'.$attribs[$attrib_name].'"';
             }
         }
-        if($self_close)
+        if($selfClose)
         {
             return $tag.'/>';
         }
@@ -120,23 +229,76 @@ class WebPage
             return $tag.'>';
         }
     }
-    
-    function create_close_tag($tag_name)
+   
+    /**
+     * Create a close tag to be added to the document
+     *
+     * @param string $tagName The tag's name (i.e. the string right after the open sign
+     *
+     * @return string The close tag as a string
+     *
+     * @deprecated 1.0.0 This funciton is deprectated and will be remoted. Please use createCloseTag() instead
+     */ 
+    function create_close_tag($tagName)
     {
-        return '</'.$tag_name.'>';
+        return $this->createCloseTag($tagName);
     }
 
-    function create_link($link_name, $link_target='#')
+    /**
+     * Create a close tag to be added to the document
+     *
+     * @param string $tagName The tag's name (i.e. the string right after the open sign
+     *
+     * @return string The close tag as a string
+     */
+    protected function createCloseTag($tagName)
     {
-        $start_tag = $this->create_open_tag('a', array('href'=>$link_target));
-        $end_tag = $this->create_close_tag('a');
-        return $start_tag.$link_name.$end_tag;
+        return '</'.$tagName.'>';
     }
 
-    function print_ie_compatability($prefix='')
+    /**
+     * Create a link to be added to the document
+     *
+     * @param string $linkName The text inside the link
+     * @param string $linkTarget The location the link goes to
+     *
+     * @return string The link
+     *
+     * @deprecated 1.0.0 This funciton is deprectated and will be remoted. Please use createLink() instead
+     */
+    function create_link($linkName, $linkTarget='#')
+    {
+        return $this->createLink($linkName, $linkTarget);
+    }
+
+    /**
+     * Create a link to be added to the document
+     *
+     * @param string $linkName The text inside the link
+     * @param string $linkTarget The location the link goes to
+     *
+     * @return string The link
+     */
+    public function createLink($linkName, $linkTarget='#')
+    {
+        $startTag = $this->createOpenTag('a', array('href'=>$linkTarget));
+        $endTag = $this->createCloseTag('a');
+        return $startTag.$linkName.$endTag;
+    }
+
+    /**
+     * Add tags to the header to make the IE family of browsers behave better
+     *
+     * The IE family of browsers lower than version 9 do not support HTML 5 so we need
+     * to add a polyfill for those feaures. Additionally, IE versions greater than 8
+     * have a compatibility mode. We need to tell them to act as the latest greatest version
+     *
+     * @param string $prefix The prefix to append to each line
+     */
+    protected function printIeCompatability($prefix='')
     {
        //IE 8 doesn't support HTML 5. Install the shim...
-       if($this->get_browser_major_ver() < 9)
+       if($this->getBrowserMajorVer() < 9)
        {
            echo $prefix.'<script src="js/html5.js"></script>';
            echo "\n";
@@ -146,35 +308,64 @@ class WebPage
        echo "\n";
     }
 
-    function print_head($prefix='')
+    /**
+     * Print the HTML HEAD section
+     *
+     * @param string $prefix The prefix to append to each line
+     */
+    protected function printHead($prefix='')
     {
-        echo $prefix."<HEAD>\n";
-        if($this->get_browser_name() === 'IE')
+        echo $prefix.'<HEAD>';
+        if($this->getBrowserName() === 'IE')
         {
-            $this->print_ie_compatability($prefix.$prefix);
+            $this->printIeCompatability($prefix.$prefix);
         }
-        echo $prefix.$prefix."<TITLE>".$this->title."</TITLE>\n";
+        echo $prefix.$prefix.'<TITLE>'.$this->title.'</TITLE>';
+        echo $prefix.$prefix.'<meta name="viewport" content="width=device-width, initial-scale=1.0">';
         foreach($this->head_tags as $tag)
         {
             echo $prefix.$prefix.$tag."\n";
         }
-        echo $prefix."</HEAD>\n";
+        echo $prefix.'</HEAD>';
     }
 
-    function print_body($prefix='')
+    /**
+     * Print the HTML BODY section
+     *
+     * @param string $prefix The prefix to append to each line
+     */
+    protected function printBody($prefix='')
     {
         echo $prefix.'<BODY '.$this->body_tags.'>';
         echo $prefix.$prefix.$this->body."\n";
-        echo $prefix."</BODY>\n";
+        echo $prefix.'</BODY>';
     }
 
+    /**
+     * Get the currently requested URL
+     *
+     * @return string The full URL of the requested page
+     *
+     * @deprecated 1.0.0 This funciton is deprectated and will be remoted. Please use currentURL() instead
+     */
     function current_url()
     {
-        if($_SERVER['REQUEST_URI'][0] === '/')
+        return $this->currentURL();
+    }
+
+    /**
+     * Get the currently requested URL
+     *
+     * @return string The full URL of the requested page
+     */
+    public function currentURL()
+    {
+        $requestURI = $_SERVER['REQUEST_URI'];
+        if($requestURI[0] === '/')
         {
-            return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+            $requestURI = '';
         }
-        return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}";
+        return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}/$requestURI";
     }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
