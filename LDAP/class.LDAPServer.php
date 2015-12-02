@@ -204,12 +204,19 @@ class LDAPServer extends \Singleton
         return $ret;
     }
 
-    function read($base_dn, $filter=false)
+    function read($base_dn, $filter=false, $single=false)
     {
         $filter_str = '(objectclass=*)';
         if($filter !== false)
         {
-            $filter_str = $filter->to_ldap_string();
+            if(is_string($filter))
+            {
+                $filter_str = $filter;
+            }
+            else
+            {
+                $filter_str = $filter->to_ldap_string();
+            }
         }
         if($this->ds === null)
         {
@@ -218,7 +225,14 @@ class LDAPServer extends \Singleton
         $sr = false;
         try
         {
-            $sr = @ldap_list($this->ds, $base_dn, $filter_str);
+            if($single === true)
+            {
+                $sr = @ldap_read($this->ds, $base_dn, $filter_str);
+            }
+            else
+            {
+                $sr = @ldap_list($this->ds, $base_dn, $filter_str);
+            }
         }
         catch(\Exception $e)
         {

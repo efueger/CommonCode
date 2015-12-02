@@ -47,6 +47,7 @@ define('CSS_BOOTSTRAP_FH', 2);
 define('CSS_BOOTSTRAP_SW', 3);
 define('CSS_DATATABLE',    4);
 define('CSS_JCROP',        5);
+define('CSS_FONTAWESOME',  6);
 
 $js_array = array(
      JS_JQUERY => array(
@@ -55,8 +56,8 @@ $js_array = array(
              'min' => '/js/common/jquery.min.js'
          ),
          'cdn' => array(
-             'no'  => '//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.js',
-             'min' => '//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'
+             'no'  => '//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.js',
+             'min' => '//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js'
          )
      ),
      JS_JQUERY_UI => array(
@@ -75,8 +76,8 @@ $js_array = array(
              'min' => '/js/common/bootstrap.min.js'
          ),
          'cdn' => array(
-             'no'  => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js',
-             'min' => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'
+             'no'  => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.js',
+             'min' => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'
          )
      ),
      JQUERY_VALIDATE => array(
@@ -238,8 +239,8 @@ $css_array = array(
              'min' => '/css/common/bootstrap.min.css'
          ),
          'cdn' => array(
-             'no'  => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css',
-             'min' => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'
+             'no'  => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.css',
+             'min' => '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'
          )
     ),
     CSS_BOOTSTRAP_FH => array(
@@ -281,6 +282,16 @@ $css_array = array(
             'no'  => '//cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.12/css/jquery.Jcrop.min.css',
             'min' => '//cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.12/css/jquery.Jcrop.min.css'
         ) 
+    ),
+    CSS_FONTAWESOME => array(
+        'no'  => array(
+            'no'  => '/css/common/font-awesome.min.css',
+            'min' => '/css/common/font-awesome.min.css'
+        ),
+        'cdn' => array(
+            'no'  => '//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css',
+            'min' => '//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css'
+        )
     )
 );
 
@@ -476,7 +487,7 @@ class FlipPage extends WebPage
      *
      * @deprecated 2.0.0 Please use addWellKnownJS() instead
      */
-    function add_js($type, $async=true)
+    function addJS($type, $async=true)
     {
         $this->addWellKnownJS($type, $async);
     }
@@ -489,10 +500,7 @@ class FlipPage extends WebPage
      */
     public function addWellKnownJS($jsFileID, $async=true)
     {
-        global $js_array;
-        $this->setupVars();
-        $src = $js_array[$jsFileID][$this->cdn][$this->minified];
-        $this->addJSByURI($src, $async);
+        $this->addJS($type, $async);
     }
 
     /**
@@ -529,6 +537,7 @@ class FlipPage extends WebPage
     {
         $this->add_js(JS_BOOTSTRAP, false);
         $this->add_css(CSS_BOOTSTRAP);
+        $this->add_css(CSS_FONTAWESOME);
     }
 
     /**

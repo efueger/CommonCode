@@ -33,12 +33,12 @@ class FlipAdminPage extends FlipPage
     {
         if($this->user === false || $this->user === null)
         {
-            $this->add_link('<span class="glyphicon glyphicon-log-in"></span> Login', $this->login_url);
+            $this->add_link('<i class="fa fa-sign-in"></i> Login', $this->login_url);
         }
         else
         {
             $this->add_links();
-            $this->add_link('<span class="glyphicon glyphicon-log-out"></span> Logout', $this->logout_url);
+            $this->add_link('<i class="fa fa-sign-out"></i> Logout', $this->logout_url);
         }
     }
 
@@ -58,11 +58,11 @@ class FlipAdminPage extends FlipPage
                 $side_nav .= '<li>';
                 if(isset($this->links[$link_name]['_']))
                 {
-                    $side_nav .= $this->create_link($link_name.' <span class="glyphicon arrow"></span>', $this->links[$link_name]['_']);
+                    $side_nav .= $this->create_link($link_name.' <i class="fa fa-arrow-right"></i>', $this->links[$link_name]['_']);
                 }
                 else
                 {
-                    $side_nav .= $this->create_link($link_name.' <span class="glyphicon arrow"></span>');
+                    $side_nav .= $this->create_link($link_name.' <i class="fa fa-arrow-right"></i>');
                 }
                 $side_nav .= '<ul>';
                 $sub_names = array_keys($this->links[$link_name]);
@@ -83,11 +83,11 @@ class FlipAdminPage extends FlipPage
         }
         if($this->user === false || $this->user === null)
         {
-            $log = '<a href="https://profiles.burningflipside.com/login.php?return='.$this->current_url().'"><span class="glyphicon glyphicon-log-in"></span></a>';
+            $log = '<a href="https://profiles.burningflipside.com/login.php?return='.$this->current_url().'"><i class="fa fa-sign-in"></i></a>';
         }
         else
         {
-            $log = '<a href="https://profiles.burningflipside.com/logout.php"><span class="glyphicon glyphicon-log-out"></span></a>';
+            $log = '<a href="https://profiles.burningflipside.com/logout.php"><i class="fa fa-sign-out"></i></a>';
         }
         $this->body = '<div id="wrapper">
                   <nav class="navbar navbar-default navbar-static-top" role=navigation" style="margin-bottom: 0">
@@ -102,12 +102,12 @@ class FlipAdminPage extends FlipPage
                       </div>
                       <ul class="nav navbar-top-links navbar-right">
                           <a href="..">
-                              <span class="glyphicon glyphicon-home"></span>
+                              <i class="fa fa-home"></i>
                           </a>
                           &nbsp;&nbsp;'.$log.'
                           <li class="dropdown">
                               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                  <span class="glyphicon glyphicon-link"></span>
+                                  <i class="fa fa-link"></i>
                                   <b class="caret"></b>
                               </a>
                               <ul class="dropdown-menu dropdown-sites">
@@ -124,6 +124,59 @@ class FlipAdminPage extends FlipPage
                       </div>
                   </nav>
                   <div id="page-wrapper" style="min-height: 538px;">'.$this->body.'</div></div>';
+    }
+
+    const CARD_GREEN  = 'panel-green';
+    const CARD_BLUE   = 'panel-primary';
+    const CARD_YELLOW = 'panel-yellow';
+    const CARD_RED    = 'panel-red';
+
+    function add_card($icon_name, $big_text, $little_text, $link='#', $color = self::CARD_BLUE, $text_color=false)
+    {
+        if($text_color === false)
+        {
+            switch($color)
+            {
+                default:
+                    $text_color='';
+                    break;
+                case self::CARD_BLUE:
+                    $text_color='text-primary';
+                    break;
+                case self::CARD_GREEN:
+                    $text_color='text-success';
+                    break;
+                case self::CARD_YELLOW:
+                    $text_color='text-warning';
+                    break;
+                case self::CARD_RED:
+                    $text_color='text-danger';
+                    break;
+            }
+        }
+        $card = '<div class="col-lg-3 col-md-6">
+                     <div class="panel '.$color.'">
+                         <div class="panel-heading">
+                             <div class="row">
+                                 <div class="col-xs-3">
+                                     <i class="fa '.$icon_name.'" style="font-size: 5em;"></i>
+                                 </div>
+                                 <div class="col-xs-9 text-right">
+                                     <div style="font-size: 40px;">'.$big_text.'</div>
+                                     <div>'.$little_text.'</div>
+                                 </div>
+                             </div>
+                         </div>
+                         <a href="'.$link.'">
+                         <div class="panel-footer">
+                             <span class="pull-left">View Details</span>
+                             <span class="pull-right fa fa-arrow-circle-right"></span>
+                             <div class="clearfix"></div>
+                         </div>
+                         </a>
+                     </div>
+                 </div>';
+        $this->body .= $card;
     }
 
     function print_page($header=true)

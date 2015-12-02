@@ -272,6 +272,11 @@ class FlipREST extends \Slim\Slim
 
     function get_json_body($array=false)
     {
+        return $this->getJsonBody($array);
+    }
+
+    function getJsonBody($array=false)
+    {
         $body = $this->request->getBody();
         return json_decode($body, $array);
     }

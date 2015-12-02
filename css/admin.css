@@ -77,11 +77,11 @@ body {
     float: right;
 }
 
-.glyphicon.arrow:before {
+.fa.arrow:before {
     content: "\e079";
 }
 
-.active > a > .glyphicon.arrow:before {
+.active > a > .fa.arrow:before {
     content: "\e114";
 }
 
