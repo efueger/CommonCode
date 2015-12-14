@@ -1,9 +1,7 @@
 <?php
 require_once('class.FlipSession.php');
-require_once('class.FlipsideUser.php');
-require_once('PHPExcel/PHPExcel.php');
-require_once('XML/Serializer.php');
-require_once('Slim/Slim.php');
+require_once('libs/Slim/Slim/Slim.php');
+require_once('Autoload.php');
 \Slim\Slim::registerAutoloader();
 
 const SUCCESS = 0;
@@ -30,11 +28,12 @@ class OAuth2Auth extends \Slim\Middleware
         // no auth header
         if(!isset($this->headers['Authorization']))
         {
-            if(FlipSession::is_logged_in())
+            if(FlipSession::isLoggedIn())
             {
-                $user = FlipSession::get_user(TRUE);
+                $user = FlipSession::getUser();
                 $this->app->user = $user;
             }
+            $this->app->getLog()->error("No authorization header or session");
         } 
         else 
         {
@@ -49,11 +48,22 @@ class OAuth2Auth extends \Slim\Middleware
             }
             try
             {
-                $key = substr($this->headers['Authorization'], 7);
-                $user = FlipsideUser::getUserByAccessCode($key);
-                if($user !== FALSE)
+                $auth = AuthProvider::getInstance();
+                $header = $this->headers['Authorization'];
+                if(strncmp($header, 'Basic', 5) === 0)
                 {
-                    $this->app->user = $user;
+                    $data = substr($this->headers['Authorization'], 6);
+                    $userpass = explode(':', base64_decode($data));
+                    $this->app->user = $auth->getUserByLogin($userpass[0], $userpass[1]);
+                }
+                else
+                {
+                    $key = substr($this->headers['Authorization'], 7);
+                    $user = $auth->getUserByAccessCode($key);
+                    if($user !== FALSE)
+                    {
+                        $this->app->user = $user;
+                    }
                 }
             }
             catch(\Exception $e)
@@ -116,7 +126,7 @@ class FlipRESTFormat extends \Slim\Middleware
                     $id = $row[$keys[0]];
                     foreach($row as $key=>$value)
                     {
-                        $this->fix_encoded_element($key, $value, &$row, '/'.$id);
+                        $this->fix_encoded_element($key, $value, $row, '/'.$id);
                     }
                     fputcsv($df, $row);
                 }
@@ -130,7 +140,7 @@ class FlipRESTFormat extends \Slim\Middleware
                     $values = get_object_vars($row);
                     foreach($values as $key=>$value)
                     {
-                        $this->fix_encoded_element($key, $value, &$values, '/'.$id);
+                        $this->fix_encoded_element($key, $value, $values, '/'.$id);
                     }
                     fputcsv($df, $values);
                 }
@@ -142,7 +152,7 @@ class FlipRESTFormat extends \Slim\Middleware
             fputcsv($df, array_keys($array));
             foreach($array as $key=>$value)
             {
-                $this->fix_encoded_element($key, $value, &$array);
+                $this->fix_encoded_element($key, $value, $array);
             }
             fputcsv($df, $array);
         }
@@ -150,38 +160,10 @@ class FlipRESTFormat extends \Slim\Middleware
         return ob_get_clean();
     }
 
-    private function create_xlsx(&$array)
-    {
-        $xlsx = new PHPExcel();
-    }
-
     private function create_xml(&$array, $path)
     {
-        if(is_array($array) && isset($array[0]) && is_object($array[0]))
-        {
-            $count = count($array);
-            for($i = 0; $i < $count; $i++)
-            {
-                if(property_exists($array[$i], '_id') && is_object($array[$i]->_id))
-                {
-                    $array[$i]->_id = $array[$i]->_id->{'$id'};
-                }
-            }
-        }
-        else if(is_object($array))
-        {
-            if(property_exists($array, '_id') && is_object($array->_id))
-            {
-                $array->_id = $array->_id->{'$id'};
-            }
-        }
-        $options = array(
-            XML_SERIALIZER_OPTION_ROOT_NAME   => $path,
-            XML_SERIALIZER_OPTION_DEFAULT_TAG => substr($path, 0, strlen($path)-1)
-        );
-        $serializer = new XML_Serializer($options);
-        $serializer->serialize($array);
-        return $serializer->getSerializedData();
+        $obj = new SerializableObject($array);
+        return $obj->xmlSerialize();
     }
 
     public function call()
@@ -190,14 +172,36 @@ class FlipRESTFormat extends \Slim\Middleware
         {
             return;
         }
-        $fmt = $this->app->request->params('fmt');
+        $params = $this->app->request->params();
+        $fmt = null;
+        if(isset($params['fmt']))
+        {
+            $fmt = $params['fmt'];
+        }
+        if($fmt === null && isset($params['$format']))
+        {
+            $fmt = $params['$format'];
+            if(strstr($fmt, 'odata.streaming=true'))
+            {
+                $this->app->response->setStatus(406);
+                return;
+            }
+        }
         if($fmt === null)
         {
             $mime_type = $this->app->request->headers->get('Accept');
+            if(strstr($mime_type, 'odata.streaming=true'))
+            {
+                $this->app->response->setStatus(406);
+                return;
+            }
             switch($mime_type)
             {
                 case 'text/csv':
                     $fmt = 'csv';
+                    break;
+                case 'text/x-vCard':
+                    $fmt = 'vcard';
                     break;
                 default:
                     $fmt = 'json';
@@ -205,7 +209,9 @@ class FlipRESTFormat extends \Slim\Middleware
             }
         }
 
-        $this->app->fmt = $fmt;
+        $this->app->fmt     = $fmt;
+        $this->app->odata   = new ODataParams($params);
+
 
         $this->next->call();
 
@@ -227,14 +233,6 @@ class FlipRESTFormat extends \Slim\Middleware
                     $this->app->response->headers->set('Content-Disposition', 'attachment; filename='.$path.'.csv');
                     $text = $this->create_csv($data);
                     break;
-                case 'xlsx':
-                    $this->app->response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                    $path = $this->app->request->getPathInfo();
-                    $path = strrchr($path, '/');
-                    $path = substr($path, 1);
-                    $this->app->response->headers->set('Content-Disposition', 'attachment; filename='.$path.'.xslx');
-                    $text = $this->create_xslx($data);
-                    break;
                 case 'xml':
                     $this->app->response->headers->set('Content-Type', 'application/xml');
                     $path = $this->app->request->getPathInfo();
@@ -253,7 +251,7 @@ class FlipRESTFormat extends \Slim\Middleware
         }
         else if($this->app->response->getStatus() == 200)
         {
-            $this->app->response->headers->set('Content-Type', 'application/json');
+            $this->app->response->headers->set('Content-Type', 'application/json;odata.metadata=none');
         }
     }
 }
@@ -279,6 +277,17 @@ class FlipREST extends \Slim\Slim
     function route_post($uri, $handler)
     {
         return $this->post($uri, $handler);
+    }
+
+    function get_json_body($array=false)
+    {
+        return $this->getJsonBody($array);
+    }
+
+    function getJsonBody($array=false)
+    {
+        $body = $this->request->getBody();
+        return json_decode($body, $array);
     }
 
     function error_handler($e)

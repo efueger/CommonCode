@@ -1,7 +1,3 @@
-<FilesMatch "^tinynav">
-    ExpiresActive On
-    ExpiresDefault "access plus 3 months"
-</FilesMatch>
 <FilesMatch "^flipside">
     ExpiresActive On
     ExpiresDefault "access plus 1 hour"

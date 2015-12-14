@@ -1,5 +1,5 @@
 <?php
-require_once('PHPMailer/PHPMailerAutoload.php');
+require_once('/var/www/common/libs/PHPMailer/PHPMailerAutoload.php');
 require_once('/var/www/secure_settings/class.FlipsideSettings.php');
 class FlipsideMail extends PHPMailer
 {

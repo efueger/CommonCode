@@ -77,11 +77,11 @@ body {
     float: right;
 }
 
-.glyphicon.arrow:before {
+.fa.arrow:before {
     content: "\e079";
 }
 
-.active > a > .glyphicon.arrow:before {
+.active > a > .fa.arrow:before {
     content: "\e114";
 }
 
@@ -159,4 +159,8 @@ body {
     .dataTables_length{
         display: none;
     }
+}
+
+input.form-control {
+    font-size: 16px;
 }

@@ -6,7 +6,7 @@ function getParameterByName(name)
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
-    return results == null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
+    return (results === null) ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
 function browser_supports_cors()
@@ -97,12 +97,12 @@ function add_notification(container, message, severity, dismissible)
     {
         class_str+=' alert-dismissible';
     }
-    var alert_div = $('<div/>', {class: class_str, role: 'alert'});
+    var alert_div = $('<div/>', {'class': class_str, role: 'alert'});
     if(dismissible)
     {
-        var button = $('<button/>', {type: 'button', class: 'close', 'data-dismiss': 'alert'});
+        var button = $('<button/>', {type: 'button', 'class': 'close', 'data-dismiss': 'alert'});
         $('<span/>', {'aria-hidden': 'true'}).html('&times;').appendTo(button);
-        $('<span/>', {class: 'sr-only'}).html('Close').appendTo(button);
+        $('<span/>', {'class': 'sr-only'}).html('Close').appendTo(button);
         button.appendTo(alert_div);
     }
     var prefix = '';
@@ -140,7 +140,7 @@ function create_modal(title, body, buttons)
     var div = $('<div/>', {'class': 'modal-body'}).html(body);
     div.appendTo(content);
     var footer = $('<div/>', {'class': 'modal-footer'});
-    for(i = 0; i < buttons.length; i++)
+    for(var i = 0; i < buttons.length; i++)
     {
         var btn_class = '';
         var options = {'type': 'button'};
@@ -152,8 +152,8 @@ function create_modal(title, body, buttons)
         {
             btn_class = buttons[i].style;
         }
-        options.class = 'btn '+btn_class;
-        if(buttons[i].close !== undefined && buttons[i].close == true)
+        options['class'] = 'btn '+btn_class;
+        if(buttons[i].close !== undefined && buttons[i].close === true)
         {
             options['data-dismiss'] = 'modal';
         }
@@ -192,12 +192,40 @@ function browser_supported()
     }
 }
 
+function browser_supports_image_upload()
+{
+    if (navigator.userAgent.match(/(Android (1.0|1.1|1.5|1.6|2.0|2.1))|(Windows Phone (OS 7|8.0))|(XBLWP)|(ZuneWP)|(w(eb)?OSBrowser)|(webOS)|(Kindle\/(1.0|2.0|2.5|3.0))/))
+    {
+        return false;
+    }
+    var elem = document.createElement('input');
+    elem.type = 'file';
+    return !elem.disabled;
+}
+
 function flipside_init()
 {
     browser_supported();
     var host = window.location.hostname.split('.')[0];
-    var link = $(".sites a[href^='https://"+host+"']");
-    link.attr('class', 'site_selected');
+    var link = $('#site_nav a[href^="https://'+host+'"]');
+    link.parent().addClass('active');
 }
 
 $(flipside_init);
+
+$.fn.serializeObject = function()
+{
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
