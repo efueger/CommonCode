@@ -492,6 +492,11 @@ class FlipPage extends WebPage
         $this->addWellKnownJS($type, $async);
     }
 
+    function add_js($type, $async=true)
+    {
+        $this->addWellKnownJS($type, $async);
+    }
+
     /**
      * Add a JavaScript file from a set of files known to the framework
      *
