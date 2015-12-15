@@ -203,7 +203,23 @@ class LDAPGroup extends Group
         return $data;
     }
 
-    public function addMember($name, $isGroup=false)
+    public function clearMembers()
+    {
+        if(isset($this->ldap_obj['member']))
+        {
+            $this->ldap_obj['member'] = array();
+        }
+        else if(isset($this->ldap_obj['uniquemember']))
+        {
+            $this->ldap_obj['uniquemember'] = array();
+        }
+        else if(isset($this->ldap_obj['memberuid']))
+        {
+            $this->ldap_obj['memberuid'] = array();
+        }
+    }
+
+    public function addMember($name, $isGroup=false, $flush=true)
     {
         $dn = false;
         if($isGroup)
@@ -224,7 +240,7 @@ class LDAPGroup extends Group
         else if(isset($this->ldap_obj['uniquemember']))
         {
             $raw_members = $this->ldap_obj['uniquemember'];
-            $propName = 'uniquemember';
+            $propName = 'uniqueMember';
         }
         else if(isset($this->ldap_obj['memberuid']))
         {
@@ -247,10 +263,18 @@ class LDAPGroup extends Group
         {
             array_push($raw_members, $dn);
         }
-        $obj = array('dn'=>$this->ldap_obj->dn);
-        $obj[$propName] = $raw_members;
-        $this->ldap_obj->$propName = array($raw_members);
-        return $this->server->update($obj);
+        $tmp = strtolower($propName);
+        $this->ldap_obj->$tmp = $raw_members;
+        if($flush === true)
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj[$propName] = $raw_members;
+            return $this->server->update($obj);
+        }
+        else
+        {
+            return true;
+        }
     }
 
     static function from_dn($dn, $data=false)

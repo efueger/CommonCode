@@ -38,6 +38,11 @@ class Group extends \SerializableObject
         return count($this->members());
     }
 
+    public function clearMembers()
+    {
+        return false;
+    }
+
     public function jsonSerialize()
     {
         $group = array();
@@ -54,7 +59,7 @@ class Group extends \SerializableObject
         return array();
     }
 
-    public function addMember($name, $isGroup=false)
+    public function addMember($name, $isGroup=false, $flush=true)
     {
         return false;
     }
@@ -72,16 +77,22 @@ class Group extends \SerializableObject
         }
         if(isset($group->member))
         {
+            $this->clearMembers();
             $count = count($group->member);
             for($i = 0; $i < $count; $i++)
             {
+                $isLast = false;
+                if($i === $count - 1)
+                {
+                    $isLast = true;
+                }
                 if($group->member[$i]->type === 'Group')
                 {
-                    $this->addMember($group->member[$i]->cn, true);
+                    $this->addMember($group->member[$i]->cn, true, $isLast);
                 }
                 else
                 {
-                    $this->addMember($group->member[$i]->uid);
+                    $this->addMember($group->member[$i]->uid, false, $isLast);
                 }
             }
             unset($group->member);

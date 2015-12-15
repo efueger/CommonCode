@@ -291,7 +291,7 @@ class LDAPServer extends \Singleton
             $ret = @ldap_mod_replace($this->ds, $dn, $entity);
             if($ret === false)
             {
-                throw new \Exception('Failed to update object with dn='.$dn);
+                throw new \Exception('Failed to update object with dn='.$dn.'('.ldap_error($this->ds).')'.print_r($entity, true));
             }
         }
         if(!empty($delete))
