@@ -331,7 +331,7 @@ class FlipPage extends WebPage
     {
         parent::__construct($title);
         $this->add_js(JS_JQUERY, false);
-        $this->add_js(JS_FLIPSIDE);
+        $this->add_js(JS_FLIPSIDE, false);
         $this->addBootstrap();
         $this->header = $header;
         if(isset(FlipsideSettings::$sites))
