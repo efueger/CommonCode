@@ -20,7 +20,11 @@ function login_submit_done(jqXHR)
             }
             else
             {
-                url = window.location;
+                url = getParameterByName('return');
+                if(url === null)
+                {
+                    url = window.location;
+                }
             }
             if(data.extended)
             {
