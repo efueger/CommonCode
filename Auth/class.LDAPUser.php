@@ -502,6 +502,60 @@ class LDAPUser extends User
         }
     }
 
+    function setTitles($titles)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['title'] = $titles;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            if($titles === '') $titles = null;
+            $obj['title'] = $titles;
+            if(is_array($titles))
+            {
+                $this->ldap_obj->title = $titles;
+            }
+            else
+            {
+                $this->ldap_obj->title = array($titles);
+            }
+            return $this->server->update($obj);
+        }
+    }
+
+    function setOrganizationUnits($ous)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['ou'] = $ous;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            if($ous === '') $ous = null;
+            $obj['ou'] = $ous;
+            if(is_array($ous))
+            {
+                $this->ldap_obj->ou = $ous;
+            }
+            else
+            {
+                $this->ldap_obj->ou = array($ous);
+            }
+            return $this->server->update($obj);
+        }
+    }
+
     function flushUser()
     {
         if(is_object($this->ldap_obj))

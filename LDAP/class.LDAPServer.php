@@ -286,14 +286,17 @@ class LDAPServer extends \Singleton
         $dn = ldap_escape($object['dn'], true);
         $delete = array();
         $entity = $this->_fix_object($object, $delete);
-        $ret = ldap_mod_replace($this->ds, $dn, $entity);
-        if($ret === false)
+        if(!empty($entity))
         {
-            throw new \Exception('Failed to update object with dn='.$dn);
+            $ret = @ldap_mod_replace($this->ds, $dn, $entity);
+            if($ret === false)
+            {
+                throw new \Exception('Failed to update object with dn='.$dn);
+            }
         }
         if(!empty($delete))
         {
-            $ret = ldap_mod_del($this->ds, $dn, $delete);
+            $ret = @ldap_mod_del($this->ds, $dn, $delete);
         }
         return $ret;
     }
