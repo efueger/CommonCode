@@ -28,14 +28,14 @@ class Group extends \SerializableObject
         return array();
     }
 
-    public function members($details=false, $recursive=true)
+    public function members($details=false, $recursive=true, $includeGroups=true)
     {
         return array();
     }
 
     public function member_count()
     {
-        return count($this->members());
+        return count($this->members(false, false, false));
     }
 
     public function clearMembers()

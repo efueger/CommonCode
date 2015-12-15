@@ -100,7 +100,7 @@ class LDAPGroup extends Group
         return $members;
     }
 
-    public function members($details=false, $recursive=true)
+    public function members($details=false, $recursive=true, $includeGroups=true)
     {
         $members = array();
         $raw_members = false;
@@ -125,6 +125,10 @@ class LDAPGroup extends Group
                 {
                     $members = array_merge($members, $child->members());
                 }
+            }
+            else if($includeGroups === false && strncmp($raw_members[$i], 'cn=', 3) === 0)
+            {
+                //Drop this member
             }
             else
             {
