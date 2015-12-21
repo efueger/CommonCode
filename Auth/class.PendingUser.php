@@ -198,7 +198,7 @@ class PendingUser extends User
                 Thank you,<br/>
                 Burning Flipside Technology Team');
         $email_msg->setSubject('Burning Flipside Registration');
-        $email_provider = EmailProvider::getInstance();
+        $email_provider = \EmailProvider::getInstance();
         if($email_provider->sendEmail($email_msg) === false)
         {
             throw new \Exception('Unable to send email!');
