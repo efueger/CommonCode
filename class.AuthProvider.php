@@ -576,6 +576,10 @@ class AuthProvider extends Singleton
         else
         {
             $auth = $this->getAuthenticator($methodName);
+            if($auth === false)
+            {
+                return $this->getUserByResetHash($hash, false);
+            }
             return $auth->getUserByResetHash($hash);
         }
     }
