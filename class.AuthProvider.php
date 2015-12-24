@@ -468,7 +468,7 @@ class AuthProvider extends Singleton
                 $ret = $this->methods[$i]->getTempUserByHash($hash);
                 if($ret !== false)
                 {
-                    return true;
+                    return $ret;
                 }
             }
             return false;
@@ -535,7 +535,7 @@ class AuthProvider extends Singleton
                 $ret = $this->methods[$i]->activatePendingUser($user);
                 if($ret !== false)
                 {
-                    $this->impersonate_user($ret);
+                    $this->impersonateUser($ret);
                     return true;
                 }
             }
@@ -604,6 +604,21 @@ class AuthProvider extends Singleton
             }
         }
         return false;
+    }
+
+    public function deletePendingUsersByFilter($filter, $methodName=false)
+    {
+        $users = $this->getPendingUsersByFilter($filter, false, false, false, false, $methodName);
+        if($users === false)
+        {
+            return false;
+        }
+        $count = count($users);
+        for($i = 0; $i < $count; $i++)
+        {
+            $users[$i]->delete();
+        }
+        return true;
     }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */

@@ -258,7 +258,7 @@ class SQLAuthenticator extends Authenticator
         $count = count($users);
         for($i = 0; $i < $count; $i++)
         {
-            $user = new SQLPendingUser($users[$i]);
+            $user = new SQLPendingUser($users[$i], $user_data_table);
             $err = false;
             foreach($field_data as $field=>$data)
             {
@@ -292,7 +292,7 @@ class SQLAuthenticator extends Authenticator
         $count = count($users);
         for($i = 0; $i < $count; $i++)
         {
-            $users[$i] = new SQLPendingUser($users[$i]);
+            $users[$i] = new SQLPendingUser($users[$i], $user_data_table);
         }
         return $users;
     }
@@ -323,7 +323,7 @@ class SQLAuthenticator extends Authenticator
 
     public function getTempUserByHash($hash)
     {
-        $users = $this->getPendingUsersByFilter(new \Data\Filter('hash eq '.$hash));
+        $users = $this->getPendingUsersByFilter(new \Data\Filter("hash eq '$hash'"));
         if($users === false || !isset($users[0]))
         {
             return false;
