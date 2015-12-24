@@ -595,6 +595,15 @@ class LDAPUser extends User
         }
         return $hash;
     }
+
+    public function delete()
+    {
+        //Make sure we are bound in write mode
+        $auth = \AuthProvider::getInstance();
+        $ldap = $auth->getAuthenticator('Auth\LDAPAuthenticator');
+        $ldap->get_and_bind_server(true);
+        return $this->server->delete($this->ldap_obj->dn);
+    }
 }
 
 ?>
