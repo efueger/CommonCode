@@ -57,12 +57,14 @@ class LDAPServer extends \Singleton
 {
     protected $ds;
     protected $connect;
+    protected $binder;
     public $user_base;
     public $group_base;
 
     protected function __construct()
     {
         $this->ds = null;
+        $this->binder = null;
     }
 
     public function __destruct()
@@ -95,7 +97,7 @@ class LDAPServer extends \Singleton
             $this->connect = $connect_str;
             $this->ds      = ldap_connect($this->connect);
         }
-        else if($connect_str !== $this->connect)
+        else
         {
             ldap_close($this->ds);
             $this->connect = $connect_str;
@@ -127,6 +129,7 @@ class LDAPServer extends \Singleton
         {
             throw new \Exception('Not connected');
         }
+        $this->binder = $cn;
         if($cn === null || $password === null)
         {
             $res = @ldap_bind($this->ds);
@@ -291,7 +294,7 @@ class LDAPServer extends \Singleton
             $ret = @ldap_mod_replace($this->ds, $dn, $entity);
             if($ret === false)
             {
-                throw new \Exception('Failed to update object with dn='.$dn.'('.ldap_error($this->ds).')'.print_r($entity, true));
+                throw new \Exception('Failed to update object with dn='.$dn.'('.ldap_errno($this->ds).':'.ldap_error($this->ds).') '.print_r($entity, true));
             }
         }
         if(!empty($delete))

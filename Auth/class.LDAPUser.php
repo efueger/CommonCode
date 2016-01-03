@@ -406,7 +406,17 @@ class LDAPUser extends User
             $obj = array('dn'=>$this->ldap_obj->dn);
             $obj['displayName'] = $name;
             $this->ldap_obj->displayname = array($name);
-            return $this->server->update($obj);
+            try
+            {
+                return $this->server->update($obj);
+            }
+            catch(\Exception $ex)
+            {
+                $auth = \AuthProvider::getInstance();
+                $ldap = $auth->getAuthenticator('Auth\LDAPAuthenticator');
+                $this->server = $ldap->get_and_bind_server(true);
+                return $this->server->update($obj);
+            }
         }
     }
 
@@ -498,6 +508,25 @@ class LDAPUser extends User
             $obj = array('dn'=>$this->ldap_obj->dn);
             $obj['jpegPhoto'] = $photo;
             $this->ldap_obj->jpegphoto = array($photo);
+            return $this->server->update($obj);
+        }
+    }
+
+    function setAddress($address)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['postalAddress'] = $address;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj['postalAddress'] = $address;
+            $this->ldap_obj->postaladdress = array($address);
             return $this->server->update($obj);
         }
     }

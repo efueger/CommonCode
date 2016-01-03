@@ -33,7 +33,10 @@ class OAuth2Auth extends \Slim\Middleware
                 $user = FlipSession::getUser();
                 $this->app->user = $user;
             }
-            $this->app->getLog()->error("No authorization header or session");
+            else
+            {
+                $this->app->getLog()->error("No authorization header or session");
+            }
         } 
         else 
         {
