@@ -131,7 +131,7 @@ abstract class OAuth2Authenticator extends \Auth\Authenticator
         {
             if($local_users[0]->canLoginWith($this->getHostName()))
             {
-                $auth->impersonate_user($local_users[0]);
+                $auth->impersonateUser($local_users[0]);
                 return self::SUCCESS;
             }
             $current_user = $local_users[0];

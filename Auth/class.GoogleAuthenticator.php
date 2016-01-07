@@ -50,7 +50,7 @@ class GoogleAuthenticator extends Authenticator
         {
             if($localUsers[0]->canLoginWith('google.com'))
             {
-                $auth->impersonate_user($localUsers[0]);
+                $auth->impersonateUser($localUsers[0]);
                 return self::SUCCESS;
             }
             $currentUser = $localUsers[0];

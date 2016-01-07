@@ -42,8 +42,9 @@ class OAuth2Auth extends \Slim\Middleware
         {
             if(strncmp($this->headers['Authorization'], 'Basic', 5) == 0)
             {
-                $ldap = new FlipsideLDAPServer();
-                $user = $ldap->doLogin($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+                $auth = \AuthProvider::getInstance();
+                $auth->login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+                $user = FlipSession::getUser();
                 if($user !== false)
                 {
                     $this->app->user = $user;
