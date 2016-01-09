@@ -150,15 +150,13 @@ class FlipSession extends Singleton
     {
         $res = array();
         $offset = 0;
-        while($offset < strlen($sessionData))
+        $length = strlen($sessionData);
+        while($offset < $length)
         {
-            if(!strstr(substr($sessionData, $offset), "|"))
-            {
-                return false;
-            }
             $pos = strpos($sessionData, "|", $offset);
             $len = $pos - $offset;
             $name = substr($sessionData, $offset, $len);
+            if($name === false) break;
             $offset += $len+1;
             $data = @unserialize(substr($sessionData, $offset));
             $res[$name] = $data;
