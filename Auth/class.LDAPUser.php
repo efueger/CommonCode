@@ -391,6 +391,21 @@ class LDAPUser extends User
         return new static($user[0]);
     }
 
+    private function update($obj)
+    {
+        try
+        {
+            return $this->server->update($obj);
+        }
+        catch(\Exception $ex)
+        {
+            $auth = \AuthProvider::getInstance();
+            $ldap = $auth->getAuthenticator('Auth\LDAPAuthenticator');
+            $this->server = $ldap->get_and_bind_server(true);
+            return $this->server->update($obj);
+        }
+    }
+
     function setDisplayName($name)
     {
         if(!is_object($this->ldap_obj))
@@ -406,17 +421,7 @@ class LDAPUser extends User
             $obj = array('dn'=>$this->ldap_obj->dn);
             $obj['displayName'] = $name;
             $this->ldap_obj->displayname = array($name);
-            try
-            {
-                return $this->server->update($obj);
-            }
-            catch(\Exception $ex)
-            {
-                $auth = \AuthProvider::getInstance();
-                $ldap = $auth->getAuthenticator('Auth\LDAPAuthenticator');
-                $this->server = $ldap->get_and_bind_server(true);
-                return $this->server->update($obj);
-            }
+            return $this->update($obj);
         }
     }
 
@@ -435,7 +440,7 @@ class LDAPUser extends User
             $obj = array('dn'=>$this->ldap_obj->dn);
             $obj['givenName'] = $name;
             $this->ldap_obj->givenname = array($name);
-            return $this->server->update($obj);
+            return $this->update($obj);
         }
     }
 
@@ -454,7 +459,7 @@ class LDAPUser extends User
             $obj = array('dn'=>$this->ldap_obj->dn);
             $obj['sn'] = $sn;
             $this->ldap_obj->sn = array($sn);
-            return $this->server->update($obj);
+            return $this->update($obj);
         }
     }
 
@@ -473,7 +478,7 @@ class LDAPUser extends User
             $obj = array('dn'=>$this->ldap_obj->dn);
             $obj['mail'] = $email;
             $this->ldap_obj->mail = array($email);
-            return $this->server->update($obj);
+            return $this->update($obj);
         }
     }
 
@@ -508,7 +513,7 @@ class LDAPUser extends User
             $obj = array('dn'=>$this->ldap_obj->dn);
             $obj['jpegPhoto'] = $photo;
             $this->ldap_obj->jpegphoto = array($photo);
-            return $this->server->update($obj);
+            return $this->update($obj);
         }
     }
 
@@ -527,7 +532,102 @@ class LDAPUser extends User
             $obj = array('dn'=>$this->ldap_obj->dn);
             $obj['postalAddress'] = $address;
             $this->ldap_obj->postaladdress = array($address);
-            return $this->server->update($obj);
+            return $this->update($obj);
+        }
+    }
+
+    function setPostalCode($postalcode)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['postalCode'] = $postalcode;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj['postalCode'] = $postalcode;
+            $this->ldap_obj->postalcode = array($postalcode);
+            return $this->update($obj);
+        }
+    }
+
+    function setCountry($country)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['c'] = $country;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj['c'] = $country;
+            $this->ldap_obj->c = array($country);
+            return $this->update($obj);
+        }
+    }
+
+    function setState($state)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['st'] = $state;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj['st'] = $state;
+            $this->ldap_obj->st = array($state);
+            return $this->update($obj);
+        }
+    }
+
+    function setCity($city)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['l'] = $city;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj['l'] = $city;
+            $this->ldap_obj->l = array($city);
+            return $this->update($obj);
+        }
+    }
+
+    function setPhoneNumber($phone)
+    {
+        if(!is_object($this->ldap_obj))
+        {
+            if($this->ldap_obj === false)
+            {
+                $this->ldap_obj = array();
+            }
+            $this->ldap_obj['mobile'] = $phone;
+        }
+        else
+        {
+            $obj = array('dn'=>$this->ldap_obj->dn);
+            $obj['mobile'] = $phone;
+            $this->ldap_obj->mobile = array($phone);
+            return $this->update($obj);
         }
     }
 
@@ -554,7 +654,7 @@ class LDAPUser extends User
             {
                 $this->ldap_obj->title = array($titles);
             }
-            return $this->server->update($obj);
+            return $this->update($obj);
         }
     }
 
@@ -581,7 +681,7 @@ class LDAPUser extends User
             {
                 $this->ldap_obj->ou = array($ous);
             }
-            return $this->server->update($obj);
+            return $this->update($obj);
         }
     }
 
