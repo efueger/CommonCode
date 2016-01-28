@@ -23,7 +23,7 @@ class MongoDataTable extends DataTable
         $criteria = array();
         if($filter !== false)
         {
-            if($filter instanceof Data\Filter)
+            if($filter instanceof \Data\Filter)
             {
                 $criteria = $filter->to_mongo_filter();
             }
