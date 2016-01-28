@@ -278,7 +278,7 @@ class LDAPAuthenticator extends Authenticator
         {
             $filter = new \Data\Filter('cn eq *');
         }
-        $users = $server->read($this->user_base, $filter);
+        $users = $server->read($this->user_base, $filter, false, $select);
         if($users === false)
         {
             return false;
