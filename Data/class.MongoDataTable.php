@@ -78,5 +78,10 @@ class MongoDataTable extends DataTable
         }
         return $ret;
     }
+
+    function create($data)
+    {
+        return $this->collection->save($data);
+    }
 }
 ?>
