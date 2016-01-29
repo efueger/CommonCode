@@ -54,7 +54,7 @@ class Group extends \SerializableObject
         return $group;
     }
 
-    public function getNonMemebers()
+    public function getNonMemebers($select=false)
     {
         return array();
     }

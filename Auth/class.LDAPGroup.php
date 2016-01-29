@@ -171,7 +171,7 @@ class LDAPGroup extends Group
         return $members;
     }
 
-    public function getNonMemebers()
+    public function getNonMemebers($select=false)
     {
         $data = array();
         $group_filter = '(&(cn=*)(!(cn='.$this->getGroupName().'))';
@@ -198,7 +198,7 @@ class LDAPGroup extends Group
         {
             array_push($data, new LDAPGroup($groups[$i]));
         }
-        $users = $this->server->read($this->server->user_base, $user_filter);
+        $users = $this->server->read($this->server->user_base, $user_filter, false, $select);
         $count = count($users);
         for($i = 0; $i < $count; $i++)
         {
