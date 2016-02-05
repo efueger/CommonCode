@@ -10,6 +10,10 @@ class LDAPGroup extends Group
     function __construct($data)
     {
         $this->ldap_obj = $data;
+        if(!is_object($data))
+        {
+            var_dump(debug_backtrace()); die();
+        }
         $this->server   = $this->ldap_obj->server;
         if($this->server === null)
         {
@@ -196,6 +200,7 @@ class LDAPGroup extends Group
         $count = count($groups);
         for($i = 0; $i < $count; $i++)
         {
+            if($groups[$i] === false || $groups[$i] === null) continue;
             array_push($data, new LDAPGroup($groups[$i]));
         }
         $users = $this->server->read($this->server->user_base, $user_filter, false, $select);

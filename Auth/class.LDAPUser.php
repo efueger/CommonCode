@@ -43,14 +43,17 @@ class LDAPUser extends User
 
     private function check_child_group($array)
     {
+        $res = false;
         for($i = 0; $i < $array['count']; $i++)
         {
             if(strpos($array[$i], $this->server->group_base) !== false)
             {
                 $dn = explode(',', $array[$i]);
-                return $this->isInGroupNamed(substr($dn[0], 3));
+                $res = $this->isInGroupNamed(substr($dn[0], 3));
+                if($res) return $res;
             }
         }
+        return $res;
     }
 
     function isInGroupNamed($name)

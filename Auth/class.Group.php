@@ -86,6 +86,7 @@ class Group extends \SerializableObject
                 {
                     $isLast = true;
                 }
+                if(!isset($group->member[$i]->type)) continue;
                 if($group->member[$i]->type === 'Group')
                 {
                     $this->addMember($group->member[$i]->cn, true, $isLast);
