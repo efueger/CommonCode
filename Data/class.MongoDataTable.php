@@ -81,7 +81,60 @@ class MongoDataTable extends DataTable
 
     function create($data)
     {
-        return $this->collection->save($data);
+        $res = $this->collection->insert($data);
+        if($res === false || $res['err'] !== null)
+        {
+            return false;
+        }
+        return $data['_id'];
+    }
+
+    function update($filter, $data)
+    {
+        $criteria = array();
+        if($filter !== false)
+        {
+            if(is_array($filter))
+            {
+                $criteria = $filter;
+            }
+            else
+            {
+                $criteria = $filter->to_mongo_filter();
+            }
+        }
+        if(isset($data['_id']))
+        {
+            unset($data['_id']);
+        }
+        $res = $this->collection->update($criteria, $data);
+        if($res === false || $res['err'] !== null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    function delete($filter)
+    {
+        $criteria = array();
+        if($filter !== false)
+        {
+            if(is_array($filter))
+            {
+                $criteria = $filter;
+            }
+            else
+            {
+                $criteria = $filter->to_mongo_filter();
+            }
+        }
+        $res = $this->collection->remove($criteria);
+        if($res === false || $res['err'] !== null)
+        {
+            return false;
+        }
+        return true;
     }
 }
 ?>
