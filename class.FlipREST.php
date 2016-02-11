@@ -136,7 +136,8 @@ class FlipRESTFormat extends \Slim\Middleware
                 }
                 else if(is_object($row))
                 {
-                    $id = $row->$keys[0];
+                    $keyName = $keys[0];
+                    $id = $row->$keyName;
                     if(is_object($id))
                     {
                         $id = $id->{'$id'};
