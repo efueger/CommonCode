@@ -54,7 +54,16 @@ class SerializableObject implements ArrayAccess,JsonSerializable
         $xml = new XmlWriter();
         $xml->openMemory();
         $xml->startDocument('1.0');
-        $this->object2XML($xml, $this);
+        if(isset($this[0]))
+        {
+            $xml->startElement('Array');
+            $this->array2XML($xml, 'Entity', (array)$this);
+            $xml->endElement();
+        }
+        else
+        {
+            $this->object2XML($xml, $this);
+        }
         $xml->endElement();
         return $xml->outputMemory(true);
     }
@@ -69,19 +78,26 @@ class SerializableObject implements ArrayAccess,JsonSerializable
     {
         foreach($data as $key => $value)
         {
-            if(is_object($value))
+            if(is_array($value) || is_numeric($key))
+            {
+                $this->array2XML($xml, $key, (array)$value);
+            }
+            else if(is_object($value))
             {
                 $xml->startElement($key);
-                $this->getObject2XML($xml, $value);
+                $this->object2XML($xml, $value);
 		$xml->endElement();
-            }
-            else if(is_array($value))
-            {
-                $this->array2XML($xml, $key, $value);
             }
             else
             {
-                $xml->writeElement($key, $value);
+                if($key[0] === '$')
+                {
+                    $xml->writeElement(substr($key, 1), $value);
+                }
+                else
+                {
+                    $xml->writeElement($key, $value);
+                }
             }
         }
     }
