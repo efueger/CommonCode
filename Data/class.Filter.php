@@ -5,6 +5,7 @@ class Filter
 {
     protected $children = array();
     protected $string;
+    protected $sqlAppend = '';
 
     function __construct($string = false)
     {
@@ -60,7 +61,7 @@ class Filter
                 $ret.=$this->children[$i]->to_sql_string();
             }
         }
-        return $ret;
+        return $ret.$this->sqlAppend;
     }
 
     function to_ldap_string()
@@ -171,12 +172,18 @@ class Filter
         $count = count($this->children);
         for($i = 0; $i < $count; $i++)
         {
+            if(!is_object($this->children[$i])) continue;
             if(strstr($this->children[$i]->var1, $substr) !== false ||
                strstr($this->children[$i]->var2, $substr) !== false)
             {
                 return $this->children[$i];
             }
         }
+    }
+
+    public function addToSQLString($string)
+    {
+        $this->sqlAppend.=$string;
     }
 }
 ?>
