@@ -19,7 +19,7 @@ class FilterClause
 
     protected function process_filter_string($string)
     {
-        if(self::str_startswith($string, 'substringof'))
+        if(self::str_startswith($string, 'substringof') || self::str_startswith($string, 'contains'))
         {
             $this->op   = strtok($string, '(');
             $this->var1 = strtok(',');
@@ -61,6 +61,7 @@ class FilterClause
         switch($this->op)
         {
             case 'substringof':
+            case 'contains':
                 $str = $this->var1.' LIKE \'%'.trim($this->var2,"'").'%\'';
                 break;
             default:
@@ -76,6 +77,7 @@ class FilterClause
         switch($this->op)
         {
             case 'substringof':
+            case 'contains':
                 $str.=$this->var1.$this->op.'*'.trim($this->var2,"'").'*';
                 break;
             case '!=':
