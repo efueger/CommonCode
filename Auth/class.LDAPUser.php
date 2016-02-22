@@ -718,7 +718,15 @@ class LDAPUser extends User
         $ldap->get_and_bind_server(true);
         $ldap_obj = $this->server->read($ldap->user_base, new \Data\Filter('uid eq '.$this->getUid()));
         $ldap_obj = $ldap_obj[0];
-        $hash = hash('sha512', $ldap_obj->dn.';'.$ldap_obj->userpassword[0].';'.$ldap_obj->mail[0]);
+        $hash = false;
+        if(isset($ldap_obj->userpassword))
+        {
+            $hash = hash('sha512', $ldap_obj->dn.';'.$ldap_obj->userpassword[0].';'.$ldap_obj->mail[0]);
+        }
+        else
+        {
+            $hash = hash('sha512', $ldap_obj->dn.';'.openssl_random_pseudo_bytes(10).';'.$ldap_obj->mail[0]);
+        }
         $obj = array('dn'=>$this->ldap_obj->dn);
         $obj['uniqueIdentifier'] = $hash;
         if($this->server->update($obj) === false)
