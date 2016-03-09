@@ -38,6 +38,7 @@ define('JS_BOOTBOX',         11);
 define('JS_DATATABLE_ODATA', 12);
 define('JS_CRYPTO_MD5_JS',   13);
 define('JS_JCROP',           14);
+define('JS_TYPEAHEAD',       15);
 define('JS_FLIPSIDE',     20);
 define('JS_LOGIN',        21);
 
@@ -198,6 +199,16 @@ $js_array = array(
          'cdn' => array(
              'no'  => '//cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.12/js/jquery.Jcrop.min.js',
              'min' => '//cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.12/js/jquery.Jcrop.min.js'
+         )
+     ),
+     JS_TYPEAHEAD => array(
+         'no' => array(
+             'no'  => '/js/common/typeahead.bundle.js',
+             'min' => '/js/common/typeahead.bundle.min.js'
+         ),
+         'cdn' => array(
+             'no'  => '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.js',
+             'min' => '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js'
          )
      ),
      JS_FLIPSIDE => array(
