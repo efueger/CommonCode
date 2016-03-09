@@ -363,9 +363,9 @@ class WebPage
         $requestURI = $_SERVER['REQUEST_URI'];
         if($requestURI[0] === '/')
         {
-            $requestURI = '';
+            $requestURI = substr($requestURI, 1);
         }
-        return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}/$requestURI";
+        return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'.$_SERVER['HTTP_HOST'].'/'.$requestURI;
     }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
