@@ -25,7 +25,7 @@ class Filter
             $string = substr($string, 1, strlen($string)-2);
             $parens = true;
         }
-        if(preg_match('/(.+)( and | or )(.+)/', $string, $clauses) === 0)
+        if(preg_match('/(.+?)( and | or )(.+)/', $string, $clauses) === 0)
         {
             return array(new FilterClause($string));
         }
