@@ -417,12 +417,26 @@ class LDAPUser extends User
             {
                 $this->ldap_obj = array();
             }
-            $this->ldap_obj['displayName'] = $name;
+            if(strlen($name) > 0)
+            {
+                $this->ldap_obj['displayName'] = $name;
+            }
+            else if(isset($this->ldap_obj['displayName']))
+            {
+                unset($this->ldap_obj['displayName']);
+            }
         }
         else
         {
             $obj = array('dn'=>$this->ldap_obj->dn);
-            $obj['displayName'] = $name;
+            if(strlen($name) > 0)
+            {
+                $obj['displayName'] = $name;
+            }
+            else
+            {
+                $obj['displayName'] = null;
+            }
             $this->ldap_obj->displayname = array($name);
             return $this->update($obj);
         }
