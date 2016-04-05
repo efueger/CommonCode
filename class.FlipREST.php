@@ -304,6 +304,7 @@ class FlipREST extends \Slim\Slim
             'line' => $e->getLine(),
         );
         $this->response->headers->set('Content-Type', 'application/json');
+        error_log(print_r($error, true));
         echo json_encode($error);
     }
 }
