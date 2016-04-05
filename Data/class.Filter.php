@@ -185,5 +185,22 @@ class Filter
     {
         $this->sqlAppend.=$string;
     }
+
+    public function appendChild($child)
+    {
+        if($child === 'and' || $child === 'or')
+        {
+            array_push($this->children, $child);
+            return;
+        }
+        else if(is_a($child, '\Data\Filter'))
+        {
+            $this->children = array_merge($this->children, $child->children);
+        }
+        else
+        {
+            $this->children = array_merge($this->children, self::process_string($child));
+        }
+    }
 }
 ?>
