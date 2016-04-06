@@ -1,6 +1,7 @@
 # Burning Flipside Dev Enviornment Setup
 
 To setup a dev environment for the Burning Flipside Web Environment please do the following:
+
 1. Goto /var/www
 2. Run sudo mkdir common
 3. Run sudo chown \`whoami\`:\`whoami\` common
@@ -19,6 +20,7 @@ To setup a dev environment for the Burning Flipside Web Environment please do th
 16. Run sudo chown \`whoami\`:\`whoami\` secure_settings
 17. Use the following as class.FlipsideSettings.php in the secure_settings folder:
 
+```
     <?php
     class FlipsideSettings
     {
@@ -43,5 +45,6 @@ To setup a dev environment for the Burning Flipside Web Environment please do th
     }
     /* vim: set tabstop=4 shiftwidth=4 expandtab: */
     ?>
-    
+```
+
 18. Run sudo /var/www/common/cron.sh
