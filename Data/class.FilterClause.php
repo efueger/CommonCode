@@ -19,11 +19,12 @@ class FilterClause
 
     protected function process_filter_string($string)
     {
-        if(self::str_startswith($string, 'substringof') || self::str_startswith($string, 'contains'))
+        if(self::str_startswith($string, 'substringof') || self::str_startswith($string, 'contains') || 
+           self::str_startswith($string, 'indexof'))
         {
             $this->op   = strtok($string, '(');
             $this->var1 = strtok(',');
-            $this->var2 = strtok(')');
+            $this->var2 = trim(strtok(')'));
             return;
         }
         $field = strtok($string, ' ');
@@ -113,6 +114,23 @@ class FilterClause
                 return array($this->var1=>array('$gte'=>$this->var2));
             case 'substringof':
                 return array($this->var1=>array('$regex'=>new MongoRegex('/'.$this->var2.'/i')));
+            case 'indexof':
+                $field = $this->var1;
+                $case  = false;
+                if(self::str_startswith($this->var1, 'tolower'))
+                {
+                    $field = substr($this->var1, strpos($this->var1, '(')+1);
+                    $field = substr($field, 0, strpos($field, ')'));
+                    $case = true;
+                }
+                if($case)
+                {
+                    return array($field=>array('$regex'=>new \MongoRegex('/'.$this->var2.'/i')));
+                }
+                else
+                {
+                    return array($field=>$this->var2);
+                }
         }
     }
 
