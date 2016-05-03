@@ -108,12 +108,12 @@ class Filter
             if($this->children[$i] === 'and')
             {
                 $old = array_pop($ret);
-                array_push($ret, array('$and'=>array($old, $this->children[$i++]->to_mongo_filter())));
+                array_push($ret, array('$and'=>array($old, $this->children[++$i]->to_mongo_filter())));
             }
             else if($this->children[$i] === 'or')
             {
                 $old = array_pop($ret);
-                array_push($ret, array('$or'=>array($old, $this->children[$i++]->to_mongo_filter())));
+                array_push($ret, array('$or'=>array($old, $this->children[++$i]->to_mongo_filter())));
             }
             else
             {
@@ -122,6 +122,7 @@ class Filter
         }
         if(count($ret) == 1 && is_array($ret[0]))
         {
+            //print_r(json_encode($ret[0])); die();
             return $ret[0];
         }
         return $ret;
