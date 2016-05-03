@@ -107,7 +107,7 @@ class MongoDataTable extends DataTable
         {
             unset($data['_id']);
         }
-        $res = $this->collection->update($criteria, $data);
+        $res = $this->collection->update($criteria, array('$set' => $data));
         if($res === false || $res['err'] !== null)
         {
             return false;

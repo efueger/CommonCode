@@ -555,6 +555,7 @@ class LDAPUser extends User
 
     function setPostalCode($postalcode)
     {
+        $postalcode = trim($postalcode);
         if(!is_object($this->ldap_obj))
         {
             if($this->ldap_obj === false)
