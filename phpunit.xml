@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit colors="true">
+<phpunit colors="true" verbose="true" stderr="true">
     <testsuites>
         <testsuite name="Common Code Test Suite">
             <directory>./tests/</directory>
@@ -9,7 +9,7 @@
 
     <filter>
         <whitelist>
-            <directory>./</directory>
+            <directory suffix=".php">./</directory>
             <exclude>
                 <directory>./tests</directory>
             </exclude>
