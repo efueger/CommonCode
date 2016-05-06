@@ -203,5 +203,10 @@ class Filter
             $this->children = array_merge($this->children, self::process_string($child));
         }
     }
+
+    public function getChildren()
+    {
+        return $this->children;
+    }
 }
 ?>
