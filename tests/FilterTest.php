@@ -113,6 +113,19 @@ class FilterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($clause->var1, 'c');
         $this->assertEquals($clause->var2, 'd');
     }
+
+    public function testSQL()
+    {
+        $filter = new \Data\Filter('a eq b');
+        $sql = $filter->to_sql_string();
+        $this->assertEquals($sql, 'a=b');
+        $filter = new \Data\Filter('a eq b and c eq d');
+        $sql = $filter->to_sql_string();
+        $this->assertEquals($sql, 'a=b AND c=d');
+        $filter = new \Data\Filter('a eq b or c eq d');
+        $sql = $filter->to_sql_string();
+        $this->assertEquals($sql, 'a=b OR c=d');
+    }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>
