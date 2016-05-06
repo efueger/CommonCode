@@ -12,6 +12,7 @@
             <directory suffix=".php">./</directory>
             <exclude>
                 <directory>./tests</directory>
+                <directory>./libs</directory>
             </exclude>
         </whitelist>
     </filter>
