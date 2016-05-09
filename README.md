@@ -1,3 +1,7 @@
+# Burning Flipside Common Code
+[![Build Status](https://travis-ci.org/BurningFlipside/CommonCode.svg?branch=master)](https://travis-ci.org/BurningFlipside/CommonCode)
+[![Coverage Status](https://coveralls.io/repos/github/BurningFlipside/CommonCode/badge.svg?branch=master)](https://coveralls.io/github/BurningFlipside/CommonCode?branch=master)
+
 # Burning Flipside Dev Enviornment Setup
 
 To setup a dev environment for the Burning Flipside Web Environment please do the following:
