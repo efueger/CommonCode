@@ -1,7 +1,7 @@
 <?php
 require_once('Autoload.php');
-if (!isset($_SESSION)) { session_start(); }
-if(!isset($_SESSION['ip_address']))
+if(!isset($_SESSION) && php_sapi_name() !== 'cli') { session_start(); }
+if(!isset($_SESSION['ip_address']) && isset($_SERVER['REMOTE_ADDR']))
 {
     $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
 }
