@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit colors="true" verbose="true" stderr="true">
+<phpunit colors="true" verbose="true" stderr="true" backupGlobals="false">
     <testsuites>
         <testsuite name="Common Code Test Suite">
             <directory>./tests/</directory>
