@@ -16,7 +16,14 @@
  * We use the FlipsideSettings class for a list of sites and settings
  * about CDNs and minified JS/CSS
  */
-require_once('/var/www/secure_settings/class.FlipsideSettings.php');
+if(isset($GLOBALS['FLIPSIDE_SETTINGS_LOC']))
+{
+    require_once($GLOBALS['FLIPSIDE_SETTINGS_LOC'].'/class.FlipsideSettings.php');
+}
+else
+{
+    require_once('/var/www/secure_settings/class.FlipsideSettings.php');
+}
 
 /**
  * We need the parent class
@@ -50,6 +57,7 @@ define('CSS_DATATABLE',    4);
 define('CSS_JCROP',        5);
 define('CSS_FONTAWESOME',  6);
 
+global $js_array;
 $js_array = array(
      JS_JQUERY => array(
          'no' => array(
@@ -233,6 +241,7 @@ $js_array = array(
      )
 );
 
+global $css_array;
 $css_array = array(
     CSS_JQUERY_UI => array(
         'no' => array(
@@ -389,7 +398,7 @@ class FlipPage extends WebPage
     {
         if($this->user === false || $this->user === null)
         {
-            if(strstr($_SERVER['REQUEST_URI'], 'logout.php') === false)
+            if(isset($_SERVER['REQUEST_URI']) && strstr($_SERVER['REQUEST_URI'], 'logout.php') === false)
             {
                 $this->addLink('Login', $this->login_url);
             }
