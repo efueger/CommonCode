@@ -51,7 +51,14 @@ class WebPage
         $this->title = $title;
         $this->head_tags = array();
         $this->body = '';
-        $this->bc = new Browscap('/var/php_cache/browser');
+        if(isset($GLOBALS['BROWSCAP_CACHE']))
+        {
+            $this->bc = new Browscap($GLOBALS['BROWSCAP_CACHE']);
+        }
+        else
+        {
+            $this->bc = new Browscap('/var/php_cache/browser');
+        }
         $this->bc->doAutoUpdate = false;
         $this->bc->lowercase = true;
         $this->browser = $this->getBrowser();
