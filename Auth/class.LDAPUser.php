@@ -30,7 +30,7 @@ class LDAPUser extends User
             {
                 $this->ldap_obj = $data;
             }
-            if(is_object($this->ldap_obj))
+            if($this->ldap_obj !== false && is_object($this->ldap_obj))
             {
                 $this->server   = $this->ldap_obj->server;
             }
