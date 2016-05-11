@@ -4,9 +4,9 @@ engines:
   duplication:
     enabled: true
     config:
-    languages:
-    - javascript
-    - php
+      languages:
+      - javascript
+      - php
   eslint:
     enabled: true
   fixme:
