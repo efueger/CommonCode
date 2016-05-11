@@ -5,9 +5,7 @@ engines:
     enabled: true
     config:
       languages:
-      - ruby
       - javascript
-      - python
       - php
   eslint:
     enabled: true
@@ -20,12 +18,21 @@ ratings:
   - "**.css"
   - "**.inc"
   - "**.js"
-  - "**.jsx"
-  - "**.module"
   - "**.php"
-  - "**.py"
-  - "**.rb"
 exclude_paths:
 - tests/
-- libs/**/*
-- vendor/**/*
+- libs/
+- vendor/
+- "static.words.php"
+- "css/bootstrap*"
+- "css/font-awesome*"
+- "css/jquery*"
+- "js/bootbox*"
+- "js/bootstrap*"
+- "js/Chart*"
+- "js/md5*"
+- "js/jquery*"
+- "js/metisMenu*"
+- "js/tinynav*"
+- "js/typeahead*"
+- "js/js-webshim/**/*"
